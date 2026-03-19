@@ -3,14 +3,19 @@ import uvicorn
 import fastapi_cdn_host
 # 引入Request对象
 from fastapi import Request
-from book import books
+from books import books
 from pydantic import BaseModel
+import models # 导入models
+from faskApi.database import engine
+
 
 # Pydantic 模型验证
 # 定义数据模型 User 模型，包含 name 和 age 两个字段
 class User(BaseModel):
     name: str
     age: int
+# 新增 创建数据库表
+models.Base.metadata.create_all(bind=engine)
 
 # 实例化FastAPI
 app = FastAPI()
