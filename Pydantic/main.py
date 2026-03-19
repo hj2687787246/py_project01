@@ -1,36 +1,75 @@
 # 1. 导入核心依赖
-from fastapi import FastAPI, HTTPException
-# 从 pydantic 导入 BaseModel（所有数据模型的基类）和 Field（用来做更细的字段校验）
-from pydantic import BaseModel, Field, EmailStr
-# 导入 datetime 用来模拟创建时间
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field, EmailStr, ValidationError
 from datetime import datetime
-# 导入 typing 的 Optional 用来定义可选字段
-from typing import Optional
+from typing import Optional, Generic, TypeVar, Union
 
-# 2. 创建 FastAPI 应用实例
-app = FastAPI(title="Pydantic参数校验入门demo", version="1.0")
+# 2. 定义通用类型（用于统一响应模型）
+T = TypeVar("T")
 
 
-# ------------------- 3. 定义Pydantic数据模型（核心重点！） -------------------
-# 模型1：创建用户时的请求体（所有必填字段都在这里，带严格校验）
+# 3. 统一响应格式模型（所有接口返回相同结构）
+class ResponseModel(BaseModel, Generic[T]):
+    code: int = Field(..., description="状态码：200成功，其他失败")
+    msg: str = Field(..., description="提示信息")
+    data: Optional[T] = Field(None, description="业务数据，成功时返回，失败时为null")
+
+    class Config:
+        from_attributes = True
+
+
+# 4. 自定义异常类（用于全局捕获）
+class CustomException(HTTPException):
+    def __init__(self, code: int, msg: str, status_code: int = 200):
+        self.code = code
+        self.msg = msg
+        self.status_code = status_code  # HTTP状态码，默认200（前后端分离常用）
+
+
+# 5. 创建FastAPI应用实例
+app = FastAPI(title="规范的用户管理接口", version="1.0")
+
+
+# 6. 全局异常处理（核心！统一捕获所有异常）
+@app.exception_handler(CustomException)
+async def custom_exception_handler(request: Request, exc: CustomException):
+    """捕获自定义异常，返回统一格式"""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=ResponseModel(code=exc.code, msg=exc.msg, data=None).dict()
+    )
+
+
+@app.exception_handler(ValidationError)
+async def validation_exception_handler(request: Request, exc: ValidationError):
+    """捕获Pydantic参数校验异常，返回统一格式"""
+    error_msg = f"参数校验失败：{exc.errors()[0]['msg']}（字段：{exc.errors()[0]['loc'][-1]}）"
+    return JSONResponse(
+        status_code=200,
+        content=ResponseModel(code=400, msg=error_msg, data=None).dict()
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """捕获所有未处理的异常，返回统一格式"""
+    return JSONResponse(
+        status_code=200,
+        content=ResponseModel(code=500, msg=f"服务器内部错误：{str(exc)}", data=None).dict()
+    )
+
+
+# 7. Pydantic数据模型（用户相关）
 class UserCreate(BaseModel):
-    # Field的第一个参数是默认值，... 表示「必填，无默认值」
-    # min_length/max_length：字符串长度限制
-    # description：字段描述，会显示在/docs文档里
-    # example：字段示例，会显示在/docs的「Try it out」里
     username: str = Field(..., min_length=3, max_length=20, description="用户名，3-20个字符", example="zhangsan")
-    # EmailStr：Pydantic内置的邮箱格式校验，自动验证是否是合法邮箱
     email: EmailStr = Field(..., description="合法邮箱地址", example="zhangsan@example.com")
-    # min_length：密码最少8位；我们可以后续加正则匹配，但先从简单的来
     password: str = Field(..., min_length=8, description="密码，最少8位", example="12345678")
-    # Optional[int]：表示这是可选字段，可以不传；ge=18, le=100：数值范围（18<=年龄<=100）
     age: Optional[int] = Field(None, ge=18, le=100, description="年龄，可选，18-100岁", example=25)
-    # regex改成pattern：正则匹配，这里用来匹配中国大陆手机号（1开头，后面10位数字）
     phone: Optional[str] = Field(None, pattern=r"^1\d{10}$", description="手机号，可选，11位中国大陆手机号",
                                  example="13800138000")
 
 
-# 模型2：更新用户时的请求体（所有字段都是可选的，因为更新可能只改一部分）
 class UserUpdate(BaseModel):
     username: Optional[str] = Field(None, min_length=3, max_length=20, description="用户名，3-20个字符")
     email: Optional[EmailStr] = Field(None, description="合法邮箱地址")
@@ -39,7 +78,6 @@ class UserUpdate(BaseModel):
     phone: Optional[str] = Field(None, pattern=r"^1\d{10}$", description="手机号，11位中国大陆手机号")
 
 
-# 模型3：返回给前端的响应体（不要返回密码！只返回安全的用户信息）
 class UserResponse(BaseModel):
     user_id: int = Field(..., description="用户ID")
     username: str = Field(..., description="用户名")
@@ -48,62 +86,53 @@ class UserResponse(BaseModel):
     phone: Optional[str] = Field(None, description="手机号")
     created_at: datetime = Field(..., description="用户创建时间")
 
-    # Config类是Pydantic的配置类，这里用来告诉Pydantic：
-    # 即使传入的是ORM对象（比如数据库查询结果），也能转换成这个响应模型
     class Config:
         from_attributes = True
 
 
-# ------------------- 4. 模拟数据库（不用真的连数据库，用内存字典存数据） -------------------
+# 8. 模拟数据库
 fake_user_db = {}
-# 模拟自增ID
 next_user_id = 1
 
 
-# ------------------- 5. 定义带参数校验的路由 -------------------
-# 路由1：创建用户（POST请求，接收UserCreate请求体）
-@app.post("/users/", response_model=UserResponse, summary="创建新用户",
-          description="传入符合要求的用户信息，自动校验参数后创建用户")
+# 9. 规范的路由接口（返回统一响应格式）
+@app.post("/users/", response_model=ResponseModel[UserResponse], summary="创建新用户")
 def create_user(user_in: UserCreate):
     global next_user_id
 
-    # 模拟保存到数据库
-    user_data = user_in.dict()  # 把Pydantic模型转换成Python字典
+    # 模拟：检查用户名是否已存在
+    for user in fake_user_db.values():
+        if user["username"] == user_in.username:
+            raise CustomException(code=400, msg="用户名已存在")
+
+    # 保存用户数据
+    user_data = user_in.dict()
     user_data["user_id"] = next_user_id
     user_data["created_at"] = datetime.now()
-
-    # 存入模拟数据库
     fake_user_db[next_user_id] = user_data
     next_user_id += 1
 
-    # 返回UserResponse模型（自动过滤掉password字段）
-    return user_data
+    # 返回统一格式的响应
+    return ResponseModel(code=200, msg="创建成功", data=user_data)
 
 
-# 路由2：更新用户（PUT请求，接收路径参数user_id和UserUpdate请求体）
-@app.put("/users/{user_id}", response_model=UserResponse, summary="更新用户信息",
-         description="传入用户ID和要更新的字段，只更新传入的字段")
+@app.put("/users/{user_id}", response_model=ResponseModel[UserResponse], summary="更新用户信息")
 def update_user(user_id: int, user_in: UserUpdate):
-    # 先检查用户是否存在
+    # 检查用户是否存在
     if user_id not in fake_user_db:
-        # 如果不存在，抛出404错误（HTTPException是FastAPI内置的错误处理）
-        raise HTTPException(status_code=404, detail="用户不存在")
-    # 获取现有用户数据
+        raise CustomException(code=404, msg="用户不存在")
+
+    # 更新数据
     existing_user = fake_user_db[user_id]
-    # 把要更新的字段转换成字典，exclude_unset=True表示「只转换用户传入的字段，不传的字段保持原样」
     update_data = user_in.dict(exclude_unset=True)
-    # 更新现有用户数据
     existing_user.update(update_data)
-    # 保存回模拟数据库
     fake_user_db[user_id] = existing_user
-    # 返回更新后的用户信息
-    return existing_user
+
+    return ResponseModel(code=200, msg="更新成功", data=existing_user)
 
 
-# 路由3：获取用户详情（GET请求，接收路径参数user_id）
-@app.get("/users/{user_id}", response_model=UserResponse, summary="获取用户详情",
-         description="传入用户ID，返回用户的完整信息（不含密码）")
+@app.get("/users/{user_id}", response_model=ResponseModel[UserResponse], summary="获取用户详情")
 def get_user(user_id: int):
     if user_id not in fake_user_db:
-        raise HTTPException(status_code=404, detail="用户不存在")
-    return fake_user_db[user_id]
+        raise CustomException(code=404, msg="用户不存在")
+    return ResponseModel(code=200, msg="查询成功", data=fake_user_db[user_id])
