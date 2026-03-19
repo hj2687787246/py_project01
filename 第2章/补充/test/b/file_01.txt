@@ -1,0 +1,4 @@
+﻿path=b
+name=file_01.txt
+created=2026-03-19 10:34:11
+note=for recursion practice

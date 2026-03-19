@@ -1,0 +1,4 @@
+﻿path=b\bb
+name=file_04.txt
+created=2026-03-19 10:34:11
+note=for recursion practice
