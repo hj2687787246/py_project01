@@ -53,7 +53,8 @@ class UserUpdate(BaseModel):
 # 用户响应体
 class UserResponse(UserCreate):
     id:int
-    # 告诉Pydantic从ORM模型中获取属性 from_attributes = True
+    # from_attributes = True
+    # 允许 Pydantic 直接读取 SQLAlchemy ORM 对象的字段，解决响应校验报错
     class Config:
         from_attributes = True # Pydantic 2.x 标准写法，支持ORM模型直接转响应对象
 
@@ -82,7 +83,7 @@ def get_user_by_id(db:Session,user_id:int):
 # R.Read 按用户名查询单个用户
 def get_user_by_username(db:Session,username:str):
     stmt = select(User).where(User.username == username)
-    # db.scalar()：返回单个值
+    # db.scalar()：返回单个值 执行查询，只取第一行第一列的值
     return db.scalar(stmt)
 # R.Read 按邮箱查询单个用户
 def get_user_by_email(db:Session,email:str):
@@ -92,7 +93,7 @@ def get_user_by_email(db:Session,email:str):
 # R.Read 分页查询用户列表
 def get_user_list(db: Session,page:int = 1,page_size:int=10):
     stmt = select(User).offset((page - 1) * page_size).limit(page_size)
-    # db.scalars 返回单个列的结果集
+    # db.scalars 返回单个列的结果集 执行查询，取某一列的所有值
     return db.scalars(stmt).all()
 
 # U.Update 更新用户
@@ -102,6 +103,7 @@ def update_user(db:Session,user_id:int,user_update: UserUpdate):
     if not db_user:
         return None
     # 仅更新用户传入的字段，实现局部更新
+    # exclude_unset=True 告诉Pydantic只提取用户明确传入的字段，避免其他未修改的字段被替换为None
     update_date = user_update.model_dump(exclude_unset=True)
     for key,value in update_date.items():
         # 使用setattr方法设置属性值
@@ -123,6 +125,7 @@ def delete_user(db:Session,user_id:int):
 app = FastAPI(title="用户CRUD管理系统",description="Depends + SQLAlchemy 2.0 完整示例")
 
 # 创建用户
+# 接口装饰器中配置，强制校验返回数据格式，自动过滤多余字段
 @app.post("/users/",response_model=UserResponse,summary="创建新用户")
 # Depends(get_db) 的作用：在接口参数里写 db: Session = Depends(get_db)
 # FastAPI 就会自动调用 get_db()，把生成的 db 传给接口，不用你自己去创建和关闭。
