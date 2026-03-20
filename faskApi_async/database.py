@@ -2,7 +2,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 
-# 1. 数据库链接地址注意变了！
+# 1. 数据库链接地址注意变了！ 使用了异步数据库
 #    sqlite -> sqlite+aiosqlite
 #    postgresql -> postgresql+asyncpg
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test_async.db"

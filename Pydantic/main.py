@@ -37,7 +37,7 @@ async def custom_exception_handler(request: Request, exc: CustomException):
     """捕获自定义异常，返回统一格式"""
     return JSONResponse(
         status_code=exc.status_code,
-        content=ResponseModel(code=exc.code, msg=exc.msg, data=None).dict()
+        content=ResponseModel(code=exc.code, msg=exc.msg, data=None).model_dump()
     )
 
 
@@ -47,7 +47,7 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
     error_msg = f"参数校验失败：{exc.errors()[0]['msg']}（字段：{exc.errors()[0]['loc'][-1]}）"
     return JSONResponse(
         status_code=200,
-        content=ResponseModel(code=400, msg=error_msg, data=None).dict()
+        content=ResponseModel(code=400, msg=error_msg, data=None).model_dump()
     )
 
 
@@ -66,7 +66,7 @@ class UserCreate(BaseModel):
     email: EmailStr = Field(..., description="合法邮箱地址", example="zhangsan@example.com")
     password: str = Field(..., min_length=8, description="密码，最少8位", example="12345678")
     age: Optional[int] = Field(None, ge=18, le=100, description="年龄，可选，18-100岁", example=25)
-    phone: Optional[str] = Field(None, pattern=r"^1\d{10}$", description="手机号，可选，11位中国大陆手机号",
+    phone: Optional[str] = Field(None, pattern=r"^1[3-9]\d{9}$", description="手机号，可选，11位中国大陆手机号",
                                  example="13800138000")
 
 
@@ -85,7 +85,7 @@ class UserResponse(BaseModel):
     age: Optional[int] = Field(None, description="年龄")
     phone: Optional[str] = Field(None, description="手机号")
     created_at: datetime = Field(..., description="用户创建时间")
-
+    # 告诉Pydantic从数据库中获取数据
     class Config:
         from_attributes = True
 

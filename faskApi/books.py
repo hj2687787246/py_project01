@@ -28,7 +28,7 @@ class Book(BookBase):
 @books.post("/",response_model=Book)
 def create_book(book: BookCreate,db:Session=Depends(get_db)):
     # 1.将Pydantic 数据库转换为SQLAlchemy模型
-    db_book = models.BookDB(**book.dict())
+    db_book = models.BookDB(**book.model_dump())
     # 2.存入数据库
     db.add(db_book)
     db.commit()
