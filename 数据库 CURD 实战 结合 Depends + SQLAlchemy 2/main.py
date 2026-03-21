@@ -1,10 +1,10 @@
-from dataclasses import field
-
-from fastapi import FastAPI,Depends,HTTPException
-from sqlalchemy import create_engine,String,select
+from sqlalchemy import or_
+from fastapi import FastAPI,Depends,HTTPException,Query
+from sqlalchemy import create_engine,String,select,DateTime,func
 from sqlalchemy.orm import DeclarativeBase,Mapped,mapped_column,sessionmaker,Session
 from pydantic import BaseModel,Field
-from typing import List,Optional
+from typing import List, Optional, TypeVar, Generic
+from datetime import datetime
 # 1.数据库基本配置
 # SQLite数据库链接地址
 SQLALCHEMY_DATABASE_URL = "sqlite:///./fastapi_test.db"
@@ -34,6 +34,13 @@ class User(Base): # 继承父类的DeclarativeBase
     username:Mapped[str] = mapped_column(String(50),unique=True,nullable=False,comment="用户名")
     age:Mapped[int] = mapped_column(comment="年龄")
     email:Mapped[str] = mapped_column(String(100),unique=True,nullable=False,comment="邮箱")
+    # Day2新增：更新时间(创建/更新自动赋值)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        comment="最后更新时间"
+    )
 # 自动创建数据库，首次运行生成fastapi_test.db文件和users表
 Base.metadata.create_all(bind=engine)
 
@@ -50,9 +57,22 @@ class UserUpdate(BaseModel):
     age:Optional[int] = Field(ge=0,le=150,default=None)
     email:Optional[str] = Field(pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$",default=None)
 
+# 定义一个泛型 支持任意数据类型
+T = TypeVar("T")
+
+class UnifiedResponse(BaseModel,Generic[T]):
+    # 统一返回格式
+    code:int = Field(default=200,description="状态码")
+    message:str = Field(default="success",description="提示信息")
+    data:Optional[T] = Field(default=None,description="响应数据")
+
+    class Config:
+        from_attributes = True
+
 # 用户响应体
 class UserResponse(UserCreate):
     id:int
+    updated_at : datetime #Day2新增字段
     # from_attributes = True
     # 允许 Pydantic 直接读取 SQLAlchemy ORM 对象的字段，解决响应校验报错
     class Config:
@@ -96,6 +116,16 @@ def get_user_list(db: Session,page:int = 1,page_size:int=10):
     # db.scalars 返回单个列的结果集 执行查询，取某一列的所有值
     return db.scalars(stmt).all()
 
+# R.Read 模糊查询用户（用户名/邮箱包含关键词）
+def search_users(db:Session,keyword:str):
+    stmt = select(User).where(
+        or_(
+            User.username.contains(keyword),
+            User.email.contains(keyword)
+        )
+    )
+    return db.scalars(stmt).all()
+
 # U.Update 更新用户
 def update_user(db:Session,user_id:int,user_update: UserUpdate):
     # 传入id查询用户
@@ -104,8 +134,8 @@ def update_user(db:Session,user_id:int,user_update: UserUpdate):
         return None
     # 仅更新用户传入的字段，实现局部更新
     # exclude_unset=True 告诉Pydantic只提取用户明确传入的字段，避免其他未修改的字段被替换为None
-    update_date = user_update.model_dump(exclude_unset=True)
-    for key,value in update_date.items():
+    update_data = user_update.model_dump(exclude_unset=True)
+    for key,value in update_data.items():
         # 使用setattr方法设置属性值
         setattr(db_user,key,value)
     db.commit()
@@ -126,7 +156,7 @@ app = FastAPI(title="用户CRUD管理系统",description="Depends + SQLAlchemy 2
 
 # 创建用户
 # 接口装饰器中配置，强制校验返回数据格式，自动过滤多余字段
-@app.post("/users/",response_model=UserResponse,summary="创建新用户")
+@app.post("/users/",response_model=UnifiedResponse[UserResponse],summary="创建新用户")
 # Depends(get_db) 的作用：在接口参数里写 db: Session = Depends(get_db)
 # FastAPI 就会自动调用 get_db()，把生成的 db 传给接口，不用你自己去创建和关闭。
 def create_user_api(user:UserCreate,db:Session = Depends(get_db)):
@@ -135,33 +165,54 @@ def create_user_api(user:UserCreate,db:Session = Depends(get_db)):
         raise HTTPException(status_code=400,detail="用户名已存在")
     elif get_user_by_email(db,user.email):
         raise HTTPException(status_code=400, detail="邮箱已存在")
-    return create_user(db,user)
+    db_user = create_user(db,user)
+    return UnifiedResponse(data=db_user)
 
 # 按ID查询用户
 # 接口里直接返回ORM对象，Pydantic会自动读取它的字段转成响应
-@app.get("/users/{user_id}",response_model=UserResponse,summary="根据ID查询用户")
+@app.get("/users/{user_id}",response_model=UnifiedResponse[UserResponse],summary="根据ID查询用户")
 def get_user_api(user_id:int,db:Session = Depends(get_db)):
     db_user= get_user_by_id(db,user_id) # 这是一个ORM对象
     if not db_user:
         raise HTTPException(status_code=404,detail="用户不存在")
-    return db_user # 直接返回，不用转字典，Pydantic自动处理
+    return UnifiedResponse(data=db_user) # 直接返回，不用转字典，Pydantic自动处理
 
 # 分页查询用户列表
-@app.get("/users/",response_model=List[UserResponse],summary="分页查询用户列表")
+@app.get("/users/",response_model=UnifiedResponse[List[UserResponse]],summary="分页查询用户列表")
 def get_user_list_api(page:int = 1,page_size:int = 10,db:Session=Depends(get_db)):
-    return get_user_list(db,page,page_size)
+    users = get_user_list(db,page,page_size)
+    return UnifiedResponse(data=users)
 
+# 模糊查询
+@app.get("/users/search/",response_model=UnifiedResponse[List[UserResponse]],summary="模糊查询用户")
+def search_users_api(
+        keyword: str = Query(...,min_length=1,description="搜索关键词"),
+        db:Session=Depends(get_db)
+):
+    users = search_users(db,keyword)
+    return UnifiedResponse(data=users)
 # 更新用户
-@app.put("/users/{user_id}",response_model=UserResponse,summary="更新用户信息")
+@app.put("/users/{user_id}",response_model=UnifiedResponse[UserResponse],summary="更新用户信息")
 def update_user_api(user_id:int,user_update:UserUpdate,db:Session = Depends(get_db)):
-    db_user = update_user(db,user_id,user_update)
+    # 1. 先查一下要更新的用户是否存在
+    db_user = get_user_by_id(db,user_id)
     if not db_user:
         raise HTTPException(status_code=404,detail="用户不存在")
-    return db_user
+    # 2. 如果要改用户名，检查新用户名是否已被其他用户占用
+    if user_update.username and user_update.username != db_user.username:
+        if get_user_by_username(db,user_update.username):
+            raise HTTPException(status_code=400,detail="用户名已被占用")
+    # 3. 检查邮件是否被占用
+    if user_update.email and user_update.email != db_user.email:
+        if get_user_by_email(db,user_update.email):
+            raise HTTPException(status_code=400,detail="邮箱已被占用")
+    # 4. 校验通过，执行更新
+    db_user = update_user(db,user_id,user_update)
+    return UnifiedResponse(data=db_user)
 
 # 删除用户
-@app.delete("/users/{user_id}",summary="删除用户")
+@app.delete("/users/{user_id}",response_model=UnifiedResponse[dict],summary="删除用户")
 def delete_user_api(user_id:int,db:Session = Depends(get_db)):
     if not delete_user(db,user_id):
         raise HTTPException(status_code=404,detail="用户不存在")
-    return {"message":"删除成功","user_id":user_id}
+    return UnifiedResponse(data={"message":"删除成功","user_id":user_id})
