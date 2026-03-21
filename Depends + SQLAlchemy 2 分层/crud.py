@@ -5,8 +5,8 @@ from models import User
 from schemas import UserCreate,UserUpdate
 from security import get_password_hash # 新增
 
-# C:Create 创建用户
-def create_user(db: Session, user: UserCreate):
+# C:Create 创建用户 新增 role 参数，允许外部指定角色（默认普通用户）
+def create_user(db: Session, user: UserCreate, role: str = "user"):
     # 将 user.password 哈希后再存入模型
     hashed_pwd = get_password_hash(user.password)
     try:
@@ -14,6 +14,7 @@ def create_user(db: Session, user: UserCreate):
         db_user = User(
             username=user.username,
             hashed_password=hashed_pwd,
+            role= role,
             age=user.age,
             email=user.email
         )

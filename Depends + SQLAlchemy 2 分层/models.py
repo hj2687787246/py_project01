@@ -12,6 +12,8 @@ class User(Base):
     username:Mapped[str] = mapped_column(String(50),unique=True,nullable=False,comment="用户名")
     # 新增密码字段
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False, comment="哈希密码")
+    # 新增权限字段
+    role: Mapped[str] = mapped_column(String(20),default="user",nullable=False,comment="角色：user/admin")
     age:Mapped[int] = mapped_column(comment="年龄")
     email:Mapped[str] = mapped_column(String(100),unique=True,nullable=False,comment="邮箱")
 

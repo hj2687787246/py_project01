@@ -32,11 +32,13 @@ class UserUpdate(BaseModel):
     username: Optional[str] = Field(min_length=3,max_length=50,default=None)
     age: Optional[int] = Field(ge=0,le=150,default=None)
     email: Optional[str] = Field(pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$", default=None)
+    role: Optional[str] = None #只有管理员能修改这个字段
 
 # 用户响应体 不返回密码
-class UserResponse(UserCreate):
+class UserResponse(BaseModel):
     id:int
     username: str
+    role: str
     age: Optional[int]
     email: str
     created_at: datetime

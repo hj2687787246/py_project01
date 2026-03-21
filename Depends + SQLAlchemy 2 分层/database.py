@@ -1,11 +1,7 @@
 # 数据库连接配置
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import DeclarativeBase,sessionmaker,Session
-from dotenv import load_dotenv
+from sqlalchemy.orm import DeclarativeBase,sessionmaker
 
-# 加载环境变量
-load_dotenv()
 # SQLite数据库链接地址
 SQLALCHEMY_DATABASE_URL = "sqlite:///./fastapi_test.db"
 
