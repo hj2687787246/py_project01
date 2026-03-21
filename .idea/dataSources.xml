@@ -15,18 +15,11 @@
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/faskApi_async/test_async.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="fastapi_test" uuid="8f31b7b5-48dd-47bf-9c84-19ad5d04cd47">
+    <data-source source="LOCAL" name="fastapi_test" uuid="d773eb59-ac22-415b-8742-7a838229e214">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/数据库 CURD 实战 结合 Depends + SQLAlchemy 2/fastapi_test.db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="fastapi_test [2]" uuid="a36a6eb0-df1c-45d9-8ce8-a62dd6c7fdf1">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/数据库 CURD 实战 结合 Depends + SQLAlchemy 2/fastapi_test.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/fastapi_test.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
