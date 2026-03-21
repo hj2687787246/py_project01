@@ -21,8 +21,7 @@ class BookCreate(BookBase):
 
 class Book(BookBase):
     id: int
-    class Config:
-        orm_mode = True # 告诉Pydantic 这是ORM模型，可以直接读取
+    model_config = {"from_attributes": True}
 
 # 增（create）：POST /book/
 @books.post("/",response_model=Book)
@@ -60,7 +59,7 @@ def update_book(book_id:int,updated_book:BookCreate,db:Session=Depends(get_db)):
         raise HTTPException(status_code=404,detail="Book not found")
 
     # 更新字段
-    for key,value in updated_book.dict().items():
+    for key,value in updated_book.model_dump().items():
         setattr(db_book,key,value)
 
     db.commit()
