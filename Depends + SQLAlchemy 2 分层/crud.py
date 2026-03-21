@@ -2,13 +2,21 @@ from sqlalchemy import select,or_
 from sqlalchemy.orm import Session
 
 from models import User
-from schemas import UserCreat,UserUpdate
+from schemas import UserCreate,UserUpdate
+from security import get_password_hash # 新增
 
 # C:Create 创建用户
-def create_user(db: Session, user: UserCreat):
+def create_user(db: Session, user: UserCreate):
+    # 将 user.password 哈希后再存入模型
+    hashed_pwd = get_password_hash(user.password)
     try:
         print(f"创建用户: {user}")
-        db_user = User(**user.model_dump())
+        db_user = User(
+            username=user.username,
+            hashed_password=hashed_pwd,
+            age=user.age,
+            email=user.email
+        )
         db.add(db_user)
         db.commit()
         db.refresh(db_user)

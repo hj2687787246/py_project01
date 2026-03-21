@@ -1,6 +1,6 @@
 # Pydantic 请求 / 响应模型
 from datetime import datetime
-from typing import List,Optional,Generic,TypeVar
+from typing import Optional,Generic,TypeVar
 from pydantic import BaseModel,Field
 
 # 泛型定义
@@ -15,9 +15,15 @@ class UnifiedResponse(BaseModel,Generic[T]):
     class Config:
         from_attributes = True
 
+# 新增Token 响应模型
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 # 创建用户请求体
-class UserCreat(BaseModel):
+class UserCreate(BaseModel):
     username: Optional[str] = Field(min_length=3,max_length=50,description="用户名")
+    password: str = Field(min_length=6,description="密码") #新增
     age: Optional[int] = Field(ge=0,le=150,description="年龄")
     email: str = Field(pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$", description="邮箱地址")
 
@@ -27,9 +33,12 @@ class UserUpdate(BaseModel):
     age: Optional[int] = Field(ge=0,le=150,default=None)
     email: Optional[str] = Field(pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$", default=None)
 
-# 用户响应体
-class UserResponse(UserCreat):
+# 用户响应体 不返回密码
+class UserResponse(UserCreate):
     id:int
+    username: str
+    age: Optional[int]
+    email: str
     created_at: datetime
     updated_at: datetime
 

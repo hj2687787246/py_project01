@@ -10,6 +10,8 @@ class User(Base):
 
     id:Mapped[int] = mapped_column(primary_key=True,autoincrement=True,comment="用户主键ID")
     username:Mapped[str] = mapped_column(String(50),unique=True,nullable=False,comment="用户名")
+    # 新增密码字段
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False, comment="哈希密码")
     age:Mapped[int] = mapped_column(comment="年龄")
     email:Mapped[str] = mapped_column(String(100),unique=True,nullable=False,comment="邮箱")
 
