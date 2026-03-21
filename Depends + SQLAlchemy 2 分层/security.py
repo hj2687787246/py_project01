@@ -65,6 +65,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     if user is None:
         raise credentials_exception
     return user
+
 # 获取当前管理员的依赖项
 async def get_current_admin(current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
