@@ -1,0 +1,31 @@
+# 核心基础变量
+name = 名字
+personality = 性格
+tone = 语气
+status = 状态
+sidebar = 侧边栏
+status_bar = 状态栏
+messages = 聊天记录
+user_input = 用户输入
+ai_reply = AI回复
+partner_info = 伴侣信息
+session_state = 会话状态
+
+# 场景拓展变量
+chat_history = 聊天历史
+emotion = 情绪
+conversation = 对话
+nickname = 昵称
+setting = 设定
+persona = 人设
+companion_type = 伴侣类型
+online_status = 在线状态
+send_button = 发送按钮
+save_button = 保存按钮
+config = 配置
+interaction = 互动
+comfort_words = 安慰话语
+care = 关心
+intimacy = 亲密感
+warmth = 温暖
+patience = 耐心

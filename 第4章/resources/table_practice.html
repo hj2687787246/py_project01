@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>爬虫练习表格页面</title>
+  <style>
+    :root {
+      --bg: #f4efe7;
+      --card: #fffdf8;
+      --line: #d8cfc2;
+      --text: #2f2a25;
+      --accent: #b45f06;
+      --accent-soft: #f7e1c3;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(180, 95, 6, 0.12), transparent 28%),
+        linear-gradient(180deg, #f8f3eb 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 48px auto;
+      padding: 0 20px 40px;
+    }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 14px 40px rgba(84, 65, 39, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      color: var(--accent);
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .meta-item {
+      padding: 14px 16px;
+      background: var(--accent-soft);
+      border-radius: 12px;
+      font-size: 14px;
+    }
+
+    .table-card {
+      margin-top: 24px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(84, 65, 39, 0.08);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    caption {
+      padding: 18px;
+      text-align: left;
+      font-weight: 700;
+      background: #fbf5ea;
+      border-bottom: 1px solid var(--line);
+    }
+
+    thead {
+      background: #f2e3cb;
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 15px;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fff8ed;
+    }
+
+    tbody tr:hover {
+      background: #fdebcf;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #f5d7a7;
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 28px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>电商商品数据表</h1>
+      <p>
+        这是一个用于爬虫练习的静态页面。你可以尝试通过标签名、类名、表格结构、属性选择器等方式读取数据。
+      </p>
+      <div class="meta">
+        <div class="meta-item"><strong>页面类型：</strong>静态 HTML</div>
+        <div class="meta-item"><strong>练习重点：</strong>表格解析</div>
+        <div class="meta-item"><strong>推荐方式：</strong>`BeautifulSoup` / `lxml` / `pandas`</div>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <table id="product-table" class="data-table">
+        <caption>2026 年春季商品清单</caption>
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>商品名称</th>
+            <th>分类</th>
+            <th>价格</th>
+            <th>库存</th>
+            <th>评分</th>
+            <th>上架日期</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-id="P1001">
+            <td>1</td>
+            <td>机械键盘 K87</td>
+            <td>外设</td>
+            <td>299.00</td>
+            <td>120</td>
+            <td>4.8</td>
+            <td>2026-03-01</td>
+            <td><span class="tag">热卖</span></td>
+          </tr>
+          <tr data-id="P1002">
+            <td>2</td>
+            <td>无线鼠标 M20</td>
+            <td>外设</td>
+            <td>89.00</td>
+            <td>340</td>
+            <td>4.6</td>
+            <td>2026-03-03</td>
+            <td><span class="tag">在售</span></td>
+          </tr>
+          <tr data-id="P1003">
+            <td>3</td>
+            <td>27 英寸显示器</td>
+            <td>显示设备</td>
+            <td>1299.00</td>
+            <td>58</td>
+            <td>4.9</td>
+            <td>2026-02-26</td>
+            <td><span class="tag">新品</span></td>
+          </tr>
+          <tr data-id="P1004">
+            <td>4</td>
+            <td>USB-C 扩展坞</td>
+            <td>办公配件</td>
+            <td>199.00</td>
+            <td>210</td>
+            <td>4.5</td>
+            <td>2026-02-18</td>
+            <td><span class="tag">在售</span></td>
+          </tr>
+          <tr data-id="P1005">
+            <td>5</td>
+            <td>降噪蓝牙耳机</td>
+            <td>音频设备</td>
+            <td>459.00</td>
+            <td>76</td>
+            <td>4.7</td>
+            <td>2026-03-08</td>
+            <td><span class="tag">热卖</span></td>
+          </tr>
+          <tr data-id="P1006">
+            <td>6</td>
+            <td>桌面阅读灯</td>
+            <td>家居</td>
+            <td>139.00</td>
+            <td>185</td>
+            <td>4.4</td>
+            <td>2026-01-30</td>
+            <td><span class="tag">清仓</span></td>
+          </tr>
+          <tr data-id="P1007">
+            <td>7</td>
+            <td>便携固态硬盘 1TB</td>
+            <td>存储设备</td>
+            <td>569.00</td>
+            <td>92</td>
+            <td>4.8</td>
+            <td>2026-03-10</td>
+            <td><span class="tag">新品</span></td>
+          </tr>
+          <tr data-id="P1008">
+            <td>8</td>
+            <td>人体工学办公椅</td>
+            <td>办公家具</td>
+            <td>899.00</td>
+            <td>34</td>
+            <td>4.6</td>
+            <td>2026-02-22</td>
+            <td><span class="tag">在售</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</body>
+</html>
