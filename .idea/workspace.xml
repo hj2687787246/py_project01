@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.21 Depends + SQLAlchemy 2 分层" />
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.21 Depends + SQLAlchemy 2 分层">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -150,7 +152,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "deletionFromPopupRequiresConfirmation": "false",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "D:/Develop/Python-Project/py_project01/mysql/resource",
     "node.js.detected.package.eslint": "true",
@@ -345,7 +347,7 @@
       <workItem from="1774068170280" duration="251000" />
       <workItem from="1774068438588" duration="25000" />
       <workItem from="1774068481374" duration="4161000" />
-      <workItem from="1774072663358" duration="5697000" />
+      <workItem from="1774072663358" duration="6462000" />
     </task>
     <task id="LOCAL-00001" summary="3.19">
       <option name="closed" value="true" />
@@ -531,7 +533,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774077375630</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="3.21 Depends + SQLAlchemy 2 分层">
+      <option name="closed" value="true" />
+      <created>1774078879167</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1774078879167</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -561,17 +571,6 @@
     <MESSAGE value="3.21 修复时区bug，新增创建时间字段" />
     <MESSAGE value="3.21 Depends + SQLAlchemy 2 分层" />
     <option name="LAST_COMMIT_MESSAGE" value="3.21 Depends + SQLAlchemy 2 分层" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/第2章/嵌套调用练习.py</url>
-          <line>15</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/py_project01$NP72_.coverage" NAME="NP72 生成字典 覆盖结果" MODIFIED="1774009569628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
