@@ -34,11 +34,17 @@ class User(Base): # 继承父类的DeclarativeBase
     username:Mapped[str] = mapped_column(String(50),unique=True,nullable=False,comment="用户名")
     age:Mapped[int] = mapped_column(comment="年龄")
     email:Mapped[str] = mapped_column(String(100),unique=True,nullable=False,comment="邮箱")
+    # Dat2新增：创建时间(仅在创建时赋值)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now,
+        comment="创建时间"
+    )
     # Day2新增：更新时间(创建/更新自动赋值)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
+        DateTime,
+        default=datetime.now,# 创建时赋值
+        onupdate=datetime.now,# 更新时重新赋值
         comment="最后更新时间"
     )
 # 自动创建数据库，首次运行生成fastapi_test.db文件和users表
@@ -72,6 +78,7 @@ class UnifiedResponse(BaseModel,Generic[T]):
 # 用户响应体
 class UserResponse(UserCreate):
     id:int
+    created_at: datetime
     updated_at : datetime #Day2新增字段
     # from_attributes = True
     # 允许 Pydantic 直接读取 SQLAlchemy ORM 对象的字段，解决响应校验报错
