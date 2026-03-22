@@ -4,18 +4,19 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import List
 
-import crud
+from dao import user_dao as crud
 import models
 import schemas
-from database import get_db
-from password_utils import verify_password
-from security import (
+from core.logger import get_logger
+from main import BusinessException
+from session.db_session import get_db
+from utils.password_utils import verify_password
+from utils.security import (
 create_access_token,
 ACCESS_TOKEN_EXPIRE_MINUTES,
 get_current_user,
 get_current_admin
 )
-from logger_config import get_logger
 # 配置日志
 logger = get_logger()
 
@@ -49,10 +50,10 @@ def create_user_api(user: schemas.UserCreate, db: Session = Depends(get_db)):
     logger.info(f"收到创建用户请求: username={user.username}, email={user.email}")
     if crud.get_user_by_username(db, user.username):
         logger.error(f"创建用户失败: username={user.username}, reason=用户名已存在")
-        raise HTTPException(status_code=400,detail="用户名已存在")
+        raise BusinessException(status_code=400, code=4001, message="用户名已存在")
     if crud.get_user_by_email(db, user.email):
         logger.error(f"创建用户失败: username={user.username}, email={user.email}, reason=邮箱已存在")
-        raise HTTPException(status_code=400,detail="邮箱已存在")
+        raise BusinessException(status_code=400, code=4002, message="邮箱已存在")
     # 这里强制role = "user",防止有人通过接口直接注册管理员
     db_user = crud.create_user(db,user,role="user")
     logger.success(f"创建用户成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
@@ -114,15 +115,15 @@ def get_user_list_api(
 def search_users_api(
         keyword: str = Query(..., min_length=1, description="搜索关键词"),
         db: Session = Depends(get_db),
-        current_user: models.User = Depends(get_current_admin)
+        current_admin: models.User = Depends(get_current_admin)
 ):
     logger.info(
-        f"收到模糊查询用户请求: operator_id={current_user.id}, operator={current_user.username}, "
-        f"role={current_user.role}, keyword={keyword}"
+        f"收到模糊查询用户请求: operator_id={current_admin.id}, operator={current_admin.username}, "
+        f"role={current_admin.role}, keyword={keyword}"
     )
     users = crud.search_users(db, keyword)
     logger.success(
-        f"模糊查询用户成功: operator_id={current_user.id}, operator={current_user.username}, "
+        f"模糊查询用户成功: operator_id={current_admin.id}, operator={current_admin.username}, "
         f"keyword={keyword}, returned_count={len(users)}"
     )
     return schemas.UnifiedResponse(data=users)
@@ -161,7 +162,7 @@ def update_user_api(
             f"更新用户角色被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
             f"target_user_id={user_id}, reason=无管理员权限"
         )
-        raise HTTPException(status_code=403, detail="无权修改用户角色")
+        raise BusinessException(status_code=403, code=4004, message="无权修改用户角色")
 
     # 3.唯一校验
     if user_update.username and user_update.username != db_user.username:
@@ -170,14 +171,14 @@ def update_user_api(
                 f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
                 f"target_user_id={user_id}, username={user_update.username}, reason=用户名已被占用"
             )
-            raise HTTPException(status_code=400, detail="用户名已被占用")
+            raise BusinessException(status_code=400, code=4001, message="用户名已被占用")
     if user_update.email and user_update.email != db_user.email:
         if crud.get_user_by_email(db, user_update.email):
             logger.error(
                 f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
                 f"target_user_id={user_id}, email={user_update.email}, reason=邮箱已被占用"
             )
-            raise HTTPException(status_code=400, detail="邮箱已被占用")
+            raise BusinessException(status_code=400, code=4002, message="邮箱已被占用")
 
     updated_user = crud.update_user(db, user_id, user_update)
     logger.success(
@@ -197,7 +198,14 @@ def delete_user_api(
         f"收到删除用户请求: operator_id={current_admin.id}, operator={current_admin.username}, "
         f"role={current_admin.role}, target_user_id={user_id}"
     )
-    if not crud.delete_user(db, user_id):
+    delete_result = crud.delete_user(db, user_id)
+    if not delete_result["success"]:
+        if delete_result["reason"] == "admin_forbidden":
+            logger.warning(
+                f"删除用户失败: operator_id={current_admin.id}, operator={current_admin.username}, "
+                f"target_user_id={user_id}, reason=不能删除admin角色用户"
+            )
+            raise BusinessException(status_code=403, code=4003, message="不能删除admin角色账号")
         logger.error(
             f"删除用户失败: operator_id={current_admin.id}, operator={current_admin.username}, "
             f"target_user_id={user_id}, reason=用户不存在"

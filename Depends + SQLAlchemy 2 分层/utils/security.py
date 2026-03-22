@@ -9,8 +9,8 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
-import crud
-from database import get_db
+from dao import user_dao as crud
+from session.db_session import get_db
 from models import User # 导入User模型用于类型提示
 
 load_dotenv()

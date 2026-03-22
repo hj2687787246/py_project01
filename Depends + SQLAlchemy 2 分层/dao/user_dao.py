@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 
 from models import User
 from schemas import UserCreate,UserUpdate
-from logger_config import get_logger
-from password_utils import get_password_hash
+from core.logger import get_logger
+from utils.password_utils import get_password_hash
 
 logger = get_logger()
 
@@ -82,9 +82,14 @@ def delete_user(db: Session, user_id: int):
     db_user = get_user_by_id(db, user_id)
     if not db_user:
         logger.warning(f"数据层删除用户失败: user_id={user_id}, reason=用户不存在")
-        return False
+        return {"success": False, "reason": "not_found"}
+
+    if db_user.role == "admin":
+        logger.warning(f"数据层删除用户失败: user_id={user_id}, reason=该角色为管理员")
+        return {"success": False, "reason": "admin_forbidden"}
+
     logger.info(f"数据层删除用户: user_id={user_id}, username={db_user.username}")
     db.delete(db_user)
     db.commit()
     logger.success(f"数据层删除用户成功: user_id={user_id}")
-    return True
+    return {"success": True, "reason": "deleted"}

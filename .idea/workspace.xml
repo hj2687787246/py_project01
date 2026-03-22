@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.21 Depends + SQLAlchemy 2 分层" />
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.22 项目分层重构">
+      <change beforePath="$PROJECT_DIR$/.idea/py_project01.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/py_project01.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/fastapi_test.db" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/fastapi_test.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests/test_user_system.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests/test_user_system.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,7 +32,13 @@
         <option name="title" value="All" />
       </GitPushTagMode>
     </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -44,6 +58,9 @@
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -101,6 +118,7 @@
     &quot;Python.17.函数进阶.executor&quot;: &quot;Run&quot;,
     &quot;Python.19.函数进阶2.executor&quot;: &quot;Run&quot;,
     &quot;Python.22.面向对象基础.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP100 重载运算.executor&quot;: &quot;Run&quot;,
     &quot;Python.NP12 格式化输出（二）.executor&quot;: &quot;Run&quot;,
     &quot;Python.NP15 截取用户名前10位.executor&quot;: &quot;Run&quot;,
     &quot;Python.NP16 发送offer.executor&quot;: &quot;Run&quot;,
@@ -122,11 +140,16 @@
     &quot;Python.NP72 生成字典.executor&quot;: &quot;Run&quot;,
     &quot;Python.NP73 查字典.executor&quot;: &quot;Run&quot;,
     &quot;Python.NP75 使用字典计数.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP89 单词造句.executor&quot;: &quot;Run&quot;,
     &quot;Python.NP9 十六进制数字的大小.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP95 兔子的数量.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP99 修改属性2.executor&quot;: &quot;Run&quot;,
     &quot;Python.file_define.executor&quot;: &quot;Run&quot;,
     &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;Python.my_fun.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_user_system (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_user_system.executor&quot;: &quot;Run&quot;,
     &quot;Python.复习题1.executor&quot;: &quot;Run&quot;,
     &quot;Python.多态练习.executor&quot;: &quot;Run&quot;,
     &quot;Python.多继承练习.executor&quot;: &quot;Run&quot;,
@@ -164,10 +187,18 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.intellij.python.django.customization.DjangoModulesConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="py_project01" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="py_project01" />
+      </console-settings>
+    </option>
+  </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Develop\Python-Project\py_project01\mysql\resource" />
@@ -176,13 +207,15 @@
       <recent name="D:\Develop\Python-Project\py_project01\第3章\resource" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Develop\Python-Project\py_project01\Depends + SQLAlchemy 2 分层\utils" />
+      <recent name="D:\Develop\Python-Project\py_project01\Depends + SQLAlchemy 2 分层" />
+      <recent name="D:\Develop\Python-Project\py_project01\Depends + SQLAlchemy 2 分层\app" />
       <recent name="D:\Develop\Python-Project\py_project01\牛客错题代码练习\3_17" />
       <recent name="D:\Develop\Python-Project\py_project01\第2章\补充" />
-      <recent name="D:\Develop\Python-Project\py_project01\第2章" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
-    <configuration name="NP69 姓名与学号" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.test_user_system (1)">
+    <configuration name="NP100 重载运算" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -191,13 +224,13 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/牛客错题代码练习/3_20" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/牛客错题代码练习/3_21" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/牛客错题代码练习/3_20/NP69 姓名与学号.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/牛客错题代码练习/3_21/NP100 重载运算.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -206,7 +239,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="NP72 生成字典" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="NP99 修改属性2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -215,61 +248,13 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/牛客错题代码练习/3_20" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/牛客错题代码练习/3_21" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/牛客错题代码练习/3_20/NP72 生成字典.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="NP73 查字典" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="py_project01" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/牛客错题代码练习/3_20" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/牛客错题代码练习/3_20/NP73 查字典.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="NP75 使用字典计数" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="py_project01" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/牛客错题代码练习/3_20" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/牛客错题代码练习/3_20/NP75 使用字典计数.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/牛客错题代码练习/3_21/NP99 修改属性2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -287,13 +272,61 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/数据库 CURD 实战 结合 Depends + SQLAlchemy 2" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/数据库 CURD 实战 结合 Depends + SQLAlchemy 2/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_user_system (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="py_project01" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests/test_user_system.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_user_system" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="py_project01" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/test_user_system.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -304,11 +337,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test_user_system (1)" />
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.NP75 使用字典计数" />
-        <item itemvalue="Python.NP73 查字典" />
-        <item itemvalue="Python.NP72 生成字典" />
-        <item itemvalue="Python.NP69 姓名与学号" />
+        <item itemvalue="Python.test_user_system" />
+        <item itemvalue="Python.NP100 重载运算" />
+        <item itemvalue="Python.NP99 修改属性2" />
       </list>
     </recent_temporary>
   </component>
@@ -352,6 +385,10 @@
       <workItem from="1774068438588" duration="25000" />
       <workItem from="1774068481374" duration="4161000" />
       <workItem from="1774072663358" duration="7268000" />
+      <workItem from="1774080253418" duration="3662000" />
+      <workItem from="1774087677086" duration="11606000" />
+      <workItem from="1774141570852" duration="16676000" />
+      <workItem from="1774160341288" duration="6657000" />
     </task>
     <task id="LOCAL-00001" summary="3.19">
       <option name="closed" value="true" />
@@ -553,7 +590,119 @@
       <option name="project" value="LOCAL" />
       <updated>1774079865979</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="3.21 Depends + SQLAlchemy 2 分层">
+      <option name="closed" value="true" />
+      <created>1774080472588</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1774080472588</updated>
+    </task>
+    <task id="LOCAL-00027" summary="3.21 测试">
+      <option name="closed" value="true" />
+      <created>1774080580150</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1774080580150</updated>
+    </task>
+    <task id="LOCAL-00028" summary="3.21 codex修改">
+      <option name="closed" value="true" />
+      <created>1774081691698</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1774081691698</updated>
+    </task>
+    <task id="LOCAL-00029" summary="3.21 jwt+token">
+      <option name="closed" value="true" />
+      <created>1774091446588</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1774091446588</updated>
+    </task>
+    <task id="LOCAL-00030" summary="3.21 jwt+token+管理员权限">
+      <option name="closed" value="true" />
+      <created>1774096676332</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1774096676332</updated>
+    </task>
+    <task id="LOCAL-00031" summary="3.21 NP76-NP100">
+      <option name="closed" value="true" />
+      <created>1774098861862</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1774098861862</updated>
+    </task>
+    <task id="LOCAL-00032" summary="3.22 显式写入 Unix 时间戳，避免时区和 naive datetime 的解释差异">
+      <option name="closed" value="true" />
+      <created>1774143962339</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1774143962339</updated>
+    </task>
+    <task id="LOCAL-00033" summary="3.22 添加全局异常、自定义异常、logger日志">
+      <option name="closed" value="true" />
+      <created>1774146900748</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1774146900748</updated>
+    </task>
+    <task id="LOCAL-00034" summary="3.22 修复日志异常">
+      <option name="closed" value="true" />
+      <created>1774147494484</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1774147494484</updated>
+    </task>
+    <task id="LOCAL-00035" summary="3.22 修复时区异常，完善项目结构">
+      <option name="closed" value="true" />
+      <created>1774149468727</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1774149468727</updated>
+    </task>
+    <task id="LOCAL-00036" summary="3.22 修复时区异常，完善项目结构">
+      <option name="closed" value="true" />
+      <created>1774149487021</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1774149487021</updated>
+    </task>
+    <task id="LOCAL-00037" summary="3.22 测试">
+      <option name="closed" value="true" />
+      <created>1774151491934</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1774151491934</updated>
+    </task>
+    <task id="LOCAL-00038" summary="3.22 项目分层重构">
+      <option name="closed" value="true" />
+      <created>1774161803528</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1774161803528</updated>
+    </task>
+    <task id="LOCAL-00039" summary="3.22 项目分层重构">
+      <option name="closed" value="true" />
+      <created>1774161818808</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1774161818808</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -562,12 +711,18 @@
   <component name="UnknownFeatures">
     <option featureType="dependencySupport" implementationName="python:pyspark" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="3.19" />
-    <MESSAGE value="3.19 faskApi 接口文档、路由分发、request对象" />
-    <MESSAGE value="3.19 faskApi 路径参数 &amp; 查询参数进阶" />
-    <MESSAGE value="3.19 faskApi 同步访问" />
-    <MESSAGE value="3.19 faskApi 异步数据库" />
     <MESSAGE value="3.19 faskApi Pydantic" />
     <MESSAGE value="3.19 faskApi Pydantic 整合统一响应 + 全局异常" />
     <MESSAGE value="3.19 牛客网错题" />
@@ -582,7 +737,18 @@
     <MESSAGE value="3.21 &#10;✅ 定义了带 updated_at 自动时间戳的 ORM 模型&#10;✅ 跑通了完整的 CURD&#10;✅ 加了模糊查询&#10;✅ 加了统一返回格式" />
     <MESSAGE value="3.21 修复时区bug，新增创建时间字段" />
     <MESSAGE value="3.21 Depends + SQLAlchemy 2 分层" />
-    <option name="LAST_COMMIT_MESSAGE" value="3.21 Depends + SQLAlchemy 2 分层" />
+    <MESSAGE value="3.21 测试" />
+    <MESSAGE value="3.21 codex修改" />
+    <MESSAGE value="3.21 jwt+token" />
+    <MESSAGE value="3.21 jwt+token+管理员权限" />
+    <MESSAGE value="3.21 NP76-NP100" />
+    <MESSAGE value="3.22 显式写入 Unix 时间戳，避免时区和 naive datetime 的解释差异" />
+    <MESSAGE value="3.22 添加全局异常、自定义异常、logger日志" />
+    <MESSAGE value="3.22 修复日志异常" />
+    <MESSAGE value="3.22 修复时区异常，完善项目结构" />
+    <MESSAGE value="3.22 测试" />
+    <MESSAGE value="3.22 项目分层重构" />
+    <option name="LAST_COMMIT_MESSAGE" value="3.22 项目分层重构" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/py_project01$NP72_.coverage" NAME="NP72 生成字典 覆盖结果" MODIFIED="1774009569628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
@@ -590,6 +756,7 @@
     <SUITE FILE_PATH="coverage/py_project01$NP61_.coverage" NAME="NP61 牛牛的矩阵相加 覆盖结果" MODIFIED="1774008466703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
     <SUITE FILE_PATH="coverage/py_project01$12.coverage" NAME="练习题12 覆盖结果" MODIFIED="1773370999702" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$07_while.coverage" NAME="07.while 覆盖结果" MODIFIED="1773228010136" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
+    <SUITE FILE_PATH="coverage/py_project01$test_user_system__1_.coverage" NAME="test_user_system (1) 覆盖结果" MODIFIED="1774165608437" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests" />
     <SUITE FILE_PATH="coverage/py_project01$07_.coverage" NAME="07.正则表达式基础使用 覆盖结果" MODIFIED="1773886223197" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
     <SUITE FILE_PATH="coverage/py_project01$main__1_.coverage" NAME="main (1) 覆盖结果" MODIFIED="1773984890874" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends" />
     <SUITE FILE_PATH="coverage/py_project01$NP75_.coverage" NAME="NP75 使用字典计数 覆盖结果" MODIFIED="1774010049366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
@@ -616,14 +783,16 @@
     <SUITE FILE_PATH="coverage/py_project01$file_define.coverage" NAME="file_define 覆盖结果" MODIFIED="1773732280221" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/数据分析案例" />
     <SUITE FILE_PATH="coverage/py_project01$01_DeepSeek.coverage" NAME="01.DeepSeek调用测试 覆盖结果" MODIFIED="1773551978660" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
     <SUITE FILE_PATH="coverage/py_project01$04_.coverage" NAME="04.运算符 覆盖结果" MODIFIED="1773215130154" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
+    <SUITE FILE_PATH="coverage/py_project01$NP100_.coverage" NAME="NP100 重载运算 覆盖结果" MODIFIED="1774098636171" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_21" />
     <SUITE FILE_PATH="coverage/py_project01$17_.coverage" NAME="17.函数进阶 覆盖结果" MODIFIED="1773377182586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$08_1.coverage" NAME="08.递归练习1 覆盖结果" MODIFIED="1773889691436" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
     <SUITE FILE_PATH="coverage/py_project01$13__tuple.coverage" NAME="13.数据容器-tuple元组 覆盖结果" MODIFIED="1773299014566" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
-    <SUITE FILE_PATH="coverage/py_project01$main.coverage" NAME="main 覆盖结果" MODIFIED="1774070178432" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/数据库 CURD 实战 结合 Depends + SQLAlchemy 2" />
+    <SUITE FILE_PATH="coverage/py_project01$main.coverage" NAME="main 覆盖结果" MODIFIED="1774147239043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
     <SUITE FILE_PATH="coverage/py_project01$19_2.coverage" NAME="19.函数进阶2 覆盖结果" MODIFIED="1773382414050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$02_mysql.coverage" NAME="02.mysql练习 覆盖结果" MODIFIED="1773817531286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$NP21_.coverage" NAME="NP21 增加派对名单（二） 覆盖结果" MODIFIED="1773748588441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />
     <SUITE FILE_PATH="coverage/py_project01$09_.coverage" NAME="09.嵌套循环 覆盖结果" MODIFIED="1773233044499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
+    <SUITE FILE_PATH="coverage/py_project01$test_user_system.coverage" NAME="test_user_system 覆盖结果" MODIFIED="1774143367639" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
     <SUITE FILE_PATH="coverage/py_project01$11.coverage" NAME="练习题11 覆盖结果" MODIFIED="1773318053786" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$14__set.coverage" NAME="14.数据容器-set集合 覆盖结果" MODIFIED="1773303455173" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP28_.coverage" NAME="NP28 密码游戏 覆盖结果" MODIFIED="1773837063889" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_18" />
@@ -651,14 +820,17 @@
     <SUITE FILE_PATH="coverage/py_project01$22_.coverage" NAME="22.面向对象基础 覆盖结果" MODIFIED="1773392199356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP67_.coverage" NAME="NP67 遍历字典 覆盖结果" MODIFIED="1774008930612" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
     <SUITE FILE_PATH="coverage/py_project01$NP25_.coverage" NAME="NP25 有序的列表 覆盖结果" MODIFIED="1773748833794" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />
+    <SUITE FILE_PATH="coverage/py_project01$NP89_.coverage" NAME="NP89 单词造句 覆盖结果" MODIFIED="1774097354339" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_21" />
     <SUITE FILE_PATH="coverage/py_project01$04_csv.coverage" NAME="04.csv入门 覆盖结果" MODIFIED="1773634727036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第四章" />
     <SUITE FILE_PATH="coverage/py_project01$05.coverage" NAME="练习题05 覆盖结果" MODIFIED="1773224974917" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP9_.coverage" NAME="NP9 十六进制数字的大小 覆盖结果" MODIFIED="1773747353914" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />
     <SUITE FILE_PATH="coverage/py_project01$08_for.coverage" NAME="08.for循环 覆盖结果" MODIFIED="1773228812207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
+    <SUITE FILE_PATH="coverage/py_project01$NP95_.coverage" NAME="NP95 兔子的数量 覆盖结果" MODIFIED="1774097746026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_21" />
     <SUITE FILE_PATH="coverage/py_project01$06_ai_parther_4.coverage" NAME="06.ai_parther_4 覆盖结果" MODIFIED="1773562689478" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
     <SUITE FILE_PATH="coverage/py_project01$__1_.coverage" NAME="爬虫练习 (1) 覆盖结果" MODIFIED="1773646697591" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第4章" />
     <SUITE FILE_PATH="coverage/py_project01$06_match.coverage" NAME="06.match模式匹配 覆盖结果" MODIFIED="1773980033759" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章" />
     <SUITE FILE_PATH="coverage/py_project01$02____1_.coverage" NAME="02.爬虫-网页解析 (1) 覆盖结果" MODIFIED="1773649969412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第4章" />
+    <SUITE FILE_PATH="coverage/py_project01$NP99_2.coverage" NAME="NP99 修改属性2 覆盖结果" MODIFIED="1774098188206" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_21" />
     <SUITE FILE_PATH="coverage/py_project01$NP16_offer.coverage" NAME="NP16 发送offer 覆盖结果" MODIFIED="1773747871923" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />
     <SUITE FILE_PATH="coverage/py_project01$NP12_.coverage" NAME="NP12 格式化输出（二） 覆盖结果" MODIFIED="1773747525528" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />
   </component>
