@@ -8,12 +8,13 @@ from fastapi.responses import JSONResponse
 from core.exceptions import BusinessException
 from core.logger import get_logger
 import schemas
-from session.db_session import Base, engine
-
+from session.db_session import Base, engine, SessionLocal
+from models.role import Role
+from routers import router as users_router
 # 配置日志
 logger = get_logger()
 
-from routers import router as users_router
+
 
 # FastAPI 启动前执行数据库初始化检查
 @asynccontextmanager
@@ -21,6 +22,19 @@ async def lifespan(app: FastAPI):
     try:
         Base.metadata.create_all(bind=engine)
         logger.info("数据库表初始化检查完成")
+        # 初始化角色数据
+        db = SessionLocal()
+        try:
+            if not db.query(Role).first():
+                from dao.role_dao import create_role
+                create_role(db, name="admin", description="系统管理员")
+                create_role(db, name="user", description="普通用户")
+                logger.info("初始化角色数据完成")
+        except Exception as e:
+            logger.warning(f"初始化角色数据跳过或失败: {e}")
+        finally:
+            db.close()
+
     except Exception as e:
         logger.exception(f"数据库表初始化检查失败: {e}")
         raise

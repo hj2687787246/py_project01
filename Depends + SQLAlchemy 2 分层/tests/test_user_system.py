@@ -1,238 +1,253 @@
-import json
-from datetime import datetime
-from typing import Optional
+import os
+import sys
+from pathlib import Path
 
-import requests
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from core.logger import get_logger
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+os.environ.setdefault("SECRET_KEY", "test-secret-key")
+
+import main
+from dao import role_dao, user_dao
+from schemas import UserCreate
+from session import db_session
+from session.db_session import Base
+
+logger = get_logger()
 
 
-BASE_URL = "http://127.0.0.1:8000"
-TEST_SUFFIX = datetime.now().strftime("%Y%m%d%H%M%S")
-TEST_USERNAME = f"user_{TEST_SUFFIX}"
-TEST_EMAIL = f"{TEST_USERNAME}@example.com"
-UPDATED_TEST_EMAIL = f"updated_{TEST_USERNAME}@example.com"
-TEST_PASSWORD = "123456"
+def setup_module():
+    """测试模块启动前清理遗留测试库。"""
+    db_path = PROJECT_ROOT / "tests" / "_test_user_system.db"
+    if db_path.exists():
+        logger.info(f"删除遗留测试数据库: path={db_path}")
+        db_path.unlink()
 
 
-def safe_json(response: requests.Response):
+def teardown_module():
+    """测试模块结束后清理测试库。"""
+    db_path = PROJECT_ROOT / "tests" / "_test_user_system.db"
+    if db_path.exists():
+        logger.info(f"清理测试数据库: path={db_path}")
+        db_path.unlink()
+
+
+def build_test_client():
+    """构建独立测试库和 TestClient。"""
+    db_path = PROJECT_ROOT / "tests" / "_test_user_system.db"
+    logger.info(f"构建测试客户端: db_path={db_path}")
+    test_engine = create_engine(
+        f"sqlite:///{db_path}", connect_args={"check_same_thread": False}
+    )
+    testing_session_local = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=test_engine,
+    )
+
+    db_session.engine = test_engine
+    db_session.SessionLocal = testing_session_local
+    main.engine = test_engine
+    main.SessionLocal = testing_session_local
+
+    # 每次构建测试客户端都重置库，确保测试之间互不污染。
+    Base.metadata.drop_all(bind=test_engine)
+    Base.metadata.create_all(bind=test_engine)
+
+    # 初始化角色和管理员账号，避免依赖外部环境已有数据。
+    with testing_session_local() as db:
+        role_dao.create_role(db, name="admin", description="系统管理员")
+        role_dao.create_role(db, name="user", description="普通用户")
+        admin_user = UserCreate(
+            username="admin",
+            password="123456",
+            age=30,
+            email="admin@example.com",
+        )
+        user_dao.create_user(db, admin_user, role_name="admin")
+
+    client = TestClient(main.app)
+    logger.success("测试客户端构建完成")
+    return client, test_engine
+
+
+def auth_headers(token: str) -> dict:
+    """构建 Bearer Token 请求头。"""
+    return {"Authorization": f"Bearer {token}"}
+
+
+def login(client: TestClient, username: str, password: str) -> str:
+    """执行登录并返回访问令牌。"""
+    logger.info(f"测试登录: username={username}")
+    response = client.post(
+        "/users/token",
+        data={"username": username, "password": password},
+    )
+    assert response.status_code == 200, response.text
+    logger.success(f"测试登录成功: username={username}")
+    return response.json()["access_token"]
+
+
+def create_user(
+    client: TestClient,
+    username: str = "alice",
+    password: str = "123456",
+    age: int = 18,
+    email: str = "alice@example.com",
+) -> dict:
+    """通过注册接口创建测试用户。"""
+    logger.info(f"测试创建用户: username={username}, email={email}")
+    response = client.post(
+        "/users",
+        json={
+            "username": username,
+            "password": password,
+            "age": age,
+            "email": email,
+        },
+    )
+    assert response.status_code == 200, response.text
+    logger.success(f"测试创建用户成功: username={username}")
+    return response.json()["data"]
+
+
+def test_health_check():
+    """验证健康检查接口。"""
+    client, engine = build_test_client()
     try:
-        return response.json()
-    except json.JSONDecodeError:
-        return {"raw_text": response.text}
+        response = client.get("/health")
+        assert response.status_code == 200
+        assert response.json() == {"status": "healthy", "message": "服务正常运行"}
+    finally:
+        client.close()
+        engine.dispose()
 
 
-def print_response(title: str, response: requests.Response):
-    print(f"\n=== {title} ===")
-    print(f"Status: {response.status_code}")
-    print(json.dumps(safe_json(response), ensure_ascii=False, indent=2))
+def test_user_basic_flow():
+    """验证普通用户注册、登录、查询、更新主流程。"""
+    client, engine = build_test_client()
+    try:
+        created_user = create_user(client)
+        token = login(client, "alice", "123456")
+
+        get_response = client.get(
+            f"/users/{created_user['id']}",
+            headers=auth_headers(token),
+        )
+        assert get_response.status_code == 200, get_response.text
+        assert get_response.json()["data"]["username"] == "alice"
+        assert get_response.json()["data"]["role"] == "user"
+
+        update_response = client.put(
+            f"/users/{created_user['id']}",
+            json={"age": 20, "email": "alice.updated@example.com"},
+            headers=auth_headers(token),
+        )
+        assert update_response.status_code == 200, update_response.text
+        assert update_response.json()["data"]["age"] == 20
+        assert update_response.json()["data"]["email"] == "alice.updated@example.com"
+    finally:
+        client.close()
+        engine.dispose()
 
 
-def assert_response(title: str, response: requests.Response, expected_status: int, expected_code: int):
-    data = safe_json(response)
-    passed = response.status_code == expected_status and data.get("code") == expected_code
-    print(
-        f"[{'PASS' if passed else 'FAIL'}] {title}: "
-        f"status={response.status_code}, code={data.get('code')}, message={data.get('message')}"
-    )
-    return passed
+def test_exception_responses():
+    """验证常见异常响应格式和业务码。"""
+    client, engine = build_test_client()
+    try:
+        create_user(client)
+
+        duplicate_username = client.post(
+            "/users",
+            json={
+                "username": "alice",
+                "password": "123456",
+                "age": 18,
+                "email": "alice2@example.com",
+            },
+        )
+        assert duplicate_username.status_code == 400, duplicate_username.text
+        assert duplicate_username.json()["code"] == 4001
+
+        duplicate_email = client.post(
+            "/users",
+            json={
+                "username": "alice2",
+                "password": "123456",
+                "age": 18,
+                "email": "alice@example.com",
+            },
+        )
+        assert duplicate_email.status_code == 400, duplicate_email.text
+        assert duplicate_email.json()["code"] == 4002
+
+        bad_login = client.post(
+            "/users/token",
+            data={"username": "alice", "password": "wrong-password"},
+        )
+        assert bad_login.status_code == 400, bad_login.text
+        assert bad_login.json()["code"] == 400
+
+        no_token = client.get("/users/1")
+        assert no_token.status_code == 401, no_token.text
+        assert no_token.json()["code"] == 401
+    finally:
+        client.close()
+        engine.dispose()
 
 
-def check_health() -> bool:
-    response = requests.get(f"{BASE_URL}/health")
-    print_response("健康检查", response)
-    return response.status_code == 200
+def test_permission_and_admin_flows():
+    """验证管理员权限相关接口和删除限制。"""
+    client, engine = build_test_client()
+    try:
+        user = create_user(client)
+        user_token = login(client, "alice", "123456")
+        admin_token = login(client, "admin", "123456")
 
+        forbidden_role_update = client.put(
+            f"/users/{user['id']}",
+            json={"role_id": 1},
+            headers=auth_headers(user_token),
+        )
+        assert forbidden_role_update.status_code == 403, forbidden_role_update.text
+        assert forbidden_role_update.json()["code"] == 4004
 
-def create_user(username: str, password: str, age: int, email: str) -> Optional[int]:
-    payload = {
-        "username": username,
-        "password": password,
-        "age": age,
-        "email": email,
-    }
-    response = requests.post(f"{BASE_URL}/users", json=payload)
-    print_response("注册用户", response)
+        list_response = client.get(
+            "/users?page=1&page_size=10",
+            headers=auth_headers(admin_token),
+        )
+        assert list_response.status_code == 200, list_response.text
+        list_data = list_response.json()["data"]
+        assert list_data["total"] == 2
+        assert len(list_data["items"]) == 2
 
-    data = safe_json(response)
-    if response.status_code == 200 and data.get("data"):
-        return data["data"].get("id")
-    return None
+        search_response = client.get(
+            "/users/search/?keyword=alice",
+            headers=auth_headers(admin_token),
+        )
+        assert search_response.status_code == 200, search_response.text
+        assert len(search_response.json()["data"]) == 1
 
+        delete_admin = client.delete(
+            "/users/1",
+            headers=auth_headers(admin_token),
+        )
+        assert delete_admin.status_code == 403, delete_admin.text
+        assert delete_admin.json()["code"] == 4003
 
-def login(username: str, password: str) -> Optional[str]:
-    form_data = {
-        "username": username,
-        "password": password,
-    }
-    response = requests.post(f"{BASE_URL}/users/token", data=form_data)
-    print_response("登录获取 Token", response)
-
-    data = safe_json(response)
-    if response.status_code == 200:
-        return data.get("access_token")
-    return None
-
-
-def get_user_id_by_username(username: str, admin_token: str) -> Optional[int]:
-    headers = {"Authorization": f"Bearer {admin_token}"}
-    response = requests.get(f"{BASE_URL}/users/search/?keyword={username}", headers=headers)
-    print_response("按用户名查找用户", response)
-
-    data = safe_json(response)
-    if response.status_code == 200 and data.get("data"):
-        for user in data["data"]:
-            if user.get("username") == username:
-                return user.get("id")
-    return None
-
-
-def get_user(user_id: int, token: str):
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(f"{BASE_URL}/users/{user_id}", headers=headers)
-    print_response("查询当前用户", response)
-
-
-def update_user(user_id: int, token: str):
-    headers = {"Authorization": f"Bearer {token}"}
-    payload = {
-        "age": 20,
-        "email": UPDATED_TEST_EMAIL,
-    }
-    response = requests.put(f"{BASE_URL}/users/{user_id}", json=payload, headers=headers)
-    print_response("修改当前用户", response)
-
-
-def update_user_role(user_id: int, token: str, role: str):
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.put(
-        f"{BASE_URL}/users/{user_id}",
-        json={"role": role},
-        headers=headers,
-    )
-    print_response("修改用户角色", response)
-    return response
-
-
-def list_users(admin_token: str):
-    headers = {"Authorization": f"Bearer {admin_token}"}
-    response = requests.get(f"{BASE_URL}/users?page=1&page_size=10", headers=headers)
-    print_response("管理员查看用户列表", response)
-
-
-def search_users(admin_token: str):
-    headers = {"Authorization": f"Bearer {admin_token}"}
-    response = requests.get(f"{BASE_URL}/users/search/?keyword=user", headers=headers)
-    print_response("管理员模糊搜索用户", response)
-
-
-def delete_user(user_id: int, admin_token: str):
-    headers = {"Authorization": f"Bearer {admin_token}"}
-    response = requests.delete(f"{BASE_URL}/users/{user_id}", headers=headers)
-    print_response("管理员删除用户", response)
-
-
-def run_exception_flow():
-    print("\n=== 异常响应测试 ===")
-
-    duplicate_username_response = requests.post(
-        f"{BASE_URL}/users",
-        json={
-            "username": TEST_USERNAME,
-            "password": TEST_PASSWORD,
-            "age": 18,
-            "email": f"dup_{TEST_EMAIL}",
-        },
-    )
-    print_response("BusinessException-用户名重复", duplicate_username_response)
-    assert_response("BusinessException-用户名重复", duplicate_username_response, 400, 4001)
-
-    duplicate_email_response = requests.post(
-        f"{BASE_URL}/users",
-        json={
-            "username": f"dup_{TEST_SUFFIX}",
-            "password": TEST_PASSWORD,
-            "age": 18,
-            "email": UPDATED_TEST_EMAIL,
-        },
-    )
-    print_response("BusinessException-邮箱重复", duplicate_email_response)
-    assert_response("BusinessException-邮箱重复", duplicate_email_response, 400, 4002)
-
-    bad_login_response = requests.post(
-        f"{BASE_URL}/users/token",
-        data={"username": TEST_USERNAME, "password": "wrong-password"},
-    )
-    print_response("HTTPException-登录失败", bad_login_response)
-    assert_response("HTTPException-登录失败", bad_login_response, 400, 400)
-
-    no_token_response = requests.get(f"{BASE_URL}/users/1")
-    print_response("HTTPException-缺少Token", no_token_response)
-    assert_response("HTTPException-缺少Token", no_token_response, 401, 401)
-
-    user_token = login(username=TEST_USERNAME, password=TEST_PASSWORD)
-    admin_token = login(username="admin", password="123456")
-
-    if user_token and admin_token:
-        target_user_id = get_user_id_by_username(username=TEST_USERNAME, admin_token=admin_token)
-        admin_user_id = get_user_id_by_username(username="admin", admin_token=admin_token)
-
-        if target_user_id:
-            forbidden_role_response = update_user_role(target_user_id, user_token, "admin")
-            assert_response("BusinessException-普通用户修改角色", forbidden_role_response, 403, 4004)
-        else:
-            print(f"[SKIP] BusinessException-普通用户修改角色: 未找到 {TEST_USERNAME}")
-
-        if admin_user_id:
-            delete_admin_response = requests.delete(
-                f"{BASE_URL}/users/{admin_user_id}",
-                headers={"Authorization": f"Bearer {admin_token}"},
-            )
-            print_response("BusinessException-删除admin账号", delete_admin_response)
-            assert_response("BusinessException-删除admin账号", delete_admin_response, 403, 4003)
-        else:
-            print("[SKIP] BusinessException-删除admin账号: 未找到 admin 用户")
-    else:
-        print("[SKIP] 需要普通用户 token 和 admin token，跳过角色和删除 admin 异常测试")
-
-
-def run_basic_flow():
-    if not check_health():
-        print("\n服务未正常启动，请先运行：uvicorn main:app --reload")
-        return
-
-    print(f"\n本次测试用户: username={TEST_USERNAME}, email={TEST_EMAIL}")
-
-    user_id = create_user(username=TEST_USERNAME, password=TEST_PASSWORD, age=18, email=TEST_EMAIL)
-    token = login(username=TEST_USERNAME, password=TEST_PASSWORD)
-
-    if token and not user_id:
-        admin_token = login(username="admin", password="123456")
-        if admin_token:
-            user_id = get_user_id_by_username(username=TEST_USERNAME, admin_token=admin_token)
-
-    if user_id and token:
-        get_user(user_id=user_id, token=token)
-        update_user(user_id=user_id, token=token)
-    else:
-        print("\n基础流程未完成，跳过后续用户操作。")
-
-
-def run_admin_flow():
-    print("\n=== 管理员接口测试说明 ===")
-    print("如果你数据库里已经有管理员账号，可以取消下面两行注释后测试管理员接口。")
-    print("默认管理员账号示例：admin / 123456")
-
-    admin_token = login(username="admin", password="123456")
-    if admin_token:
-        list_users(admin_token)
-        search_users(admin_token)
-        target_user_id = get_user_id_by_username(username=TEST_USERNAME, admin_token=admin_token)
-        if target_user_id:
-            delete_user(user_id=target_user_id, admin_token=admin_token)
-        else:
-            print(f"\n未找到 {TEST_USERNAME}，跳过管理员删除用户测试。")
-
-
-if __name__ == "__main__":
-    run_basic_flow()
-    run_exception_flow()
-    run_admin_flow()
+        delete_user_response = client.delete(
+            f"/users/{user['id']}",
+            headers=auth_headers(admin_token),
+        )
+        assert delete_user_response.status_code == 200, delete_user_response.text
+        assert delete_user_response.json()["data"]["user_id"] == user["id"]
+    finally:
+        client.close()
+        engine.dispose()

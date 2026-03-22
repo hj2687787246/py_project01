@@ -127,13 +127,19 @@ http://127.0.0.1:8000
 
 ## 测试方式
 
-启动服务后执行：
+先安装测试依赖：
 
 ```bash
-python tests/test_user_system.py
+pip install -r requirements.txt
 ```
 
-当前测试脚本会覆盖：
+然后在项目目录下执行：
+
+```bash
+pytest tests/test_user_system.py -q
+```
+
+当前 `pytest` 集成测试会覆盖：
 - 基础注册 / 登录 / 查询 / 更新流程
 - `BusinessException` 响应验证
   - 用户名重复
