@@ -1,298 +1,152 @@
-import requests
-import time
 import json
-import logging
+from datetime import datetime
 from typing import Optional
 
-# 配置日志
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+import requests
 
-# 基础URL
-BASE_URL = "http://localhost:8000"
 
-def safe_json_parse(response):
-    """安全地解析JSON响应"""
+BASE_URL = "http://127.0.0.1:8000"
+TEST_SUFFIX = datetime.now().strftime("%Y%m%d%H%M%S")
+TEST_USERNAME = f"user_{TEST_SUFFIX}"
+TEST_EMAIL = f"{TEST_USERNAME}@example.com"
+UPDATED_TEST_EMAIL = f"updated_{TEST_USERNAME}@example.com"
+TEST_PASSWORD = "123456"
+
+
+def safe_json(response: requests.Response):
     try:
         return response.json()
     except json.JSONDecodeError:
-        return {
-            "error": "无法解析响应", 
-            "status_code": response.status_code, 
-            "text": response.text[:500]
-        }
+        return {"raw_text": response.text}
 
-def check_service_health():
-    """检查服务健康状态"""
-    print("=== 检查服务健康状态 ===")
-    try:
-        # 首先检查文档页面
-        docs_response = requests.get(f"{BASE_URL}/docs")
-        print(f"文档页面状态: {docs_response.status_code}")
-        
-        # 检查健康检查端点
-        health_response = requests.get(f"{BASE_URL}/health")
-        print(f"健康检查状态: {health_response.status_code}")
-        
-        if health_response.status_code == 200:
-            health_data = safe_json_parse(health_response)
-            print(f"服务状态: {health_data}")
-            return True
-        return False
-    except requests.exceptions.ConnectionError:
-        print("❌ 无法连接到服务，请确保FastAPI应用正在运行")
-        print("启动命令: uvicorn main:app --reload --host 0.0.0.0 --port 8000")
-        return False
-    except Exception as e:
-        print(f"❌ 检查服务状态时出错: {e}")
-        return False
 
-def test_create_user():
-    """测试创建用户 - 包含所有边界情况"""
-    print("\n=== 测试1: 创建用户 ===")
-    
-    test_cases = [
-        # 正常情况
-        {
-            "name": "正常创建用户",
-            "data": {
-                "username": "testuser1",
-                "age": 25,
-                "email": "testuser1@example.com"
-            },
-            "expected_status": 200
-        },
-        # 边界情况 - 年龄边界值
-        {
-            "name": "年龄为0",
-            "data": {
-                "username": "testuser2",
-                "age": 0,
-                "email": "testuser2@example.com"
-            },
-            "expected_status": 200
-        },
-        {
-            "name": "年龄为150",
-            "data": {
-                "username": "testuser3",
-                "age": 150,
-                "email": "testuser3@example.com"
-            },
-            "expected_status": 200
-        },
-        # 错误情况 - 无效邮箱
-        {
-            "name": "无效邮箱格式",
-            "data": {
-                "username": "testuser4",
-                "age": 25,
-                "email": "invalid-email"
-            },
-            "expected_status": 422  # Pydantic验证错误
-        },
-        # 错误情况 - 用户名过短
-        {
-            "name": "用户名过短",
-            "data": {
-                "username": "ab",
-                "age": 25,
-                "email": "testuser5@example.com"
-            },
-            "expected_status": 422
-        }
-    ]
-    
-    created_user_ids = []
-    
-    for case in test_cases:
-        print(f"\n--- 测试用例: {case['name']} ---")
-        try:
-            response = requests.post(f"{BASE_URL}/users", json=case["data"])
-            print(f"状态码: {response.status_code}")
-            
-            response_data = safe_json_parse(response)
-            print(f"响应: {json.dumps(response_data, ensure_ascii=False, indent=2)}")
-            
-            # 记录成功创建的用户ID
-            if (response.status_code == case["expected_status"] and 
-                response.status_code == 200 and 
-                'data' in response_data and 
-                response_data['data']):
-                created_user_ids.append(response_data['data'].get('id'))
-                
-        except Exception as e:
-            print(f"请求失败: {e}")
-    
-    return created_user_ids[0] if created_user_ids else None
+def print_response(title: str, response: requests.Response):
+    print(f"\n=== {title} ===")
+    print(f"Status: {response.status_code}")
+    print(json.dumps(safe_json(response), ensure_ascii=False, indent=2))
 
-def test_get_user(user_id: int):
-    """测试查询单个用户"""
-    print("\n=== 测试2: 查询单个用户 ===")
-    
-    if not user_id:
-        print("没有有效的用户ID")
+
+def check_health() -> bool:
+    response = requests.get(f"{BASE_URL}/health")
+    print_response("健康检查", response)
+    return response.status_code == 200
+
+
+def create_user(username: str, password: str, age: int, email: str) -> Optional[int]:
+    payload = {
+        "username": username,
+        "password": password,
+        "age": age,
+        "email": email,
+    }
+    response = requests.post(f"{BASE_URL}/users", json=payload)
+    print_response("注册用户", response)
+
+    data = safe_json(response)
+    if response.status_code == 200 and data.get("data"):
+        return data["data"].get("id")
+    return None
+
+
+def login(username: str, password: str) -> Optional[str]:
+    form_data = {
+        "username": username,
+        "password": password,
+    }
+    response = requests.post(f"{BASE_URL}/users/token", data=form_data)
+    print_response("登录获取 Token", response)
+
+    data = safe_json(response)
+    if response.status_code == 200:
+        return data.get("access_token")
+    return None
+
+
+def get_user_id_by_username(username: str, admin_token: str) -> Optional[int]:
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.get(f"{BASE_URL}/users/search/?keyword={username}", headers=headers)
+    print_response("按用户名查找用户", response)
+
+    data = safe_json(response)
+    if response.status_code == 200 and data.get("data"):
+        for user in data["data"]:
+            if user.get("username") == username:
+                return user.get("id")
+    return None
+
+
+def get_user(user_id: int, token: str):
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(f"{BASE_URL}/users/{user_id}", headers=headers)
+    print_response("查询当前用户", response)
+
+
+def update_user(user_id: int, token: str):
+    headers = {"Authorization": f"Bearer {token}"}
+    payload = {
+        "age": 20,
+        "email": UPDATED_TEST_EMAIL,
+    }
+    response = requests.put(f"{BASE_URL}/users/{user_id}", json=payload, headers=headers)
+    print_response("修改当前用户", response)
+
+
+def list_users(admin_token: str):
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.get(f"{BASE_URL}/users?page=1&page_size=10", headers=headers)
+    print_response("管理员查看用户列表", response)
+
+
+def search_users(admin_token: str):
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.get(f"{BASE_URL}/users/search/?keyword=user", headers=headers)
+    print_response("管理员模糊搜索用户", response)
+
+
+def delete_user(user_id: int, admin_token: str):
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.delete(f"{BASE_URL}/users/{user_id}", headers=headers)
+    print_response("管理员删除用户", response)
+
+
+def run_basic_flow():
+    if not check_health():
+        print("\n服务未正常启动，请先运行：uvicorn main:app --reload")
         return
-    
-    # 正常查询
-    try:
-        response = requests.get(f"{BASE_URL}/users/{user_id}")
-        print(f"查询用户 - 状态码: {response.status_code}")
-        
-        response_data = safe_json_parse(response)
-        print(f"响应内容: {json.dumps(response_data, ensure_ascii=False, indent=2)}")
-        
-    except Exception as e:
-        print(f"查询用户失败: {e}")
-    
-    # 查询不存在的用户
-    print("\n--- 查询不存在的用户 ---")
-    try:
-        response = requests.get(f"{BASE_URL}/users/999999")
-        print(f"状态码: {response.status_code}")
-        response_data = safe_json_parse(response)
-        print(f"响应: {json.dumps(response_data, ensure_ascii=False, indent=2)}")
-        
-    except Exception as e:
-        print(f"查询失败: {e}")
 
-def test_list_users():
-    """测试分页查询用户列表"""
-    print("\n=== 测试3: 分页查询用户列表 ===")
-    
-    test_cases = [
-        {"page": 1, "page_size": 5},
-        {"page": 1, "page_size": 0},  # 测试默认值
-        {"page": 999, "page_size": 10}  # 测试空结果
-    ]
-    
-    for case in test_cases:
-        print(f"\n--- 分页参数: page={case['page']}, page_size={case['page_size']} ---")
-        try:
-            url = f"{BASE_URL}/users?page={case['page']}&page_size={case['page_size']}"
-            response = requests.get(url)
-            print(f"状态码: {response.status_code}")
-            
-            response_data = safe_json_parse(response)
-            if 'data' in response_data and response_data['data']:
-                print(f"返回用户数量: {len(response_data['data'])}")
-                if len(response_data['data']) > 0:
-                    print(f"第一条记录: {response_data['data'][0]}")
-            else:
-                print("没有返回用户数据")
-                
-        except Exception as e:
-            print(f"请求失败: {e}")
+    print(f"\n本次测试用户: username={TEST_USERNAME}, email={TEST_EMAIL}")
 
-def test_search_users():
-    """测试模糊查询"""
-    print("\n=== 测试4: 模糊查询用户 ===")
-    
-    search_terms = ["testuser", "@example.com", "nonexistent"]
-    
-    for term in search_terms:
-        print(f"\n--- 搜索关键词: '{term}' ---")
-        try:
-            response = requests.get(f"{BASE_URL}/users/search/?keyword={term}")
-            print(f"状态码: {response.status_code}")
-            
-            response_data = safe_json_parse(response)
-            if 'data' in response_data and response_data['data']:
-                print(f"找到 {len(response_data['data'])} 个结果")
-            else:
-                print("没有找到结果")
-                
-        except Exception as e:
-            print(f"搜索失败: {e}")
+    user_id = create_user(username=TEST_USERNAME, password=TEST_PASSWORD, age=18, email=TEST_EMAIL)
+    token = login(username=TEST_USERNAME, password=TEST_PASSWORD)
 
-def test_update_user(user_id: int):
-    """测试更新用户"""
-    print("\n=== 测试5: 更新用户信息 ===")
-    
-    if not user_id:
-        print("没有有效的用户ID")
-        return
-    
-    update_cases = [
-        {
-            "name": "正常更新",
-            "data": {
-                "age": 26,
-                "email": "updated_email@example.com"
-            }
-        },
-        {
-            "name": "只更新部分字段",
-            "data": {
-                "age": 27
-            }
-        }
-    ]
-    
-    for case in update_cases:
-        print(f"\n--- {case['name']} ---")
-        try:
-            response = requests.put(f"{BASE_URL}/users/{user_id}", json=case["data"])
-            print(f"状态码: {response.status_code}")
-            
-            response_data = safe_json_parse(response)
-            print(f"响应: {json.dumps(response_data, ensure_ascii=False, indent=2)}")
-            
-        except Exception as e:
-            print(f"更新失败: {e}")
+    if token and not user_id:
+        admin_token = login(username="admin", password="123456")
+        if admin_token:
+            user_id = get_user_id_by_username(username=TEST_USERNAME, admin_token=admin_token)
 
-def test_delete_user(user_id: int):
-    """测试删除用户"""
-    print("\n=== 测试6: 删除用户 ===")
-    
-    if not user_id:
-        print("没有有效的用户ID")
-        return
-    
-    # 删除存在的用户
-    try:
-        response = requests.delete(f"{BASE_URL}/users/{user_id}")
-        print(f"删除用户 - 状态码: {response.status_code}")
-        
-        response_data = safe_json_parse(response)
-        print(f"响应内容: {json.dumps(response_data, ensure_ascii=False, indent=2)}")
-        
-        # 验证用户是否被删除
-        print("\n--- 验证用户是否被删除 ---")
-        verify_response = requests.get(f"{BASE_URL}/users/{user_id}")
-        print(f"验证查询状态码: {verify_response.status_code}")
-        
-    except Exception as e:
-        print(f"删除失败: {e}")
-
-def run_comprehensive_test():
-    """运行全面测试"""
-    print("=" * 50)
-    print("开始全面测试用户管理系统")
-    print("=" * 50)
-    
-    # 1. 检查服务健康状态
-    if not check_service_health():
-        print("❌ 服务未运行，无法继续测试")
-        return
-    
-    print("✅ 服务运行正常，开始功能测试...")
-    
-    # 2. 执行所有测试
-    user_id = test_create_user()
-    
-    if user_id:
-        test_get_user(user_id)
-        test_list_users()
-        test_search_users()
-        test_update_user(user_id)
-        test_delete_user(user_id)
+    if user_id and token:
+        get_user(user_id=user_id, token=token)
+        update_user(user_id=user_id, token=token)
     else:
-        print("⚠️  创建用户失败，跳过后续测试")
-    
-    print("\n" + "=" * 50)
-    print("全面测试完成")
-    print("=" * 50)
+        print("\n基础流程未完成，跳过后续用户操作。")
+
+
+def run_admin_flow():
+    print("\n=== 管理员接口测试说明 ===")
+    print("如果你数据库里已经有管理员账号，可以取消下面两行注释后测试管理员接口。")
+    print("默认管理员账号示例：admin / 123456")
+
+    admin_token = login(username="admin", password="123456")
+    if admin_token:
+        list_users(admin_token)
+        search_users(admin_token)
+        target_user_id = get_user_id_by_username(username=TEST_USERNAME, admin_token=admin_token)
+        if target_user_id:
+            delete_user(user_id=target_user_id, admin_token=admin_token)
+        else:
+            print(f"\n未找到 {TEST_USERNAME}，跳过管理员删除用户测试。")
+
 
 if __name__ == "__main__":
-    run_comprehensive_test()
+    run_basic_flow()
+    run_admin_flow()

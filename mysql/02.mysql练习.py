@@ -1,4 +1,4 @@
-
+import os
 from data_define import Record
 from file_define import CsvReader,JsonReader
 from pathlib import Path
@@ -25,19 +25,24 @@ jsonReader = JsonReader(str(base_dir / "resource" / "order_data.json"))
 csv_data:list[Record] = csvReader.read_date()
 json_data:list[Record] = jsonReader.read_date()
 all_data = csv_data + json_data
+mysql_host = os.getenv("MYSQL_HOST", "localhost")
+mysql_port = int(os.getenv("MYSQL_PORT", "3306"))
+mysql_user = os.getenv("MYSQL_USER", "root")
+mysql_password = os.getenv("MYSQL_PASSWORD")
+mysql_database = os.getenv("MYSQL_GOODS_DATABASE", "test_goods")
 
-
-
+if not mysql_password:
+    raise ValueError("缺少 MYSQL_PASSWORD 环境变量")
 
 with Connection(
-    host="localhost",
-    port=3306,
-    user="root",
-    password="hejie@2244"
+    host=mysql_host,
+    port=mysql_port,
+    user=mysql_user,
+    password=mysql_password
 ) as connection:
     cursor = connection.cursor()
-    cursor.execute("create database test_goods charset=utf8")
-    connection.select_db("test_goods")
+    cursor.execute(f"create database {mysql_database} charset=utf8")
+    connection.select_db(mysql_database)
     cursor.execute("create table orders(order_time varchar(20),order_ID varchar(20),order_price float,order_year varchar(4))")
 
     try:

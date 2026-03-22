@@ -2,20 +2,32 @@ from sqlalchemy import select,or_
 from sqlalchemy.orm import Session
 
 from models import User
-from schemas import UserCreat,UserUpdate
+from schemas import UserCreate,UserUpdate
+from logger_config import get_logger
+from password_utils import get_password_hash
 
-# C:Create 创建用户
-def create_user(db: Session, user: UserCreat):
+logger = get_logger()
+
+# C:Create 创建用户 新增 role 参数，允许外部指定角色（默认普通用户）
+def create_user(db: Session, user: UserCreate, role: str = "user"):
+    # 将 user.password 哈希后再存入模型
+    hashed_pwd = get_password_hash(user.password)
     try:
-        print(f"创建用户: {user}")
-        db_user = User(**user.model_dump())
+        logger.info(f"数据层创建用户: username={user.username}, email={user.email}, role={role}")
+        db_user = User(
+            username=user.username,
+            hashed_password=hashed_pwd,
+            role= role,
+            age=user.age,
+            email=user.email
+        )
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        print(f"用户创建成功: {db_user.id}")
+        logger.success(f"数据层创建用户成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
         return db_user
     except Exception as e:
-        print(f"创建用户时出错: {e}")
+        logger.exception(f"数据层创建用户异常: username={user.username}, email={user.email}, error={e}")
         db.rollback()
         raise
 
@@ -54,19 +66,25 @@ def search_users(db: Session,keyword: str):
 def update_user(db: Session, user_id: int, user_update: UserUpdate):
     db_user = get_user_by_id(db, user_id)
     if not db_user:
+        logger.warning(f"数据层更新用户失败: user_id={user_id}, reason=用户不存在")
         return None
     update_data = user_update.model_dump(exclude_unset=True)
+    logger.info(f"数据层更新用户: user_id={user_id}, fields={list(update_data.keys())}")
     for key,value in update_data.items():
         setattr(db_user,key,value)
     db.commit()
     db.refresh(db_user)
+    logger.success(f"数据层更新用户成功: user_id={user_id}")
     return db_user
 
 # D:Delete 删除用户
 def delete_user(db: Session, user_id: int):
     db_user = get_user_by_id(db, user_id)
     if not db_user:
+        logger.warning(f"数据层删除用户失败: user_id={user_id}, reason=用户不存在")
         return False
+    logger.info(f"数据层删除用户: user_id={user_id}, username={db_user.username}")
     db.delete(db_user)
     db.commit()
+    logger.success(f"数据层删除用户成功: user_id={user_id}")
     return True
