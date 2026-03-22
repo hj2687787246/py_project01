@@ -38,11 +38,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     # 生成JWT Token
     to_encode = data.copy()
+    now = datetime.now(timezone.utc)
     if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
+        expire = now + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
+        expire = now + timedelta(minutes=15)
+    # 显式写入 Unix 时间戳，避免时区和 naive datetime 的解释差异
+    to_encode.update({
+        "iat": int(now.timestamp()),
+        "exp": int(expire.timestamp())
+    })
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
