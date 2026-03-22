@@ -22,7 +22,8 @@ class ResponseModel(BaseModel):
 
 # 2.自定义业务异常类
 class BusinessException(Exception):
-    def __int__(self, code: int, message: str):
+    def __init__(self, code: int, message: str):
+        super().__init__(message)
         self.code = code
         self.message = message
 # @asynccontextmanager

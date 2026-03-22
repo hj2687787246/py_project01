@@ -80,3 +80,5 @@ wcwidth==0.6.0
 Werkzeug==3.1.6
 zope.interface==8.2
 
+
+passlib

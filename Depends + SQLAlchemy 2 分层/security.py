@@ -1,36 +1,27 @@
 # 核心安全逻辑
+import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
 
 import crud
 from database import get_db
 from models import User # 导入User模型用于类型提示
 
+load_dotenv()
+
 # 配置项
 # 生成一个安全的 SECRET_KEY: 终端运行 openssl rand -hex 32
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("未配置 SECRET_KEY，请在环境变量或 .env 文件中设置 SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Token 30分钟过期
-
-pwd_context = CryptContext(
-    schemes=["pbkdf2_sha256"],
-    default="pbkdf2_sha256",
-    pbkdf2_sha256__default_rounds=100000,  # 迭代次数（越高越安全，默认10万次）
-    deprecated="auto")
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    # 验证密码：明文 vs 哈希值
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password: str)->str:
-    # 获取密码的哈希值
-    return pwd_context.hash(password)
 
 # JWT Token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")

@@ -8,8 +8,8 @@ import crud
 import models
 import schemas
 from database import get_db
+from password_utils import verify_password
 from security import (
-verify_password,
 create_access_token,
 ACCESS_TOKEN_EXPIRE_MINUTES,
 get_current_user,
@@ -191,20 +191,20 @@ def update_user_api(
 def delete_user_api(
         user_id: int,
         db: Session = Depends(get_db),
-        current_user: models.User = Depends(get_current_admin)
+        current_admin: models.User = Depends(get_current_admin)
 ):
     logger.info(
-        f"收到删除用户请求: operator_id={current_user.id}, operator={current_user.username}, "
-        f"role={current_user.role}, target_user_id={user_id}"
+        f"收到删除用户请求: operator_id={current_admin.id}, operator={current_admin.username}, "
+        f"role={current_admin.role}, target_user_id={user_id}"
     )
     if not crud.delete_user(db, user_id):
         logger.error(
-            f"删除用户失败: operator_id={current_user.id}, operator={current_user.username}, "
+            f"删除用户失败: operator_id={current_admin.id}, operator={current_admin.username}, "
             f"target_user_id={user_id}, reason=用户不存在"
         )
         raise HTTPException(status_code=404, detail="用户不存在")
     logger.success(
-        f"删除用户成功: operator_id={current_user.id}, operator={current_user.username}, "
+        f"删除用户成功: operator_id={current_admin.id}, operator={current_admin.username}, "
         f"target_user_id={user_id}"
     )
     return schemas.UnifiedResponse(data={"message": "删除成功", "user_id": user_id})

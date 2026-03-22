@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from models import User
 from schemas import UserCreate,UserUpdate
 from logger_config import get_logger
-from security import get_password_hash # 新增
+from password_utils import get_password_hash
 
 logger = get_logger()
 
