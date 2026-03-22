@@ -5,13 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.22 项目分层重构">
-      <change beforePath="$PROJECT_DIR$/.idea/py_project01.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/py_project01.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/core/exceptions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/core/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/core/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/fastapi_test.db" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/fastapi_test.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests/test_user_system.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests/test_user_system.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/user_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/user_schema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -388,7 +392,7 @@
       <workItem from="1774080253418" duration="3662000" />
       <workItem from="1774087677086" duration="11606000" />
       <workItem from="1774141570852" duration="16676000" />
-      <workItem from="1774160341288" duration="6657000" />
+      <workItem from="1774160341288" duration="9012000" />
     </task>
     <task id="LOCAL-00001" summary="3.19">
       <option name="closed" value="true" />
@@ -702,7 +706,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774161818808</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="3.22 项目分层重构">
+      <option name="closed" value="true" />
+      <created>1774167046813</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1774167046813</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -756,7 +768,7 @@
     <SUITE FILE_PATH="coverage/py_project01$NP61_.coverage" NAME="NP61 牛牛的矩阵相加 覆盖结果" MODIFIED="1774008466703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
     <SUITE FILE_PATH="coverage/py_project01$12.coverage" NAME="练习题12 覆盖结果" MODIFIED="1773370999702" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$07_while.coverage" NAME="07.while 覆盖结果" MODIFIED="1773228010136" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
-    <SUITE FILE_PATH="coverage/py_project01$test_user_system__1_.coverage" NAME="test_user_system (1) 覆盖结果" MODIFIED="1774165608437" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests" />
+    <SUITE FILE_PATH="coverage/py_project01$test_user_system__1_.coverage" NAME="test_user_system (1) 覆盖结果" MODIFIED="1774173599431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests" />
     <SUITE FILE_PATH="coverage/py_project01$07_.coverage" NAME="07.正则表达式基础使用 覆盖结果" MODIFIED="1773886223197" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
     <SUITE FILE_PATH="coverage/py_project01$main__1_.coverage" NAME="main (1) 覆盖结果" MODIFIED="1773984890874" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends" />
     <SUITE FILE_PATH="coverage/py_project01$NP75_.coverage" NAME="NP75 使用字典计数 覆盖结果" MODIFIED="1774010049366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />

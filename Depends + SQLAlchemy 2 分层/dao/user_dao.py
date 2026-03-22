@@ -1,4 +1,4 @@
-from sqlalchemy import select,or_
+from sqlalchemy import select,or_,func
 from sqlalchemy.orm import Session
 
 from models import User
@@ -45,12 +45,20 @@ def get_user_by_email(db:Session,email:str):
     stmt = select(User).where(User.email == email)
     return db.scalar(stmt)
 
-# R:Read 分页查询列表
+# R:Read 分页查询列表(返回列表和总数)
 def get_user_list(db:Session,page: int = 1,page_size: int=10):
     if page_size <= 0:
         page_size = 10
-    stmt = select(User).offset((page - 1) * page_size).limit(page_size)
-    return db.scalars(stmt).all()
+
+    # 1.计算偏移量
+    offset = (page - 1) * page_size
+    # 2.查询数据列表
+    stmt = select(User).offset(offset).limit(page_size)
+    items = db.scalars(stmt).all()
+    # 3.查询总条数（select count(*) from users）
+    count_stmt = select(func.count()).select_from(User)
+    total = db.scalar(count_stmt)
+    return items, total
 
 # R:Read 模糊查询
 def search_users(db: Session,keyword: str):

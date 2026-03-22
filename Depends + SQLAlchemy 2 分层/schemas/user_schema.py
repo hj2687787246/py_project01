@@ -1,8 +1,9 @@
 # Pydantic 请求 / 响应模型
 from datetime import datetime
-from typing import Optional,Generic,TypeVar
+from typing import Optional,Generic,TypeVar,List
 from zoneinfo import ZoneInfo
 
+from fastapi import Query
 from pydantic import BaseModel,Field, field_serializer
 
 # 泛型定义
@@ -53,6 +54,26 @@ class UserResponse(BaseModel):
         if value.tzinfo is None:
             value = value.replace(tzinfo=ZoneInfo("UTC"))
         return value.astimezone(SHANGHAI_TZ).isoformat()
+
+    class Config:
+        from_attributes = True
+
+# 分页相关通用模型
+class PageParams:
+    # 通用分页参数依赖项
+    def __init__(
+            self,page: int = Query(1, ge=1, description="页码，从1开始"),
+            page_size: int = Query(10, ge=1, le=100, description="每页数量,最大100")
+    ):
+        self.page = page
+        self.page_size = page_size
+
+class PageResult(BaseModel, Generic[T]):
+    # 通用分页响应结果
+    items: List[T]          # 数据列表
+    total: int              # 总条数
+    page: int               # 当前页码
+    page_size: int          # 每页条数
 
     class Config:
         from_attributes = True

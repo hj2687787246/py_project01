@@ -5,20 +5,13 @@ from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from core.exceptions import BusinessException
 from core.logger import get_logger
 import schemas
 from session.db_session import Base, engine
 
 # 配置日志
 logger = get_logger()
-# 自定义业务异常
-class BusinessException(Exception):
-    def __init__(self, status_code: int, code: int, message: str):
-        super().__init__(message)
-        self.status_code = status_code
-        self.code = code
-        self.message = message
-
 
 from routers import router as users_router
 

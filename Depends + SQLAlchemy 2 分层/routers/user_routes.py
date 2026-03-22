@@ -8,7 +8,7 @@ from dao import user_dao as crud
 import models
 import schemas
 from core.logger import get_logger
-from main import BusinessException
+from core.exceptions import BusinessException
 from session.db_session import get_db
 from utils.password_utils import verify_password
 from utils.security import (
@@ -94,21 +94,29 @@ def get_user_api(
 # 分页查询
 @router.get("", response_model=schemas.UnifiedResponse[List[schemas.UserResponse]], summary="分页查询用户列表")
 def get_user_list_api(
-        page: int = 1,
-        page_size: int = 10,
+        # 使用通用的 PageParams 依赖，不再单独写 page 和 page_size
+        page_params: schemas.PageParams = Depends(),
         db: Session = Depends(get_db),
-        current_user: models.User = Depends(get_current_admin)
+        current_admin: models.User = Depends(get_current_admin)
 ):
     logger.info(
-        f"收到分页查询用户列表请求: operator_id={current_user.id}, operator={current_user.username}, "
-        f"role={current_user.role}, page={page}, page_size={page_size}"
+        f"收到分页查询用户列表请求: operator_id={current_admin.id}, operator={current_admin.username}, "
+        f"role={current_admin.role}, page={page_params.page}, page_size={page_params.page_size}"
     )
-    users = crud.get_user_list(db, page, page_size)
+    users, total = crud.get_user_list(db, page_params.page, page_params.page_size)
     logger.success(
-        f"分页查询用户列表成功: operator_id={current_user.id}, operator={current_user.username}, "
-        f"returned_count={len(users)}"
+        f"分页查询用户列表成功: operator_id={current_admin.id}, operator={current_admin.username}, "
+        f"returned_count={len(users)}, total={total}"
     )
-    return schemas.UnifiedResponse(data=users)
+
+    # 构造PageResult 对象
+    page_result = schemas.PageResult(
+        items=users,
+        total=total,
+        page=page_params.page,
+        page_size=page_params.page_size
+    )
+    return schemas.UnifiedResponse(data=page_result)
 
 # 模糊查询
 @router.get("/search/", response_model=schemas.UnifiedResponse[List[schemas.UserResponse]], summary="模糊查询用户")

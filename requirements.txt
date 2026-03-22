@@ -82,3 +82,5 @@ zope.interface==8.2
 
 
 passlib
+loguru
+loguru
