@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -23,17 +25,22 @@ class BusinessException(Exception):
     def __int__(self, code: int, message: str):
         self.code = code
         self.message = message
-
-# 创建数据库表
-try:
-    models.Base.metadata.create_all(bind=engine)
-    logger.info("数据库表创建成功")
-except Exception as e:
-    logger.error(f"创建数据库表时出错: {e}")
-    traceback.print_exc()
+# @asynccontextmanager
+# -FastAPI 启动应用前，先执行 yield 前面的代码
+# - 应用运行期间，控制权交给 FastAPI
+# - 应用关闭时，再继续执行 yield 后面的代码
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        models.Base.metadata.create_all(bind=engine)
+        logger.info("数据库表初始化检查完成")
+    except Exception as e:
+        logger.exception(f"数据库表初始化检查失败: {e}")
+        raise
+    yield
 
 # FastAPI 实例
-app = FastAPI(title="用户管理系统", description="分层版")
+app = FastAPI(title="用户管理系统", description="分层版", lifespan=lifespan)
 # 挂载路由
 app.include_router(users_router)
 
@@ -69,6 +76,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 # 5.兜底异常捕获，服务器内部错误 最后的防线，防止代码崩了直接给用户看堆栈信息。
+@app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     # 记录详细的错误堆栈
     logger.exception(f"发生未捕获的异常：{str(exc)}")
