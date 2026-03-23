@@ -71,7 +71,7 @@ def get_user_detail(db: Session, user_id: int, current_user: models.User) -> mod
 
 
 # 分页查询
-def get_user_list(db: Session, page: int, page_size: int) -> tuple[Sequence[Any], int | Any]:
+def get_user_list(db: Session, page: int, page_size: int) -> tuple[List[models.User], int]:
     """分页查询用户列表并返回总数。"""
     return user_dao.get_user_list(db, page, page_size)
 

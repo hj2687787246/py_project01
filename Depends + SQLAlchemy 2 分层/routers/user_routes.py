@@ -216,4 +216,4 @@ def upload_avatar_api(user_id: int,
 
     logger.success(f"上传头像成功: operator_id={current_user.id}, operator={current_user.username}, "
                    f"target_user_id={user_id}, avatar_url={updated_user.avatar_url}")
-    return UnifiedResponse(data=updated_user)
+    return schemas.UnifiedResponse(data=updated_user)

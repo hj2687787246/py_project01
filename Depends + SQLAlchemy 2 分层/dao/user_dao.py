@@ -1,11 +1,11 @@
-from typing import Sequence, Optional, TypedDict, Any
+from typing import Sequence, Optional, TypedDict, cast, List
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from core.logger import get_logger
 from dao import role_dao
-from models import User
+import models
 from schemas import UserCreate, UserUpdate
 from utils.password_utils import get_password_hash
 
@@ -19,7 +19,7 @@ class DeleteUserResult(TypedDict):
 
 # C: Create 创建用户
 # 通过角色名查询 role_id，避免路由层直接写死角色主键。
-def create_user(db: Session, user: UserCreate, role_name: str = "user") -> User:
+def create_user(db: Session, user: UserCreate, role_name: str = "user") -> models.User:
     """创建用户并写入关联角色。"""
     hashed_pwd = get_password_hash(user.password)
     role = role_dao.get_role_by_name(db, role_name)
@@ -29,7 +29,7 @@ def create_user(db: Session, user: UserCreate, role_name: str = "user") -> User:
 
     try:
         logger.info(f"数据层创建用户: username={user.username}, email={user.email}, role={role_name}")
-        db_user = User(
+        db_user = models.User(
             username=user.username,
             hashed_password=hashed_pwd,
             role_id=role.id,
@@ -47,65 +47,66 @@ def create_user(db: Session, user: UserCreate, role_name: str = "user") -> User:
         raise
 
 # R: Read 根据ID查询查询角色关系
-def get_user_with_role(db: Session, user_id: int) -> Optional[User]:
+def get_user_with_role(db: Session, user_id: int) -> Optional[models.User]:
     """根据用户 ID 查询用户及其角色关系。"""
     logger.info(f"数据层查询用户角色关系: user_id={user_id}")
-    stmt = select(User).options(joinedload(User.role_info)).where(User.id == user_id)
+    stmt = select(models.User).options(joinedload(models.User.role_info)).where(models.User.id == user_id)
     return db.scalar(stmt)
 
 
 # R: Read 按 ID 查询，同时预加载角色，避免后续响应序列化时再懒加载。
-def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
+def get_user_by_id(db: Session, user_id: int) -> Optional[models.User]:
     """根据用户 ID 查询单个用户。"""
     logger.info(f"数据层按ID查询用户: user_id={user_id}")
-    stmt = select(User).options(joinedload(User.role_info)).where(User.id == user_id)
+    stmt = select(models.User).options(joinedload(models.User.role_info)).where(models.User.id == user_id)
     return db.scalar(stmt)
 
 # R: Read 按名字查询
-def get_user_by_username(db: Session, username: str) -> Optional[User]:
+def get_user_by_username(db: Session, username: str) -> Optional[models.User]:
     """根据用户名查询用户。"""
     logger.info(f"数据层按用户名查询用户: username={username}")
-    stmt = select(User).options(joinedload(User.role_info)).where(User.username == username)
+    stmt = select(models.User).options(joinedload(models.User.role_info)).where(models.User.username == username)
     return db.scalar(stmt)
 
 # R: Read 按邮箱查询
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
+def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
     """根据邮箱查询用户。"""
     logger.info(f"数据层按邮箱查询用户: email={email}")
-    stmt = select(User).options(joinedload(User.role_info)).where(User.email == email)
+    stmt = select(models.User).options(joinedload(models.User.role_info)).where(models.User.email == email)
     return db.scalar(stmt)
 
 
 # R: Read 分页查询列表，并返回总数。
-def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[Sequence[Any], int | Any]:
+def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[List[models.User], int]:
     """分页查询用户列表，并返回总条数。"""
     if page_size <= 0:
         page_size = 10
 
     logger.info(f"数据层分页查询用户列表: page={page}, page_size={page_size}")
     offset = (page - 1) * page_size
-    stmt = select(User).options(joinedload(User.role_info)).offset(offset).limit(page_size)
-    items = db.scalars(stmt).all()
-
-    count_stmt = select(func.count()).select_from(User)
-    total = db.scalar(count_stmt) or 0
+    stmt = select(models.User).options(joinedload(models.User.role_info)).offset(offset).limit(page_size)
+    # 1. 显式转换为 list
+    items = list(db.scalars(stmt).all())
+    count_stmt = select(func.count()).select_from(models.User)
+    # 2. 显式转换为 int，消除 None | Any 的推断
+    total = int(db.scalar(count_stmt) or 0)
     logger.success(f"数据层分页查询用户列表成功: returned_count={len(items)}, total={total}")
     return items, total
 
 
 # R: Read 模糊查询
-def search_users(db: Session, keyword: str) -> Sequence[User]:
+def search_users(db: Session, keyword: str) -> Sequence[models.User]:
     """按用户名或邮箱关键字模糊查询。"""
     logger.info(f"数据层模糊查询用户: keyword={keyword}")
-    stmt = (select(User).options(joinedload(User.role_info))
-            .where(or_(User.username.contains(keyword), User.email.contains(keyword))))
+    stmt = (select(models.User).options(joinedload(models.User.role_info))
+            .where(or_(models.User.username.contains(keyword), models.User.email.contains(keyword))))
     users = db.scalars(stmt).all()
     logger.success(f"数据层模糊查询用户成功: keyword={keyword}, returned_count={len(users)}")
     return users
 
 
 # U: Update 更新用户
-def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[User]:
+def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[models.User]:
     """更新用户可变字段。"""
     db_user = get_user_by_id(db, user_id)
     if not db_user:
@@ -125,7 +126,7 @@ def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[
 
 
 # U: Update 重置密码
-def update_user_password(db: Session, db_user: User, hashed_password: str) -> User:
+def update_user_password(db: Session, db_user: models.User, hashed_password: str) -> models.User:
     """更新用户密码并持久化。"""
     logger.info(f"数据层重置密码: user_id={db_user.id}, username={db_user.username}")
     db_user.hashed_password = hashed_password
@@ -154,7 +155,7 @@ def delete_user(db: Session, user_id: int) -> DeleteUserResult:
     return {"success": True, "reason": "deleted"}
 
 # 更新用户头像
-def update_user_avatar(db: Session, user_id: int, avatar_url: str) -> User | None:
+def update_user_avatar(db: Session, user_id: int, avatar_url: str) -> models.User | None:
     """更新用户头像地址。"""
     db_user = get_user_by_id(db, user_id)
     if not db_user:

@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 修复已知bug">
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/role_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/role_dao.py" afterDir="false" />
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 静态文件挂载">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/role_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/role_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/user_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pydantic/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pydantic/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,128 +71,129 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "JavaScript 调试.table_practice.html.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python 测试.Python 测试 (test_user_system.py 内).executor": "Run",
-    "Python 测试.tests.test_user_system.test_permission_and_admin_flows 的 Python 测试.executor": "Run",
-    "Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试.executor": "Run",
-    "Python.01.DeepSeek调用测试.executor": "Run",
-    "Python.01.faskApi1.executor": "Run",
-    "Python.01.mysql练习.executor": "Run",
-    "Python.01.入门程序.executor": "Run",
-    "Python.01.字面量与变量.executor": "Run",
-    "Python.01.导入模块.executor": "Run",
-    "Python.01.爬虫入门程序.executor": "Run",
-    "Python.02.json文件入门.executor": "Run",
-    "Python.02.mysql练习.executor": "Run",
-    "Python.02.常见数据类型.executor": "Run",
-    "Python.02.文件操作入门.executor": "Run",
-    "Python.02.爬虫-网页解析 (1).executor": "Run",
-    "Python.02.爬虫-网页解析.executor": "Run",
-    "Python.03.输入与输出.executor": "Run",
-    "Python.04.csv入门.executor": "Run",
-    "Python.04.运算符.executor": "Run",
-    "Python.05.if条件判断.executor": "Run",
-    "Python.05.多线程练习.executor": "Run",
-    "Python.05.爬虫-案例-电影榜单.executor": "Run",
-    "Python.06.ai_parther_4.executor": "Run",
-    "Python.06.ai_parther_4_fixed.executor": "Run",
-    "Python.06.match模式匹配.executor": "Run",
-    "Python.06.socket客户端编程 (1).executor": "Run",
-    "Python.06.socket客服端编程.executor": "Run",
-    "Python.06.socket服务端编程.executor": "Run",
-    "Python.07.while.executor": "Run",
-    "Python.07.正则表达式基础使用.executor": "Run",
-    "Python.08.for循环.executor": "Run",
-    "Python.08.递归练习1.executor": "Run",
-    "Python.09.嵌套循环.executor": "Run",
-    "Python.10.循环案例1.executor": "Run",
-    "Python.10.循环案例2.executor": "Run",
-    "Python.11.数据容器-list.executor": "Run",
-    "Python.12.数据容器-str.executor": "Run",
-    "Python.13.数据容器-tuple元组.executor": "Run",
-    "Python.14.数据容器-set集合.executor": "Run",
-    "Python.15.数据容器-dict字典.executor": "Run",
-    "Python.16.函数基础.executor": "Run",
-    "Python.17.函数进阶.executor": "Run",
-    "Python.19.函数进阶2.executor": "Run",
-    "Python.22.面向对象基础.executor": "Run",
-    "Python.NP100 重载运算.executor": "Run",
-    "Python.NP12 格式化输出（二）.executor": "Run",
-    "Python.NP15 截取用户名前10位.executor": "Run",
-    "Python.NP16 发送offer.executor": "Run",
-    "Python.NP21 增加派对名单（二）.executor": "Run",
-    "Python.NP24 淘汰排名最后的学生.executor": "Run",
-    "Python.NP25 有序的列表.executor": "Run",
-    "Python.NP26 牛牛的反转列表.executor": "Run",
-    "Python.NP28 密码游戏.executor": "Run",
-    "Python.NP45 禁止重复注册.executor": "Run",
-    "Python.NP47 牛牛的绩点.executor": "Run",
-    "Python.NP51 列表的最大与最小.executor": "Run",
-    "Python.NP54 被5整除的数字.executor": "Run",
-    "Python.NP55 2的次方数.executor": "Run",
-    "Python.NP60 跳过列表的某个元素.executor": "Run",
-    "Python.NP61 牛牛的矩阵相加.executor": "Run",
-    "Python.NP62 运动会双人项目.executor": "Run",
-    "Python.NP67 遍历字典.executor": "Run",
-    "Python.NP69 姓名与学号.executor": "Run",
-    "Python.NP72 生成字典.executor": "Run",
-    "Python.NP73 查字典.executor": "Run",
-    "Python.NP75 使用字典计数.executor": "Run",
-    "Python.NP89 单词造句.executor": "Run",
-    "Python.NP9 十六进制数字的大小.executor": "Run",
-    "Python.NP95 兔子的数量.executor": "Run",
-    "Python.NP99 修改属性2.executor": "Run",
-    "Python.file_define.executor": "Run",
-    "Python.main (1).executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.my_fun.executor": "Run",
-    "Python.test_user_system (1).executor": "Run",
-    "Python.test_user_system.executor": "Run",
-    "Python.复习题1.executor": "Run",
-    "Python.多态练习.executor": "Run",
-    "Python.多继承练习.executor": "Run",
-    "Python.封装练习题.executor": "Run",
-    "Python.嵌套调用练习.executor": "Run",
-    "Python.数据容器-str.executor": "Run",
-    "Python.爬虫练习 (1).executor": "Run",
-    "Python.爬虫练习.executor": "Run",
-    "Python.练习题01.executor": "Run",
-    "Python.练习题02.executor": "Run",
-    "Python.练习题03.executor": "Run",
-    "Python.练习题05.executor": "Run",
-    "Python.练习题06.executor": "Run",
-    "Python.练习题07.executor": "Run",
-    "Python.练习题08.executor": "Run",
-    "Python.练习题09.executor": "Run",
-    "Python.练习题10.executor": "Run",
-    "Python.练习题11.executor": "Run",
-    "Python.练习题12.executor": "Run",
-    "Python.继承练习.executor": "Run",
-    "Python.连续题01.executor": "Run",
-    "Python.面向对象练习题.executor": "Run",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "deletionFromPopupRequiresConfirmation": "false",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "D:/Develop/Python-Project/py_project01/Depends + SQLAlchemy 2 分层/static/avatars",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.sourceCode.yaml",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;JavaScript 调试.table_practice.html.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python 测试.Python 测试 (test_user_system.py 内).executor&quot;: &quot;Run&quot;,
+    &quot;Python 测试.tests.test_user_system.test_health_check 的 Python 测试.executor&quot;: &quot;Run&quot;,
+    &quot;Python 测试.tests.test_user_system.test_permission_and_admin_flows 的 Python 测试.executor&quot;: &quot;Run&quot;,
+    &quot;Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01.DeepSeek调用测试.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01.faskApi1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01.mysql练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01.入门程序.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01.字面量与变量.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01.导入模块.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01.爬虫入门程序.executor&quot;: &quot;Run&quot;,
+    &quot;Python.02.json文件入门.executor&quot;: &quot;Run&quot;,
+    &quot;Python.02.mysql练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.02.常见数据类型.executor&quot;: &quot;Run&quot;,
+    &quot;Python.02.文件操作入门.executor&quot;: &quot;Run&quot;,
+    &quot;Python.02.爬虫-网页解析 (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.02.爬虫-网页解析.executor&quot;: &quot;Run&quot;,
+    &quot;Python.03.输入与输出.executor&quot;: &quot;Run&quot;,
+    &quot;Python.04.csv入门.executor&quot;: &quot;Run&quot;,
+    &quot;Python.04.运算符.executor&quot;: &quot;Run&quot;,
+    &quot;Python.05.if条件判断.executor&quot;: &quot;Run&quot;,
+    &quot;Python.05.多线程练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.05.爬虫-案例-电影榜单.executor&quot;: &quot;Run&quot;,
+    &quot;Python.06.ai_parther_4.executor&quot;: &quot;Run&quot;,
+    &quot;Python.06.ai_parther_4_fixed.executor&quot;: &quot;Run&quot;,
+    &quot;Python.06.match模式匹配.executor&quot;: &quot;Run&quot;,
+    &quot;Python.06.socket客户端编程 (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.06.socket客服端编程.executor&quot;: &quot;Run&quot;,
+    &quot;Python.06.socket服务端编程.executor&quot;: &quot;Run&quot;,
+    &quot;Python.07.while.executor&quot;: &quot;Run&quot;,
+    &quot;Python.07.正则表达式基础使用.executor&quot;: &quot;Run&quot;,
+    &quot;Python.08.for循环.executor&quot;: &quot;Run&quot;,
+    &quot;Python.08.递归练习1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.09.嵌套循环.executor&quot;: &quot;Run&quot;,
+    &quot;Python.10.循环案例1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.10.循环案例2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.11.数据容器-list.executor&quot;: &quot;Run&quot;,
+    &quot;Python.12.数据容器-str.executor&quot;: &quot;Run&quot;,
+    &quot;Python.13.数据容器-tuple元组.executor&quot;: &quot;Run&quot;,
+    &quot;Python.14.数据容器-set集合.executor&quot;: &quot;Run&quot;,
+    &quot;Python.15.数据容器-dict字典.executor&quot;: &quot;Run&quot;,
+    &quot;Python.16.函数基础.executor&quot;: &quot;Run&quot;,
+    &quot;Python.17.函数进阶.executor&quot;: &quot;Run&quot;,
+    &quot;Python.19.函数进阶2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.22.面向对象基础.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP100 重载运算.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP12 格式化输出（二）.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP15 截取用户名前10位.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP16 发送offer.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP21 增加派对名单（二）.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP24 淘汰排名最后的学生.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP25 有序的列表.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP26 牛牛的反转列表.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP28 密码游戏.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP45 禁止重复注册.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP47 牛牛的绩点.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP51 列表的最大与最小.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP54 被5整除的数字.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP55 2的次方数.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP60 跳过列表的某个元素.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP61 牛牛的矩阵相加.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP62 运动会双人项目.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP67 遍历字典.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP69 姓名与学号.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP72 生成字典.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP73 查字典.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP75 使用字典计数.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP89 单词造句.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP9 十六进制数字的大小.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP95 兔子的数量.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NP99 修改属性2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.file_define.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.my_fun.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_user_system (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_user_system.executor&quot;: &quot;Run&quot;,
+    &quot;Python.复习题1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.多态练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.多继承练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.封装练习题.executor&quot;: &quot;Run&quot;,
+    &quot;Python.嵌套调用练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.数据容器-str.executor&quot;: &quot;Run&quot;,
+    &quot;Python.爬虫练习 (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.爬虫练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题01.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题02.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题03.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题05.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题06.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题07.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题08.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题09.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题10.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题11.executor&quot;: &quot;Run&quot;,
+    &quot;Python.练习题12.executor&quot;: &quot;Run&quot;,
+    &quot;Python.继承练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.连续题01.executor&quot;: &quot;Run&quot;,
+    &quot;Python.面向对象练习题.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;deletionFromPopupRequiresConfirmation&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Develop/Python-Project/py_project01/Depends + SQLAlchemy 2 分层/static/avatars&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.yaml&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings module-name="py_project01" is-module-sdk="true">
@@ -241,7 +243,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="06.ai_parther_4_fixed" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -250,37 +252,13 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/第3章" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/第3章/06.ai_parther_4_fixed.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test_user_system (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="py_project01" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/tests/test_user_system.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -306,6 +284,23 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="tests.test_user_system.test_health_check 的 Python 测试" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="py_project01" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_user_system.test_health_check&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <configuration name="tests.test_user_system.test_user_basic_flow 的 Python 测试" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
@@ -326,10 +321,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python 测试.Python 测试 (test_user_system.py 内)" />
+        <item itemvalue="Python 测试.tests.test_user_system.test_health_check 的 Python 测试" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试" />
         <item itemvalue="Python.06.ai_parther_4" />
-        <item itemvalue="Python.06.ai_parther_4_fixed" />
-        <item itemvalue="Python.test_user_system (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -381,7 +376,8 @@
       <workItem from="1774185366599" duration="387000" />
       <workItem from="1774185762313" duration="178000" />
       <workItem from="1774226027472" duration="17840000" />
-      <workItem from="1774248404383" duration="17762000" />
+      <workItem from="1774248404383" duration="19449000" />
+      <workItem from="1774271700744" duration="1882000" />
     </task>
     <task id="LOCAL-00001" summary="3.19">
       <option name="closed" value="true" />
@@ -759,7 +755,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774269140749</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="3.23 静态文件挂载">
+      <option name="closed" value="true" />
+      <created>1774270132687</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1774270132687</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -780,7 +784,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="3.20 数据库 CURD 实战 结合 Depends + SQLAlchemy 2" />
     <MESSAGE value="3.20 数据库CURD实战结合 Depends + SQLAlchemy 2 注释添加" />
     <MESSAGE value="3.20 NP61-NP75错题练习" />
     <MESSAGE value="3.21 &#10;✅ 定义了带 updated_at 自动时间戳的 ORM 模型&#10;✅ 跑通了完整的 CURD&#10;✅ 加了模糊查询&#10;✅ 加了统一返回格式" />
@@ -805,7 +808,8 @@
     <MESSAGE value="3.23 分层结构，新增服务层" />
     <MESSAGE value="3.23 用户头像上传" />
     <MESSAGE value="3.23 修复已知bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="3.23 修复已知bug" />
+    <MESSAGE value="3.23 静态文件挂载" />
+    <option name="LAST_COMMIT_MESSAGE" value="3.23 静态文件挂载" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/py_project01$NP72_.coverage" NAME="NP72 生成字典 覆盖结果" MODIFIED="1774009569628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
@@ -829,7 +833,7 @@
     <SUITE FILE_PATH="coverage/py_project01$11__list.coverage" NAME="11.数据容器-list 覆盖结果" MODIFIED="1773292966578" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$10_2.coverage" NAME="10.循环案例2 覆盖结果" MODIFIED="1773235049181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$01_.coverage" NAME="01.爬虫入门程序 覆盖结果" MODIFIED="1773629412393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第四章" />
-    <SUITE FILE_PATH="coverage/py_project01$.coverage" NAME=" 覆盖结果" MODIFIED="1774267991202" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
+    <SUITE FILE_PATH="coverage/py_project01$.coverage" NAME=" 覆盖结果" MODIFIED="1774270160282" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
     <SUITE FILE_PATH="coverage/py_project01$02_json.coverage" NAME="02.json文件入门 覆盖结果" MODIFIED="1773554005108" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
     <SUITE FILE_PATH="coverage/py_project01$01_mysql.coverage" NAME="01.mysql练习 覆盖结果" MODIFIED="1773811734774" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$my_fun.coverage" NAME="my_fun 覆盖结果" MODIFIED="1773388602924" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章/module02" />
@@ -844,7 +848,7 @@
     <SUITE FILE_PATH="coverage/py_project01$17_.coverage" NAME="17.函数进阶 覆盖结果" MODIFIED="1773377182586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$08_1.coverage" NAME="08.递归练习1 覆盖结果" MODIFIED="1773889691436" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
     <SUITE FILE_PATH="coverage/py_project01$13__tuple.coverage" NAME="13.数据容器-tuple元组 覆盖结果" MODIFIED="1773299014566" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
-    <SUITE FILE_PATH="coverage/py_project01$main.coverage" NAME="main 覆盖结果" MODIFIED="1774147239043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
+    <SUITE FILE_PATH="coverage/py_project01$main.coverage" NAME="main 覆盖结果" MODIFIED="1774271125625" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
     <SUITE FILE_PATH="coverage/py_project01$19_2.coverage" NAME="19.函数进阶2 覆盖结果" MODIFIED="1773382414050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$02_mysql.coverage" NAME="02.mysql练习 覆盖结果" MODIFIED="1773817531286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$NP21_.coverage" NAME="NP21 增加派对名单（二） 覆盖结果" MODIFIED="1773748588441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />

@@ -56,7 +56,7 @@ async def global_exception_handler(request: Request, exc: Exception):
     """捕获所有未处理的异常，返回统一格式"""
     return JSONResponse(
         status_code=200,
-        content=ResponseModel(code=500, msg=f"服务器内部错误：{str(exc)}", data=None).dict()
+        content=ResponseModel(code=500, msg=f"服务器内部错误：{str(exc)}", data=None).model_dump()
     )
 
 
