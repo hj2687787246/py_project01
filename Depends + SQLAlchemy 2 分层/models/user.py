@@ -16,30 +16,16 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, comment="用户主键ID")
-    username: Mapped[str] = mapped_column(
-        String(50), unique=True, nullable=False, comment="用户名"
-    )
-    hashed_password: Mapped[str] = mapped_column(
-        String(255), nullable=False, comment="哈希密码"
-    )
-    role_id: Mapped[int] = mapped_column(
-        ForeignKey("roles.id"), nullable=False, comment="关联角色表ID"
-    )
+    username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, comment="用户名")
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False, comment="哈希密码")
+    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), nullable=False, comment="关联角色表ID")
     # 关系属性：通过 role_id 关联到角色表。
     role_info: Mapped["Role"] = relationship("Role", back_populates="users")
     age: Mapped[int] = mapped_column(comment="年龄")
-    email: Mapped[str] = mapped_column(
-        String(100), unique=True, nullable=False, comment="邮箱"
-    )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=utc_now, comment="创建时间"
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=utc_now,
-        onupdate=utc_now,
-        comment="最后更新时间",
-    )
+    email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, comment="邮箱")
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, comment="创建时间")
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=utc_now,onupdate=utc_now,comment="最后更新时间")
 
     @property
     def role(self) -> str | None:

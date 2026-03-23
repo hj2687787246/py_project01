@@ -15,33 +15,26 @@ logger = get_logger()
 def create_user(db: Session, user: UserCreate, role_name: str = "user"):
     """创建用户并写入关联角色。"""
     hashed_pwd = get_password_hash(user.password)
+    # 查询角色是否存在，存在返回角色名，不存在返回None
     role = role_dao.get_role_by_name(db, role_name)
     if role is None:
         logger.error(f"数据层创建用户失败: username={user.username}, reason=角色不存在, role={role_name}")
         raise ValueError(f"角色不存在: {role_name}")
 
     try:
-        logger.info(
-            f"数据层创建用户: username={user.username}, email={user.email}, role={role_name}"
-        )
-        db_user = User(
-            username=user.username,
-            hashed_password=hashed_pwd,
-            role_id=role.id,
-            age=user.age,
-            email=user.email,
-        )
+        logger.info(f"数据层创建用户: username={user.username}, email={user.email}, role={role_name}")
+        db_user = User(username=user.username,
+                       hashed_password=hashed_pwd,
+                       role_id=role.id,
+                       age=user.age,
+                       email=user.email)
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        logger.success(
-            f"数据层创建用户成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}"
-        )
+        logger.success(f"数据层创建用户成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
         return db_user
     except Exception as e:
-        logger.exception(
-            f"数据层创建用户异常: username={user.username}, email={user.email}, error={e}"
-        )
+        logger.exception(f"数据层创建用户异常: username={user.username}, email={user.email}, error={e}")
         db.rollback()
         raise
 

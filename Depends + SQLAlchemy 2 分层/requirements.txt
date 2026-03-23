@@ -1,4 +1,4 @@
-fastapi>=0.115.0
+﻿fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
 sqlalchemy>=2.0.35
 pydantic>=2.10.0
@@ -8,4 +8,9 @@ python-jose[cryptography]>=3.3.0
 python-multipart>=0.0.12
 python-dotenv>=1.0.1
 charset_normalizer>=3.4.6
+loguru>=0.7.2
+httpx>=0.28.1
+tzdata>=2024.1
 pytest>=8.3.0
+
+

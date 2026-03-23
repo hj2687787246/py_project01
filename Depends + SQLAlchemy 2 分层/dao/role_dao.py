@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from models.role import Role
 
-
+# 获取角色名称
 def get_role_by_name(db: Session, name: str):
     return db.query(Role).filter(Role.name == name).first()
 

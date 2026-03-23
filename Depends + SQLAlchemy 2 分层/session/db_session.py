@@ -6,9 +6,7 @@ from sqlalchemy.orm import DeclarativeBase,sessionmaker
 SQLALCHEMY_DATABASE_URL = "sqlite:///./fastapi_test.db"
 
 # 创建数据库引擎
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,connect_args={"check_same_thread":False}
-)
+engine = create_engine(SQLALCHEMY_DATABASE_URL,connect_args={"check_same_thread":False})
 
 # 会话工厂
 SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
