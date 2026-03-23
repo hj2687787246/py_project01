@@ -1,6 +1,10 @@
 from datetime import timedelta
 from typing import List
 
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -11,7 +15,7 @@ from core.exceptions import BusinessException
 from core.logger import get_logger
 from dao import user_dao
 from session.db_session import get_db
-from utils.password_utils import verify_password
+from utils.password_utils import verify_password, validate_password
 from utils.security import (ACCESS_TOKEN_EXPIRE_MINUTES,
                             create_access_token,
                             get_current_admin,
@@ -21,12 +25,17 @@ logger = get_logger()
 router = APIRouter(prefix="/users", tags=["用户管理"])
 
 
+limiter = Limiter(key_func=get_remote_address)
+router.state.limiter = limiter
+router.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # 登录
 @router.post("/token", response_model=schemas.Token, summary="登录获取 Token")
+# 限流接口 防止暴力请求 比如1分钟最多5次
+@limiter.limit("5/minute")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
     logger.info(f"收到登录请求: username={form_data.username}")
     user = user_dao.get_user_by_username(db, username=form_data.username)
-
+    # 验证用户名和密码
     if not user or not verify_password(form_data.password, user.hashed_password):
         logger.error(f"登录失败: username={form_data.username}, reason=用户名或密码错误")
         raise HTTPException(status_code=400,detail="用户名或密码错误",headers={"WWW-Authenticate": "Bearer"})
@@ -53,6 +62,9 @@ def create_user_api(user: schemas.UserCreate, db: Session = Depends(get_db)):
         logger.error(f"创建用户失败: username={user.username}, email={user.email}, reason=邮箱已存在")
         raise BusinessException(status_code=400, code=4002, message="邮箱已存在")
 
+    if not validate_password(user.password):
+        logger.error(f"创建用户失败: username={user.username}, email={user.password}, reason=密码至少8位，包含大小写、数字、特殊字符")
+        raise BusinessException(status_code=400, code=4003, message="密码至少8位，包含大小写、数字、特殊字符")
     # 普通注册入口固定创建 user 角色，避免通过该接口直接注册管理员。
     db_user = user_dao.create_user(db, user, role_name="user")
     logger.success(f"创建用户成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")

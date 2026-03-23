@@ -13,8 +13,14 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
+os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 
 import main
+import routers.user_routes as user_routes
+import utils.security as security
+
+security.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
+user_routes.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
 from dao import role_dao, user_dao
 from schemas import UserCreate
 from session import db_session
@@ -248,6 +254,214 @@ def test_permission_and_admin_flows():
         )
         assert delete_user_response.status_code == 200, delete_user_response.text
         assert delete_user_response.json()["data"]["user_id"] == user["id"]
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_create_admin_user_api():
+    """验证管理员创建管理员账号接口。"""
+    client, engine = build_test_client()
+    try:
+        admin_token = login(client, "admin", "123456")
+
+        response = client.post(
+            "/roles/admin/users",
+            json={
+                "username": "boss2",
+                "password": "123456",
+                "age": 35,
+                "email": "boss2@example.com",
+            },
+            headers=auth_headers(admin_token),
+        )
+        assert response.status_code == 200, response.text
+        data = response.json()["data"]
+        assert data["username"] == "boss2"
+        assert data["role"] == "admin"
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_create_admin_user_api_duplicate_cases():
+    """验证创建管理员账号时的重复校验。"""
+    client, engine = build_test_client()
+    try:
+        admin_token = login(client, "admin", "123456")
+        create_user(client, username="alice", email="alice@example.com")
+
+        duplicate_username = client.post(
+            "/roles/admin/users",
+            json={
+                "username": "alice",
+                "password": "123456",
+                "age": 28,
+                "email": "alice_admin@example.com",
+            },
+            headers=auth_headers(admin_token),
+        )
+        assert duplicate_username.status_code == 400, duplicate_username.text
+        assert duplicate_username.json()["code"] == 4001
+
+        duplicate_email = client.post(
+            "/roles/admin/users",
+            json={
+                "username": "alice_admin",
+                "password": "123456",
+                "age": 28,
+                "email": "alice@example.com",
+            },
+            headers=auth_headers(admin_token),
+        )
+        assert duplicate_email.status_code == 400, duplicate_email.text
+        assert duplicate_email.json()["code"] == 4002
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_create_role_api():
+    """验证管理员创建角色接口。"""
+    client, engine = build_test_client()
+    try:
+        admin_token = login(client, "admin", "123456")
+
+        response = client.post(
+            "/roles",
+            json={"name": "editor", "description": "编辑角色"},
+            headers=auth_headers(admin_token),
+        )
+        assert response.status_code == 200, response.text
+        data = response.json()["data"]
+        assert data["name"] == "editor"
+        assert data["description"] == "编辑角色"
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_create_role_api_duplicate_role():
+    """验证创建重复角色时返回业务错误。"""
+    client, engine = build_test_client()
+    try:
+        admin_token = login(client, "admin", "123456")
+
+        response = client.post(
+            "/roles",
+            json={"name": "admin", "description": "系统管理员"},
+            headers=auth_headers(admin_token),
+        )
+        assert response.status_code == 400, response.text
+        assert response.json()["code"] == 4006
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_get_all_roles():
+    """验证管理员查询全部角色接口。"""
+    client, engine = build_test_client()
+    try:
+        admin_token = login(client, "admin", "123456")
+
+        response = client.get(
+            "/roles",
+            headers=auth_headers(admin_token),
+        )
+        assert response.status_code == 200, response.text
+        data = response.json()["data"]
+        role_names = [item["name"] for item in data]
+        assert "admin" in role_names
+        assert "user" in role_names
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_reset_password_by_self():
+    """验证用户可以重置自己的密码。"""
+    client, engine = build_test_client()
+    try:
+        user = create_user(client, username="alice", email="alice@example.com")
+        user_token = login(client, "alice", "123456")
+
+        response = client.post(
+            f"/roles/{user['id']}/reset-password",
+            json="654321",
+            headers=auth_headers(user_token),
+        )
+        assert response.status_code == 200, response.text
+        assert response.json()["data"]["message"] == "密码重置成功"
+
+        bad_login = client.post(
+            "/users/token",
+            data={"username": "alice", "password": "123456"},
+        )
+        assert bad_login.status_code == 400, bad_login.text
+
+        new_token = login(client, "alice", "654321")
+        assert new_token
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_reset_password_by_admin():
+    """验证管理员可以重置其他用户密码。"""
+    client, engine = build_test_client()
+    try:
+        user = create_user(client, username="alice", email="alice@example.com")
+        admin_token = login(client, "admin", "123456")
+
+        response = client.post(
+            f"/roles/{user['id']}/reset-password",
+            json="654321",
+            headers=auth_headers(admin_token),
+        )
+        assert response.status_code == 200, response.text
+        assert response.json()["data"]["message"] == "密码重置成功"
+
+        new_token = login(client, "alice", "654321")
+        assert new_token
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_reset_password_permission_denied():
+    """验证普通用户不能重置他人密码。"""
+    client, engine = build_test_client()
+    try:
+        alice = create_user(client, username="alice", email="alice@example.com")
+        bob = create_user(client, username="bob", email="bob@example.com")
+        alice_token = login(client, "alice", "123456")
+
+        response = client.post(
+            f"/roles/{bob['id']}/reset-password",
+            json="654321",
+            headers=auth_headers(alice_token),
+        )
+        assert response.status_code == 403, response.text
+        assert response.json()["code"] == 403
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_reset_password_user_not_found():
+    """验证重置不存在用户密码时返回 404。"""
+    client, engine = build_test_client()
+    try:
+        admin_token = login(client, "admin", "123456")
+
+        response = client.post(
+            "/roles/999/reset-password",
+            json="654321",
+            headers=auth_headers(admin_token),
+        )
+        assert response.status_code == 404, response.text
+        assert response.json()["code"] == 404
     finally:
         client.close()
         engine.dispose()

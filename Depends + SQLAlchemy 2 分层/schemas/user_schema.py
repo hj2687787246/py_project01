@@ -30,7 +30,6 @@ class Token(BaseModel):
 # 创建用户请求体
 class UserCreate(BaseModel):
     """创建用户请求模型。"""
-
     username: str = Field(min_length=3,max_length=50,description="用户名")
     password: str = Field(min_length=6,description="密码") #新增
     age: int = Field(ge=0,le=150,description="年龄")

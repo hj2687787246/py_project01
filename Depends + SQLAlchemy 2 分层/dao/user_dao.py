@@ -5,7 +5,7 @@ from core.logger import get_logger
 from dao import role_dao
 from models import User
 from schemas import UserCreate, UserUpdate
-from utils.password_utils import get_password_hash
+from utils.password_utils import get_password_hash,validate_password
 
 logger = get_logger()
 
