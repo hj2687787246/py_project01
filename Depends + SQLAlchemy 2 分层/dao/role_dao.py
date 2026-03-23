@@ -1,8 +1,6 @@
-from typing import Sequence, Optional
-
+from typing import Optional
 from sqlalchemy.orm import Session
 
-import models
 from core.exceptions import BusinessException
 from models.role import Role
 
@@ -29,6 +27,6 @@ def create_role_with_check(db: Session, name: str, description: str | None = Non
     return create_role(db, name, description)
 
 # 获取所有角色信息
-def get_all_roles(db: Session) -> Sequence[models.Role]:
+def get_all_roles(db: Session) -> list[type[Role]]:
     """查询全部角色。"""
-    return db.query(models.Role).all()
+    return db.query(Role).all()

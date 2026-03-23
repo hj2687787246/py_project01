@@ -3,6 +3,7 @@ import traceback
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.staticfiles import StaticFiles
 
 from core.exceptions import BusinessException
 from core.logger import get_logger
@@ -53,6 +54,8 @@ app = FastAPI(
     description="分层版",
     lifespan=lifespan,
 )
+# 挂载静态文件目录（用于访问头像）
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # 挂载路由
 app.include_router(users_router)

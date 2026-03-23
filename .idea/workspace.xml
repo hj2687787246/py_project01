@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 用户头像上传">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 修复已知bug">
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/role_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/role_dao.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/role_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/role_service.py" afterDir="false" />
@@ -58,7 +57,7 @@
     <urls />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="AISelfReview" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -189,7 +188,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.intellij.python.django.customization.DjangoModulesConfigurable",
+    "settings.editor.selected.configurable": "preferences.sourceCode.yaml",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -382,7 +381,7 @@
       <workItem from="1774185366599" duration="387000" />
       <workItem from="1774185762313" duration="178000" />
       <workItem from="1774226027472" duration="17840000" />
-      <workItem from="1774248404383" duration="16931000" />
+      <workItem from="1774248404383" duration="17762000" />
     </task>
     <task id="LOCAL-00001" summary="3.19">
       <option name="closed" value="true" />
@@ -752,7 +751,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774268055930</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="3.23 修复已知bug">
+      <option name="closed" value="true" />
+      <created>1774269140749</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1774269140749</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -773,7 +780,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="3.20 子依赖" />
     <MESSAGE value="3.20 数据库 CURD 实战 结合 Depends + SQLAlchemy 2" />
     <MESSAGE value="3.20 数据库CURD实战结合 Depends + SQLAlchemy 2 注释添加" />
     <MESSAGE value="3.20 NP61-NP75错题练习" />
@@ -798,7 +804,8 @@
     <MESSAGE value="3.23 分层结构，" />
     <MESSAGE value="3.23 分层结构，新增服务层" />
     <MESSAGE value="3.23 用户头像上传" />
-    <option name="LAST_COMMIT_MESSAGE" value="3.23 用户头像上传" />
+    <MESSAGE value="3.23 修复已知bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="3.23 修复已知bug" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/py_project01$NP72_.coverage" NAME="NP72 生成字典 覆盖结果" MODIFIED="1774009569628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />

@@ -1,4 +1,4 @@
-from typing import Sequence, TypeAlias
+from typing import List, TypeAlias
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -11,8 +11,7 @@ from models import Role, User
 from utils.password_utils import get_password_hash
 
 # 角色列表的统一返回类型。
-RoleListResult: TypeAlias = Sequence[Role]
-
+RoleListResult: TypeAlias = List[Role]
 
 # 管理员创建前校验
 def _ensure_admin_user_unique(db: Session, user: schemas.UserCreate) -> None:
@@ -38,7 +37,7 @@ def create_role(db: Session, role: schemas.RoleCreate) -> Role:
 
 
 # 查询全部角色
-def get_all_roles(db: Session) -> RoleListResult:
+def get_all_roles(db: Session) -> list[type[Role]]:
     """查询全部角色列表。"""
     return role_dao.get_all_roles(db)
 

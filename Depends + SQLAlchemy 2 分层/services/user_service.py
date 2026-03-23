@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Sequence, Tuple, TypeAlias
+from typing import List, Tuple, TypeAlias, Sequence, Any
 
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -9,6 +9,7 @@ import schemas
 from core.exceptions import BusinessException
 from dao import user_dao
 from dao.user_dao import DeleteUserResult
+from models import User
 from utils.file_utils import save_avatar
 from utils.password_utils import validate_password, verify_password
 from utils.security import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
@@ -16,7 +17,7 @@ from utils.security import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 # 登录后返回“用户对象 + token”的统一结构。
 LoginResult: TypeAlias = Tuple[models.User, str]
 # 分页查询返回“数据列表 + 总数”的统一结构。
-UserListResult: TypeAlias = tuple[Sequence[models.User], int]
+UserListResult: TypeAlias = tuple[List[models.User], int]
 
 
 # 注册校验
@@ -70,13 +71,13 @@ def get_user_detail(db: Session, user_id: int, current_user: models.User) -> mod
 
 
 # 分页查询
-def get_user_list(db: Session, page: int, page_size: int) -> UserListResult:
+def get_user_list(db: Session, page: int, page_size: int) -> tuple[Sequence[Any], int | Any]:
     """分页查询用户列表并返回总数。"""
     return user_dao.get_user_list(db, page, page_size)
 
 
 # 根据ID、用户名模糊查询
-def search_users(db: Session, keyword: str) -> Sequence[models.User]:
+def search_users(db: Session, keyword: str) -> Sequence[User]:
     """按关键字搜索用户。"""
     return user_dao.search_users(db, keyword)
 

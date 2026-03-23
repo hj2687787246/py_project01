@@ -1,4 +1,4 @@
-from typing import Sequence, Optional, TypedDict
+from typing import Sequence, Optional, TypedDict, Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
@@ -77,7 +77,7 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
 
 
 # R: Read 分页查询列表，并返回总数。
-def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[Sequence[User], int]:
+def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[Sequence[Any], int | Any]:
     """分页查询用户列表，并返回总条数。"""
     if page_size <= 0:
         page_size = 10
