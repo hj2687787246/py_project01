@@ -13,7 +13,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
-os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
+# 测试环境关闭登录限流，避免批量用例触发 429。
+os.environ.setdefault("TESTING", "1")
 
 import main
 import routers.user_routes as user_routes
@@ -104,7 +105,7 @@ def login(client: TestClient, username: str, password: str) -> str:
 def create_user(
     client: TestClient,
     username: str = "alice",
-    password: str = "123456",
+    password: str = "Aa123456!",
     age: int = 18,
     email: str = "alice@example.com",
 ) -> dict:
@@ -141,7 +142,7 @@ def test_user_basic_flow():
     client, engine = build_test_client()
     try:
         created_user = create_user(client)
-        token = login(client, "alice", "123456")
+        token = login(client, "alice", "Aa123456!")
 
         get_response = client.get(
             f"/users/{created_user['id']}",
@@ -174,7 +175,7 @@ def test_exception_responses():
             "/users",
             json={
                 "username": "alice",
-                "password": "123456",
+                "password": "Aa123456!",
                 "age": 18,
                 "email": "alice2@example.com",
             },
@@ -186,7 +187,7 @@ def test_exception_responses():
             "/users",
             json={
                 "username": "alice2",
-                "password": "123456",
+                "password": "Aa123456!",
                 "age": 18,
                 "email": "alice@example.com",
             },
@@ -214,7 +215,7 @@ def test_permission_and_admin_flows():
     client, engine = build_test_client()
     try:
         user = create_user(client)
-        user_token = login(client, "alice", "123456")
+        user_token = login(client, "alice", "Aa123456!")
         admin_token = login(client, "admin", "123456")
 
         forbidden_role_update = client.put(
@@ -269,7 +270,7 @@ def test_create_admin_user_api():
             "/roles/admin/users",
             json={
                 "username": "boss2",
-                "password": "123456",
+                "password": "Aa123456!",
                 "age": 35,
                 "email": "boss2@example.com",
             },
@@ -295,7 +296,7 @@ def test_create_admin_user_api_duplicate_cases():
             "/roles/admin/users",
             json={
                 "username": "alice",
-                "password": "123456",
+                "password": "Aa123456!",
                 "age": 28,
                 "email": "alice_admin@example.com",
             },
@@ -308,7 +309,7 @@ def test_create_admin_user_api_duplicate_cases():
             "/roles/admin/users",
             json={
                 "username": "alice_admin",
-                "password": "123456",
+                "password": "Aa123456!",
                 "age": 28,
                 "email": "alice@example.com",
             },
@@ -384,7 +385,7 @@ def test_reset_password_by_self():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="alice", email="alice@example.com")
-        user_token = login(client, "alice", "123456")
+        user_token = login(client, "alice", "Aa123456!")
 
         response = client.post(
             f"/roles/{user['id']}/reset-password",
@@ -396,7 +397,7 @@ def test_reset_password_by_self():
 
         bad_login = client.post(
             "/users/token",
-            data={"username": "alice", "password": "123456"},
+            data={"username": "alice", "password": "Aa123456!"},
         )
         assert bad_login.status_code == 400, bad_login.text
 
@@ -435,7 +436,7 @@ def test_reset_password_permission_denied():
     try:
         alice = create_user(client, username="alice", email="alice@example.com")
         bob = create_user(client, username="bob", email="bob@example.com")
-        alice_token = login(client, "alice", "123456")
+        alice_token = login(client, "alice", "Aa123456!")
 
         response = client.post(
             f"/roles/{bob['id']}/reset-password",

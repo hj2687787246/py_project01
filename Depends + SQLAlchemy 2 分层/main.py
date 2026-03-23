@@ -16,7 +16,6 @@ from routers import router as users_router
 logger = get_logger()
 
 
-
 # FastAPI 启动前执行数据库初始化检查
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -34,8 +33,8 @@ async def lifespan(app: FastAPI):
             if not db.query(User).first():
                 from schemas.user_schema import UserCreate
                 from dao.user_dao import create_user
-                admin_user = UserCreate(username="admin",password="123456",age=26,email="2687787246@qq.com")
-                create_user(db, admin_user,"admin")
+                admin_user = UserCreate(username="admin", password="123456", age=26, email="2687787246@qq.com")
+                create_user(db, admin_user, "admin")
                 logger.info("初始化管理员账号完成")
         except Exception as e:
             logger.warning(f"初始化角色数据跳过或失败: {e}")
@@ -116,3 +115,10 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "message": "服务正常运行"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=False)
+
