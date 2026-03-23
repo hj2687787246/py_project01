@@ -1,4 +1,4 @@
-from typing import List, Optional, TypedDict, Any, Sequence
+from typing import Sequence, Optional, TypedDict
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
@@ -18,11 +18,10 @@ class DeleteUserResult(TypedDict):
 
 
 # C: Create 创建用户
-# 通过角色名查出 role_id，避免路由层直接写死角色主键。
+# 通过角色名查询 role_id，避免路由层直接写死角色主键。
 def create_user(db: Session, user: UserCreate, role_name: str = "user") -> User:
     """创建用户并写入关联角色。"""
     hashed_pwd = get_password_hash(user.password)
-    # 查询角色是否存在，存在返回角色名，不存在返回None
     role = role_dao.get_role_by_name(db, role_name)
     if role is None:
         logger.error(f"数据层创建用户失败: username={user.username}, reason=角色不存在, role={role_name}")
@@ -78,7 +77,7 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
 
 
 # R: Read 分页查询列表，并返回总数。
-def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[Sequence[Any], int | Any]:
+def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[Sequence[User], int]:
     """分页查询用户列表，并返回总条数。"""
     if page_size <= 0:
         page_size = 10
@@ -95,7 +94,7 @@ def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[Sequ
 
 
 # R: Read 模糊查询
-def search_users(db: Session, keyword: str) -> Sequence[Any]:
+def search_users(db: Session, keyword: str) -> Sequence[User]:
     """按用户名或邮箱关键字模糊查询。"""
     logger.info(f"数据层模糊查询用户: keyword={keyword}")
     stmt = (select(User).options(joinedload(User.role_info))
@@ -125,8 +124,9 @@ def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[
     return db_user
 
 
+# U: Update 重置密码
 def update_user_password(db: Session, db_user: User, hashed_password: str) -> User:
-    # 单独抽一个密码更新方法，避免 service 层直接操作 ORM 字段和 commit。
+    """更新用户密码并持久化。"""
     logger.info(f"数据层重置密码: user_id={db_user.id}, username={db_user.username}")
     db_user.hashed_password = hashed_password
     db.commit()
@@ -154,9 +154,9 @@ def delete_user(db: Session, user_id: int) -> DeleteUserResult:
     return {"success": True, "reason": "deleted"}
 
 # 更新用户头像
-def update_user_avatar(db:Session, user_id:int, avatar_url:str)-> User | None:
-    # 单独更新用户头像
-    db_user = get_user_by_id(db,user_id)
+def update_user_avatar(db: Session, user_id: int, avatar_url: str) -> User | None:
+    """更新用户头像地址。"""
+    db_user = get_user_by_id(db, user_id)
     if not db_user:
         return None
     # 更新用户头像
