@@ -1,4 +1,4 @@
-from typing import List, Optional, TypedDict
+from typing import List, Optional, TypedDict, Any, Sequence
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
@@ -78,7 +78,7 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
 
 
 # R: Read 分页查询列表，并返回总数。
-def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[List[User], int]:
+def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[Sequence[Any], int | Any]:
     """分页查询用户列表，并返回总条数。"""
     if page_size <= 0:
         page_size = 10
@@ -95,7 +95,7 @@ def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[List
 
 
 # R: Read 模糊查询
-def search_users(db: Session, keyword: str) -> List[User]:
+def search_users(db: Session, keyword: str) -> Sequence[Any]:
     """按用户名或邮箱关键字模糊查询。"""
     logger.info(f"数据层模糊查询用户: keyword={keyword}")
     stmt = (select(User).options(joinedload(User.role_info))
@@ -152,3 +152,15 @@ def delete_user(db: Session, user_id: int) -> DeleteUserResult:
     db.commit()
     logger.success(f"数据层删除用户成功: user_id={user_id}")
     return {"success": True, "reason": "deleted"}
+
+# 更新用户头像
+def update_user_avatar(db:Session, user_id:int, avatar_url:str)-> User | None:
+    # 单独更新用户头像
+    db_user = get_user_by_id(db,user_id)
+    if not db_user:
+        return None
+    # 更新用户头像
+    db_user.avatar_url = avatar_url
+    db.commit()
+    db.refresh(db_user)
+    return db_user

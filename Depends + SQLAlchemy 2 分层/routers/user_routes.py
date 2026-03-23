@@ -5,7 +5,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -13,6 +13,7 @@ import models
 import schemas
 from core.exceptions import BusinessException
 from core.logger import get_logger
+from schemas import UnifiedResponse
 from services import user_service
 from session.db_session import get_db
 from utils.security import get_current_admin, get_current_user
@@ -187,3 +188,32 @@ def delete_user_api(user_id: int,
                    f"target_user_id={user_id}")
 
     return schemas.UnifiedResponse(data={"message": "删除成功", "user_id": user_id})
+
+
+# 上传头像
+@router.post("/{user_id}/avatar",response_model=schemas.UnifiedResponse[schemas.UserResponse],summary="上传头像")
+def upload_avatar_api(user_id: int,
+                      file: UploadFile = File(...,description="头像图片文件"),
+                      db: Session = Depends(get_db),
+                      current_user: models.User = Depends(get_current_user)):
+    """上传当前用户头像。"""
+    logger.info(f"收到上传头像请求: operator_id={current_user.id}, operator={current_user.username}, "
+                f"role={current_user.role}, target_user_id={user_id}, filename={file.filename}, content_type={file.content_type}")
+
+    try:
+        updated_user = user_service.upload_avatar(db, user_id, current_user, file)
+    except HTTPException as exc:
+        if exc.status_code == 404:
+            logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, "
+                         f"target_user_id={user_id}, filename={file.filename}, reason=用户不存在")
+        elif exc.status_code == 403:
+            logger.error(f"上传头像被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
+                         f"target_user_id={user_id}, filename={file.filename}, reason=无权修改他人头像")
+        elif exc.status_code == 400:
+            logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, "
+                         f"target_user_id={user_id}, filename={file.filename}, content_type={file.content_type}, reason={exc.detail}")
+        raise
+
+    logger.success(f"上传头像成功: operator_id={current_user.id}, operator={current_user.username}, "
+                   f"target_user_id={user_id}, avatar_url={updated_user.avatar_url}")
+    return UnifiedResponse(data=updated_user)

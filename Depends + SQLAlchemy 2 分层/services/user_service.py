@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import List, Tuple, TypeAlias
 
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 import models
@@ -9,6 +9,7 @@ import schemas
 from core.exceptions import BusinessException
 from dao import user_dao
 from dao.user_dao import DeleteUserResult
+from utils.file_utils import save_avatar
 from utils.password_utils import validate_password, verify_password
 from utils.security import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
@@ -42,6 +43,27 @@ def login_user(db: Session, username: str, password: str) -> LoginResult:
     access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
     access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return user, access_token
+
+
+# 头像保存
+def upload_avatar(db: Session,
+                  user_id: int,
+                  current_user: models.User,
+                  file: UploadFile) -> models.User:
+    # 1.查找用户是否存在
+    db_user = user_dao.get_user_by_id(db, user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="用户不存在")
+    # 2.校验ID是否一致，只能改自己的
+    if db_user.id != current_user.id:
+        raise HTTPException(status_code=403, detail="无权修改他人头像")
+    # 3.使用工具保存文件到 static/avatars，并获取 avatar_url
+    avatar_url = save_avatar(file)
+    # 4.更新数据库
+    updated_user = user_dao.update_user_avatar(db, user_id, avatar_url)
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="用户不存在")
+    return updated_user
 
 
 def create_user(db: Session, user: schemas.UserCreate) -> models.User:

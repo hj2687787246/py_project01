@@ -6,18 +6,20 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from core.logger import get_logger
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from core.logger import get_logger
+
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
+os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 # 测试环境关闭登录限流，避免批量用例触发 429。
 os.environ.setdefault("TESTING", "1")
 
 import main
 import routers.user_routes as user_routes
+import utils.file_utils as file_utils
 import utils.security as security
 
 security.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
@@ -30,12 +32,22 @@ from session.db_session import Base
 logger = get_logger()
 
 
+def cleanup_test_avatars():
+    """清理测试生成的头像文件，保留默认头像。"""
+    if not file_utils.STATIC_DIR.exists():
+        return
+    for avatar_file in file_utils.STATIC_DIR.iterdir():
+        if avatar_file.is_file() and avatar_file.name != "default.jpg":
+            avatar_file.unlink()
+
+
 def setup_module():
     """测试模块启动前清理遗留测试库。"""
     db_path = PROJECT_ROOT / "tests" / "_test_user_system.db"
     if db_path.exists():
         logger.info(f"删除遗留测试数据库: path={db_path}")
         db_path.unlink()
+    cleanup_test_avatars()
 
 
 def teardown_module():
@@ -44,6 +56,7 @@ def teardown_module():
     if db_path.exists():
         logger.info(f"清理测试数据库: path={db_path}")
         db_path.unlink()
+    cleanup_test_avatars()
 
 
 def build_test_client():
@@ -80,6 +93,7 @@ def build_test_client():
         )
         user_dao.create_user(db, admin_user, role_name="admin")
 
+    cleanup_test_avatars()
     client = TestClient(main.app)
     logger.success("测试客户端构建完成")
     return client, test_engine
@@ -463,6 +477,72 @@ def test_reset_password_user_not_found():
         )
         assert response.status_code == 404, response.text
         assert response.json()["code"] == 404
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_upload_avatar_success_with_png():
+    """验证用户可上传 PNG 头像，并写入数据库。"""
+    client, engine = build_test_client()
+    try:
+        user = create_user(client, username="avatar_user", email="avatar_user@example.com")
+        token = login(client, "avatar_user", "Aa123456!")
+
+        response = client.post(
+            f"/users/{user['id']}/avatar",
+            files={"file": ("avatar.png", b"fake-png-bytes", "image/png")},
+            headers=auth_headers(token),
+        )
+        assert response.status_code == 200, response.text
+        assert response.json()["code"] == 200
+
+        with db_session.SessionLocal() as db:
+            db_user = user_dao.get_user_by_id(db, user["id"])
+            assert db_user.avatar_url is not None
+            assert db_user.avatar_url.startswith("static/avatars/")
+            assert db_user.avatar_url.endswith(".png")
+            assert db_user.avatar_url != "static/avatars/default.jpg"
+            assert (PROJECT_ROOT / db_user.avatar_url).exists()
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_upload_avatar_reject_invalid_content_type():
+    """验证上传非图片文件时返回 400。"""
+    client, engine = build_test_client()
+    try:
+        user = create_user(client, username="bad_file_user", email="bad_file_user@example.com")
+        token = login(client, "bad_file_user", "Aa123456!")
+
+        response = client.post(
+            f"/users/{user['id']}/avatar",
+            files={"file": ("avatar.txt", b"not-an-image", "text/plain")},
+            headers=auth_headers(token),
+        )
+        assert response.status_code == 400, response.text
+        assert response.json()["code"] == 400
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_upload_avatar_reject_oversized_file():
+    """验证上传超过 2MB 的文件时返回 400。"""
+    client, engine = build_test_client()
+    try:
+        user = create_user(client, username="large_file_user", email="large_file_user@example.com")
+        token = login(client, "large_file_user", "Aa123456!")
+        large_content = b"a" * (2 * 1024 * 1024 + 1)
+
+        response = client.post(
+            f"/users/{user['id']}/avatar",
+            files={"file": ("avatar.jpg", large_content, "image/jpeg")},
+            headers=auth_headers(token),
+        )
+        assert response.status_code == 400, response.text
+        assert response.json()["code"] == 400
     finally:
         client.close()
         engine.dispose()

@@ -25,7 +25,8 @@ class User(Base):
     age: Mapped[int] = mapped_column(comment="年龄")
     # index 索引，给高频字段加索引
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, comment="邮箱", index=True)
-
+    # nullable 允许为空
+    avatar_url: Mapped[str | None] = mapped_column(String(255),nullable=True,default="static/avatars/default.jpg",comment="头像url")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, comment="创建时间")
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=utc_now,onupdate=utc_now,comment="最后更新时间")
 

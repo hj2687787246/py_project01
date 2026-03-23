@@ -40,6 +40,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    # 依赖项： 通过Token获取当前用户，用于保护接口
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="无法验证凭据",
@@ -59,6 +60,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     return user
 
 async def get_current_admin(current_user: User = Depends(get_current_user)):
+    # 依赖项： 通过Token获取当前用户，用于保护接口
     if current_user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
