@@ -13,7 +13,7 @@ SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
 # 统一返回格式
 class UnifiedResponse(BaseModel,Generic[T]):
     """统一响应结构。"""
-
+    # 模型配置
     model_config = ConfigDict(from_attributes=True)
 
     code: int = Field(default=200,description="状态码")

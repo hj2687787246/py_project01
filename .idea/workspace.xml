@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.22 分页的统一封装,剥离自定义异常避免循环依赖">
-      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 修复了一些已知bug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/role_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/role_dao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/models/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/session/db_session.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/session/db_session.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/role_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/role_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/user_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/user_schema.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -382,7 +377,7 @@
       <workItem from="1774181975436" duration="2045000" />
       <workItem from="1774185366599" duration="387000" />
       <workItem from="1774185762313" duration="178000" />
-      <workItem from="1774226027472" duration="2413000" />
+      <workItem from="1774226027472" duration="5923000" />
     </task>
     <task id="LOCAL-00001" summary="3.19">
       <option name="closed" value="true" />
@@ -712,7 +707,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774176934676</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="3.23 修复了一些已知bug">
+      <option name="closed" value="true" />
+      <created>1774228469278</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1774228469278</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -733,7 +736,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="3.19 faskApi Pydantic 整合统一响应 + 全局异常" />
     <MESSAGE value="3.19 牛客网错题" />
     <MESSAGE value="3.20 最简函数依赖（参数复用）" />
     <MESSAGE value="3.20 方法迭代" />
@@ -758,7 +760,8 @@
     <MESSAGE value="3.22 测试" />
     <MESSAGE value="3.22 项目分层重构" />
     <MESSAGE value="3.22 分页的统一封装,剥离自定义异常避免循环依赖" />
-    <option name="LAST_COMMIT_MESSAGE" value="3.22 分页的统一封装,剥离自定义异常避免循环依赖" />
+    <MESSAGE value="3.23 修复了一些已知bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="3.23 修复了一些已知bug" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/py_project01$NP72_.coverage" NAME="NP72 生成字典 覆盖结果" MODIFIED="1774009569628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />

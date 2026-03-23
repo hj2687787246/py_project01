@@ -10,7 +10,9 @@ from core.logger import get_logger
 import schemas
 from session.db_session import Base, engine, SessionLocal
 from models.role import Role
+from models.user import User
 from routers import router as users_router
+
 # 配置日志
 logger = get_logger()
 
@@ -30,6 +32,12 @@ async def lifespan(app: FastAPI):
                 create_role(db, name="admin", description="系统管理员")
                 create_role(db, name="user", description="普通用户")
                 logger.info("初始化角色数据完成")
+            if not db.query(User).first():
+                from schemas.user_schema import UserCreate
+                from dao.user_dao import create_user
+                admin_user = UserCreate(username="admin",password="123456",age=26,email="2687787246@qq.com")
+                create_user(db, admin_user,"admin")
+                logger.info("初始化管理员账号完成")
         except Exception as e:
             logger.warning(f"初始化角色数据跳过或失败: {e}")
         finally:
