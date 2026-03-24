@@ -13,7 +13,7 @@ SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
 # 统一返回格式
 class UnifiedResponse(BaseModel,Generic[T]):
     """统一响应结构。"""
-    # 模型配置
+    # 模型配置 把「数据库模型层 (Model)」转换成「DTO」
     model_config = ConfigDict(from_attributes=True)
 
     code: int = Field(default=200,description="状态码")
@@ -47,7 +47,7 @@ class UserUpdate(BaseModel):
 # 用户响应体 不返回密码
 class UserResponse(BaseModel):
     """用户响应模型。"""
-
+    # 模型配置 把「数据库模型层 (Model)」转换成「DTO」
     model_config = ConfigDict(from_attributes=True)
 
     id:int

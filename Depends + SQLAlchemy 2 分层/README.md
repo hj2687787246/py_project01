@@ -1,86 +1,85 @@
-# FastAPI 分层项目完整说明
+# FastAPI 分层项目源码归档
 
-## 项目说明
+## 文档用途
 
-这个文档用于把 `Depends + SQLAlchemy 2 分层` 项目的目录结构和源码集中到一个 Markdown 文件里，方便直接发给其他 AI 或同学查看。
+这份文档用于把 `Depends + SQLAlchemy 2 分层` 项目的目录结构和全部代码文件集中到一个 Markdown 文件里，方便直接发给豆包或其他 AI。
 
-项目技术栈: `FastAPI`, `SQLAlchemy 2`, `Pydantic`, `JWT`, `SQLite`, `pytest`.
+说明:
 
-当前实现能力:
+- 代码文件来源于当前项目实际文件清单，自动收录，不再手工挑选。
+- 当前已收录全部文本代码文件：`.env`, `core\__init__.py`, `core\exceptions.py`, `core\logger.py`, `dao\__init__.py`, `dao\role_dao.py`, `dao\user_dao.py`, `main.py`, `models\__init__.py`, `models\role.py`, `models\user.py`, `requirements.txt`, `routers\__init__.py`, `routers\role_routes.py`, `routers\user_routes.py`, `schemas\__init__.py`, `schemas\role_schema.py`, `schemas\user_schema.py`, `services\__init__.py`, `services\role_service.py`, `services\user_service.py`, `session\__init__.py`, `session\db_session.py`, `tests\test_user_system.py`, `utils\__init__.py`, `utils\file_utils.py`, `utils\password_utils.py`, `utils\security.py`。
+- 二进制文件只列路径，不展开内容。
+- `.env` 中的 `SECRET_KEY` 已脱敏。
 
-- 用户注册
-- 用户登录与 JWT 鉴权
-- 普通用户查询和修改自己的资料
-- 管理员查询用户列表、搜索用户、创建管理员、删除用户
-- 角色管理与重置密码接口
-- 启动时自动初始化角色和默认管理员账号
-- 统一异常处理与统一响应格式
-- 集成测试覆盖核心业务流程
-
-## 当前分层
-
-当前项目已经整理为四层:
-
-- `routers/`: 接口定义、依赖注入、日志、异常翻译、响应包装
-- `services/`: 业务流程编排、权限/唯一性/密码等业务校验
-- `dao/`: 数据库查询、更新、删除、提交事务
-- `models/` / `schemas/`: ORM 模型和请求响应模型
-
-## 目录结构
+## 实际目录结构
 
 ```text
 Depends + SQLAlchemy 2 分层/
-- .env
-- core/
-- dao/
-- main.py
-- models/
-- README.md
-- requirements.txt
-- routers/
-- schemas/
-- services/
-- session/
-- tests/
-- utils/
+├── .env
+├── core
+├── __init__.py
+├── exceptions.py
+├── logger.py
+├── dao
+├── __init__.py
+├── role_dao.py
+├── user_dao.py
+├── main.py
+├── models
+├── __init__.py
+├── role.py
+├── user.py
+├── requirements.txt
+├── routers
+├── __init__.py
+├── role_routes.py
+├── user_routes.py
+├── schemas
+├── __init__.py
+├── role_schema.py
+├── user_schema.py
+├── services
+├── __init__.py
+├── role_service.py
+├── user_service.py
+├── session
+├── __init__.py
+├── db_session.py
+├── tests
+├── test_user_system.py
+├── utils
+├── __init__.py
+├── file_utils.py
+├── password_utils.py
+├── security.py
+├── static
+├── avatars
+│   ├── 1774315893089.jpg
+│   ├── 1774317347273.jpg
+│   ├── default.jpg
 ```
 
-## 这次整理的重点
+## 二进制文件
 
-- 新增 `services/role_service.py` 和 `services/user_service.py`
-- 把原来写在路由层的业务流程下沉到服务层
-- 把数据库读写收口到 `dao/`
-- 给 `dao/` 和 `services/` 补了更明确的类型标注
-- 给改动过的关键位置补了中文注释，方便阅读
-- 测试环境下关闭登录限流，避免批量测试触发 429
-- 测试用户密码统一改成满足复杂度要求的值
+- `static\avatars\1774315893089.jpg` (41710 bytes)
+- `static\avatars\1774317347273.jpg` (41710 bytes)
+- `static\avatars\default.jpg` (48903 bytes)
 
-## 默认初始化数据
+## 全部代码
 
-应用启动后会自动执行:
+### .env
 
-- 建表 `Base.metadata.create_all(bind=engine)`
-- 初始化角色: `admin`, `user`
-- 如果用户表为空，则创建默认管理员: `admin`, `123456`, `26`, `2687787246@qq.com`
+```dotenv
+# 密码规则
+SECRET_KEY="<your-secret-key>"
+# Token 30分钟过期
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 
-## 测试说明
+# 数据库链接地址
+SQLALCHEMY_DATABASE_URL="sqlite:///./fastapi_test.db"
+```
 
-当前测试文件: `tests/test_user_system.py`
-
-覆盖内容包括:
-
-- 健康检查
-- 普通用户注册、登录、查询、更新
-- 常见异常响应格式和业务码
-- 管理员分页、搜索、删除
-- 管理员创建管理员账号
-- 创建角色、查询全部角色
-- 用户自己重置密码、管理员重置他人密码
-- 重置密码的权限与不存在用户场景
-
-## 源码汇总
-
-### core/__init__.py
+### core\__init__.py
 
 ```python
 # 核心能力
@@ -88,7 +87,7 @@ from .logger import get_logger
 from .exceptions import BusinessException
 ```
 
-### core/exceptions.py
+### core\exceptions.py
 
 ```python
 # 自定义业务异常
@@ -100,7 +99,7 @@ class BusinessException(Exception):
         self.message = message
 ```
 
-### core/logger.py
+### core\logger.py
 
 ```python
 # 日志配置文件
@@ -139,7 +138,7 @@ def get_logger():
     return logger
 ```
 
-### dao/__init__.py
+### dao\__init__.py
 
 ```python
 # 数据访问层
@@ -150,53 +149,54 @@ from .user_dao import DeleteUserResult
 __all__ = ["role_dao", "user_dao", "DeleteUserResult"]
 ```
 
-### dao/role_dao.py
+### dao\role_dao.py
 
 ```python
-from typing import List, Optional
-
+from typing import Optional
 from sqlalchemy.orm import Session
 
-import models
 from core.exceptions import BusinessException
 from models.role import Role
 
 # 获取角色名称
 def get_role_by_name(db: Session, name: str) -> Optional[Role]:
+    """根据角色名查询角色。"""
     return db.query(Role).filter(Role.name == name).first()
 
 # 新增角色
 def create_role(db: Session, name: str, description: str | None = None) -> Role:
-    # 这里只负责角色落库，不处理是否重复等业务校验。
+    """创建角色并写入数据库。"""
     db_role = Role(name=name, description=description)
     db.add(db_role)
     db.commit()
     db.refresh(db_role)
     return db_role
 
+# 查重后新增角色
 def create_role_with_check(db: Session, name: str, description: str | None = None) -> Role:
-    # 这个方法给 service 层用，统一封装“查重后创建”的数据库流程。
+    """先校验是否重复，再创建角色。"""
     db_role = get_role_by_name(db, name)
     if db_role:
         raise BusinessException(400, 4006, "该角色已存在")
     return create_role(db, name, description)
 
 # 获取所有角色信息
-def get_all_roles(db: Session) -> List[models.Role]:
-    return db.query(models.Role).all()
+def get_all_roles(db: Session) -> list[type[Role]]:
+    """查询全部角色。"""
+    return db.query(Role).all()
 ```
 
-### dao/user_dao.py
+### dao\user_dao.py
 
 ```python
-from typing import List, Optional, TypedDict
+from typing import Sequence, Optional, TypedDict, List
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from core.logger import get_logger
 from dao import role_dao
-from models import User
+import models
 from schemas import UserCreate, UserUpdate
 from utils.password_utils import get_password_hash
 
@@ -209,11 +209,10 @@ class DeleteUserResult(TypedDict):
 
 
 # C: Create 创建用户
-# 通过角色名查出 role_id，避免路由层直接写死角色主键。
-def create_user(db: Session, user: UserCreate, role_name: str = "user") -> User:
+# 通过角色名查询 role_id，避免路由层直接写死角色主键。
+def create_user(db: Session, user: UserCreate, role_name: str = "user") -> models.User:
     """创建用户并写入关联角色。"""
     hashed_pwd = get_password_hash(user.password)
-    # 查询角色是否存在，存在返回角色名，不存在返回None
     role = role_dao.get_role_by_name(db, role_name)
     if role is None:
         logger.error(f"数据层创建用户失败: username={user.username}, reason=角色不存在, role={role_name}")
@@ -221,7 +220,7 @@ def create_user(db: Session, user: UserCreate, role_name: str = "user") -> User:
 
     try:
         logger.info(f"数据层创建用户: username={user.username}, email={user.email}, role={role_name}")
-        db_user = User(
+        db_user = models.User(
             username=user.username,
             hashed_password=hashed_pwd,
             role_id=role.id,
@@ -238,66 +237,68 @@ def create_user(db: Session, user: UserCreate, role_name: str = "user") -> User:
         db.rollback()
         raise
 
-# R: Read 根据ID查询查询角色关系
-def get_user_with_role(db: Session, user_id: int) -> Optional[User]:
+# R: Read 根据ID查询查询角色关系 Optional表示 models | None
+def get_user_with_role(db: Session, user_id: int) -> Optional[models.User]:
     """根据用户 ID 查询用户及其角色关系。"""
     logger.info(f"数据层查询用户角色关系: user_id={user_id}")
-    stmt = select(User).options(joinedload(User.role_info)).where(User.id == user_id)
+    # 查询User表的时候同时连接查询Role表，避免后续响应序列化时再懒加载。一次性加载关联数据
+    stmt = select(models.User).options(joinedload(models.User.role_info)).where(models.User.id == user_id)
     return db.scalar(stmt)
 
 
-# R: Read 按 ID 查询，同时预加载角色，避免后续响应序列化时再懒加载。
-def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
+# R: Read 按 ID 查询，同时预加载角色，避免后续响应序列化时再懒加载。一次性加载关联数据
+def get_user_by_id(db: Session, user_id: int) -> Optional[models.User]:
     """根据用户 ID 查询单个用户。"""
     logger.info(f"数据层按ID查询用户: user_id={user_id}")
-    stmt = select(User).options(joinedload(User.role_info)).where(User.id == user_id)
+    stmt = select(models.User).options(joinedload(models.User.role_info)).where(models.User.id == user_id)
     return db.scalar(stmt)
 
 # R: Read 按名字查询
-def get_user_by_username(db: Session, username: str) -> Optional[User]:
+def get_user_by_username(db: Session, username: str) -> Optional[models.User]:
     """根据用户名查询用户。"""
     logger.info(f"数据层按用户名查询用户: username={username}")
-    stmt = select(User).options(joinedload(User.role_info)).where(User.username == username)
+    stmt = select(models.User).options(joinedload(models.User.role_info)).where(models.User.username == username)
     return db.scalar(stmt)
 
 # R: Read 按邮箱查询
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
+def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
     """根据邮箱查询用户。"""
     logger.info(f"数据层按邮箱查询用户: email={email}")
-    stmt = select(User).options(joinedload(User.role_info)).where(User.email == email)
+    stmt = select(models.User).options(joinedload(models.User.role_info)).where(models.User.email == email)
     return db.scalar(stmt)
 
 
 # R: Read 分页查询列表，并返回总数。
-def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[List[User], int]:
+def get_user_list(db: Session, page: int = 1, page_size: int = 10) -> tuple[List[models.User], int]:
     """分页查询用户列表，并返回总条数。"""
     if page_size <= 0:
         page_size = 10
 
     logger.info(f"数据层分页查询用户列表: page={page}, page_size={page_size}")
     offset = (page - 1) * page_size
-    stmt = select(User).options(joinedload(User.role_info)).offset(offset).limit(page_size)
-    items = db.scalars(stmt).all()
-
-    count_stmt = select(func.count()).select_from(User)
-    total = db.scalar(count_stmt) or 0
+    stmt = select(models.User).options(joinedload(models.User.role_info)).offset(offset).limit(page_size)
+    # 1. 显式转换为 list
+    items = list(db.scalars(stmt).all())
+    count_stmt = select(func.count()).select_from(models.User)
+    # 2. 显式转换为 int，消除 None | Any 的推断
+    total = int(db.scalar(count_stmt) or 0)
     logger.success(f"数据层分页查询用户列表成功: returned_count={len(items)}, total={total}")
     return items, total
 
 
 # R: Read 模糊查询
-def search_users(db: Session, keyword: str) -> List[User]:
+def search_users(db: Session, keyword: str) -> Sequence[models.User]:
     """按用户名或邮箱关键字模糊查询。"""
     logger.info(f"数据层模糊查询用户: keyword={keyword}")
-    stmt = (select(User).options(joinedload(User.role_info))
-            .where(or_(User.username.contains(keyword), User.email.contains(keyword))))
+    stmt = (select(models.User).options(joinedload(models.User.role_info))
+            .where(or_(models.User.username.contains(keyword), models.User.email.contains(keyword))))
     users = db.scalars(stmt).all()
     logger.success(f"数据层模糊查询用户成功: keyword={keyword}, returned_count={len(users)}")
     return users
 
 
 # U: Update 更新用户
-def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[User]:
+def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[models.User]:
     """更新用户可变字段。"""
     db_user = get_user_by_id(db, user_id)
     if not db_user:
@@ -316,8 +317,9 @@ def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[
     return db_user
 
 
-def update_user_password(db: Session, db_user: User, hashed_password: str) -> User:
-    # 单独抽一个密码更新方法，避免 service 层直接操作 ORM 字段和 commit。
+# U: Update 重置密码
+def update_user_password(db: Session, db_user: models.User, hashed_password: str) -> models.User:
+    """更新用户密码并持久化。"""
     logger.info(f"数据层重置密码: user_id={db_user.id}, username={db_user.username}")
     db_user.hashed_password = hashed_password
     db.commit()
@@ -343,16 +345,29 @@ def delete_user(db: Session, user_id: int) -> DeleteUserResult:
     db.commit()
     logger.success(f"数据层删除用户成功: user_id={user_id}")
     return {"success": True, "reason": "deleted"}
+
+# 更新用户头像
+def update_user_avatar(db: Session, user_id: int, avatar_url: str) -> models.User | None:
+    """更新用户头像地址。"""
+    db_user = get_user_by_id(db, user_id)
+    if not db_user:
+        return None
+    # 更新用户头像
+    db_user.avatar_url = avatar_url
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 ```
 
 ### main.py
 
 ```python
-﻿from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager
 import traceback
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.staticfiles import StaticFiles
 
 from core.exceptions import BusinessException
 from core.logger import get_logger
@@ -364,7 +379,6 @@ from routers import router as users_router
 
 # 配置日志
 logger = get_logger()
-
 
 
 # FastAPI 启动前执行数据库初始化检查
@@ -384,8 +398,8 @@ async def lifespan(app: FastAPI):
             if not db.query(User).first():
                 from schemas.user_schema import UserCreate
                 from dao.user_dao import create_user
-                admin_user = UserCreate(username="admin",password="123456",age=26,email="2687787246@qq.com")
-                create_user(db, admin_user,"admin")
+                admin_user = UserCreate(username="admin", password="123456", age=26, email="2687787246@qq.com")
+                create_user(db, admin_user, "admin")
                 logger.info("初始化管理员账号完成")
         except Exception as e:
             logger.warning(f"初始化角色数据跳过或失败: {e}")
@@ -404,6 +418,8 @@ app = FastAPI(
     description="分层版",
     lifespan=lifespan,
 )
+# 挂载静态文件目录（用于访问头像）
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # 挂载路由
 app.include_router(users_router)
@@ -466,9 +482,15 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "message": "服务正常运行"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=False)
 ```
 
-### models/__init__.py
+### models\__init__.py
 
 ```python
 # 模型层
@@ -476,7 +498,7 @@ from .user import User
 from .role import Role
 ```
 
-### models/role.py
+### models\role.py
 
 ```python
 from session.db_session import Base
@@ -496,7 +518,7 @@ class Role(Base):
     users: Mapped[list["User"]] = relationship("User", back_populates="role_info")
 ```
 
-### models/user.py
+### models\user.py
 
 ```python
 from datetime import datetime, timezone
@@ -526,7 +548,8 @@ class User(Base):
     age: Mapped[int] = mapped_column(comment="年龄")
     # index 索引，给高频字段加索引
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, comment="邮箱", index=True)
-
+    # nullable 允许为空
+    avatar_url: Mapped[str | None] = mapped_column(String(255),nullable=True,default="static/avatars/default.jpg",comment="头像url")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, comment="创建时间")
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=utc_now,onupdate=utc_now,comment="最后更新时间")
 
@@ -540,7 +563,7 @@ class User(Base):
 ### requirements.txt
 
 ```text
-﻿fastapi>=0.115.0
+fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
 sqlalchemy>=2.0.35
 pydantic>=2.10.0
@@ -556,7 +579,7 @@ tzdata>=2024.1
 pytest>=8.3.0
 ```
 
-### routers/__init__.py
+### routers\__init__.py
 
 ```python
 # 路由层
@@ -570,7 +593,7 @@ router.include_router(user_router)
 router.include_router(role_router)
 ```
 
-### routers/role_routes.py
+### routers\role_routes.py
 
 ```python
 from typing import List
@@ -665,7 +688,7 @@ def reset_password_api(user_id: int,
     return schemas.UnifiedResponse(data={"message":"密码重置成功"})
 ```
 
-### routers/user_routes.py
+### routers\user_routes.py
 
 ```python
 import os
@@ -675,7 +698,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -857,9 +880,38 @@ def delete_user_api(user_id: int,
                    f"target_user_id={user_id}")
 
     return schemas.UnifiedResponse(data={"message": "删除成功", "user_id": user_id})
+
+
+# 上传头像
+@router.post("/{user_id}/avatar",response_model=schemas.UnifiedResponse[schemas.UserResponse],summary="上传头像")
+def upload_avatar_api(user_id: int,
+                      file: UploadFile = File(...,description="头像图片文件"),
+                      db: Session = Depends(get_db),
+                      current_user: models.User = Depends(get_current_user)):
+    """上传当前用户头像。"""
+    logger.info(f"收到上传头像请求: operator_id={current_user.id}, operator={current_user.username}, "
+                f"role={current_user.role}, target_user_id={user_id}, filename={file.filename}, content_type={file.content_type}")
+
+    try:
+        updated_user = user_service.upload_avatar(db, user_id, current_user, file)
+    except HTTPException as exc:
+        if exc.status_code == 404:
+            logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, "
+                         f"target_user_id={user_id}, filename={file.filename}, reason=用户不存在")
+        elif exc.status_code == 403:
+            logger.error(f"上传头像被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
+                         f"target_user_id={user_id}, filename={file.filename}, reason=无权修改他人头像")
+        elif exc.status_code == 400:
+            logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, "
+                         f"target_user_id={user_id}, filename={file.filename}, content_type={file.content_type}, reason={exc.detail}")
+        raise
+
+    logger.success(f"上传头像成功: operator_id={current_user.id}, operator={current_user.username}, "
+                   f"target_user_id={user_id}, avatar_url={updated_user.avatar_url}")
+    return schemas.UnifiedResponse(data=updated_user)
 ```
 
-### schemas/__init__.py
+### schemas\__init__.py
 
 ```python
 # Pydantic 请求 / 响应模型
@@ -867,7 +919,7 @@ from .user_schema import Token, UnifiedResponse, UserCreate, UserResponse, UserU
 from .role_schema import RoleResponse,RoleCreate
 ```
 
-### schemas/role_schema.py
+### schemas\role_schema.py
 
 ```python
 from typing import Optional
@@ -892,7 +944,7 @@ class RoleResponse(RoleBase):
     id: int
 ```
 
-### schemas/user_schema.py
+### schemas\user_schema.py
 
 ```python
 # Pydantic 请求 / 响应模型
@@ -952,6 +1004,7 @@ class UserResponse(BaseModel):
     role: Optional[str]
     age: Optional[int]
     email: str
+    avatar_url: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -991,7 +1044,7 @@ from .role_schema import RoleResponse
 UserResponse.model_rebuild()
 ```
 
-### services/__init__.py
+### services\__init__.py
 
 ```python
 # 服务层
@@ -1009,7 +1062,7 @@ __all__ = [
 ]
 ```
 
-### services/role_service.py
+### services\role_service.py
 
 ```python
 from typing import List, TypeAlias
@@ -1027,9 +1080,9 @@ from utils.password_utils import get_password_hash
 # 角色列表的统一返回类型。
 RoleListResult: TypeAlias = List[Role]
 
-
+# 管理员创建前校验
 def _ensure_admin_user_unique(db: Session, user: schemas.UserCreate) -> None:
-    # 创建管理员前先做用户名和邮箱的唯一性校验。
+    """创建管理员前校验用户名和邮箱唯一性。"""
     if user_dao.get_user_by_username(db, user.username):
         raise BusinessException(status_code=400, code=4001, message="用户名已存在")
 
@@ -1037,24 +1090,28 @@ def _ensure_admin_user_unique(db: Session, user: schemas.UserCreate) -> None:
         raise BusinessException(status_code=400, code=4002, message="邮箱已存在")
 
 
+# 创建管理员
 def create_admin_user(db: Session, user: schemas.UserCreate) -> User:
-    # 将创建管理员账号的流程收口到 service 层。
+    """创建管理员账号。"""
     _ensure_admin_user_unique(db, user)
     return user_dao.create_user(db, user, role_name="admin")
 
 
+# 创建角色
 def create_role(db: Session, role: schemas.RoleCreate) -> Role:
-    # 角色的“查重 + 创建”统一由 DAO 封装。
+    """创建角色并校验重复。"""
     return role_dao.create_role_with_check(db, role.name, role.description)
 
 
-def get_all_roles(db: Session) -> RoleListResult:
-    # 统一角色列表查询入口。
+# 查询全部角色
+def get_all_roles(db: Session) -> list[type[Role]]:
+    """查询全部角色列表。"""
     return role_dao.get_all_roles(db)
 
 
+# 重置密码
 def reset_password(db: Session, user_id: int, current_user: models.User, new_password: str) -> User:
-    # 将“查用户 + 权限判断 + 密码更新”统一放在 service 层。
+    """重置指定用户密码，并校验操作权限。"""
     db_user = user_dao.get_user_by_id(db, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="用户不存在")
@@ -1066,13 +1123,13 @@ def reset_password(db: Session, user_id: int, current_user: models.User, new_pas
     return user_dao.update_user_password(db, db_user, hashed_password)
 ```
 
-### services/user_service.py
+### services\user_service.py
 
 ```python
 from datetime import timedelta
-from typing import List, Tuple, TypeAlias
+from typing import List, Tuple, TypeAlias, Sequence, Any
 
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 import models
@@ -1080,6 +1137,8 @@ import schemas
 from core.exceptions import BusinessException
 from dao import user_dao
 from dao.user_dao import DeleteUserResult
+from models import User
+from utils.file_utils import save_avatar
 from utils.password_utils import validate_password, verify_password
 from utils.security import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
@@ -1089,8 +1148,10 @@ LoginResult: TypeAlias = Tuple[models.User, str]
 UserListResult: TypeAlias = tuple[List[models.User], int]
 
 
+# 注册校验
+
 def _ensure_user_unique(db: Session, user: schemas.UserCreate) -> None:
-    # 注册前检查用户名和邮箱是否已被使用。
+    """注册前检查用户名和邮箱是否已被使用。"""
     if user_dao.get_user_by_username(db, user.username):
         raise BusinessException(status_code=400, code=4001, message="用户名已存在")
 
@@ -1098,14 +1159,16 @@ def _ensure_user_unique(db: Session, user: schemas.UserCreate) -> None:
         raise BusinessException(status_code=400, code=4002, message="邮箱已存在")
 
 
+# 密码校验
 def _ensure_password_valid(password: str) -> None:
-    # 密码复杂度校验统一放在 service 层。
+    """密码复杂度校验统一放在 service 层。"""
     if not validate_password(password):
         raise BusinessException(status_code=400, code=4003, message="密码至少8位，包含大小写、数字、特殊字符")
 
 
+# 登录校验
 def login_user(db: Session, username: str, password: str) -> LoginResult:
-    # 登录时统一完成用户查找、密码校验和 token 生成。
+    """完成用户查找、密码校验和 token 生成。"""
     user = user_dao.get_user_by_username(db, username=username)
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=400, detail="用户名或密码错误", headers={"WWW-Authenticate": "Bearer"})
@@ -1114,16 +1177,17 @@ def login_user(db: Session, username: str, password: str) -> LoginResult:
     access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return user, access_token
 
-
+# 创建用户
 def create_user(db: Session, user: schemas.UserCreate) -> models.User:
-    # 注册流程统一在 service 层完成各类前置校验。
+    """完成注册前置校验并创建普通用户。"""
     _ensure_user_unique(db, user)
     _ensure_password_valid(user.password)
     return user_dao.create_user(db, user, role_name="user")
 
 
+# 根据id查询
 def get_user_detail(db: Session, user_id: int, current_user: models.User) -> models.User:
-    # 详情查询在 service 层完成“存在性 + 查看权限”判断。
+    """完成用户存在性与查看权限校验，并返回用户详情。"""
     db_user = user_dao.get_user_by_id(db, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="用户不存在")
@@ -1134,18 +1198,21 @@ def get_user_detail(db: Session, user_id: int, current_user: models.User) -> mod
     return db_user
 
 
-def get_user_list(db: Session, page: int, page_size: int) -> UserListResult:
-    # 分页查询先保持轻量包装，便于后续扩展。
+# 分页查询
+def get_user_list(db: Session, page: int, page_size: int) -> tuple[List[models.User], int]:
+    """分页查询用户列表并返回总数。"""
     return user_dao.get_user_list(db, page, page_size)
 
 
-def search_users(db: Session, keyword: str) -> List[models.User]:
-    # 搜索保留为 service 层入口，避免 route 直接调数据层。
+# 根据ID、用户名模糊查询
+def search_users(db: Session, keyword: str) -> Sequence[User]:
+    """按关键字搜索用户。"""
     return user_dao.search_users(db, keyword)
 
 
+# 更新用户
 def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate, current_user: models.User) -> models.User:
-    # 更新流程统一完成权限、角色、唯一性校验。
+    """完成权限、角色、唯一性校验并更新用户。"""
     db_user = user_dao.get_user_by_id(db, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="用户不存在")
@@ -1169,41 +1236,70 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate, curr
 
     return user_dao.update_user(db, user_id, user_update)
 
-
+# 删除用户
 def delete_user(db: Session, user_id: int) -> DeleteUserResult:
-    # 删除流程统一把 DAO 返回结果翻译成业务异常或 HTTP 异常。
+    """删除用户，并将 DAO 返回结果翻译成业务异常或 HTTP 异常。"""
     delete_result = user_dao.delete_user(db, user_id)
     if not delete_result["success"]:
         if delete_result["reason"] == "admin_forbidden":
             raise BusinessException(status_code=403, code=4003, message="不能删除 admin 角色账号")
         raise HTTPException(status_code=404, detail="用户不存在")
     return delete_result
+
+# 头像保存
+def upload_avatar(db: Session,
+                  user_id: int,
+                  current_user: models.User,
+                  file: UploadFile) -> models.User:
+    """上传并保存当前用户头像。"""
+    # 1.查找用户是否存在
+    db_user = user_dao.get_user_by_id(db, user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="用户不存在")
+    # 2.校验ID是否一致，只能改自己的
+    if db_user.id != current_user.id:
+        raise HTTPException(status_code=403, detail="无权修改他人头像")
+    # 3.使用工具保存文件到 static/avatars，并获取 avatar_url
+    new_avatar_url = save_avatar(file,db_user.avatar_url)
+    # 4.更新数据库
+    updated_user = user_dao.update_user_avatar(db, user_id, new_avatar_url)
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="用户不存在")
+    return updated_user
 ```
 
-### session/__init__.py
+### session\__init__.py
 
 ```python
 # 会话层
 ```
 
-### session/db_session.py
+### session\db_session.py
 
 ```python
 # 数据库连接配置
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase,sessionmaker
+from pathlib import Path
 
-# SQLite数据库链接地址
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+# SQLite 数据库连接地址
 SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
+if not SQLALCHEMY_DATABASE_URL:
+    raise RuntimeError("未配置 SQLALCHEMY_DATABASE_URL，请检查 .env 文件")
 
 # 创建数据库引擎
-engine = create_engine(SQLALCHEMY_DATABASE_URL,connect_args={"check_same_thread":False})
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
 # 会话工厂
-SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# ORM模型基类
+# ORM 模型基类
 class Base(DeclarativeBase):
     pass
 
@@ -1213,7 +1309,7 @@ def get_db():
         yield db
 ```
 
-### tests/test_user_system.py
+### tests\test_user_system.py
 
 ```python
 import os
@@ -1224,18 +1320,20 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from core.logger import get_logger
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from core.logger import get_logger
+
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
+os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 # 测试环境关闭登录限流，避免批量用例触发 429。
 os.environ.setdefault("TESTING", "1")
 
 import main
 import routers.user_routes as user_routes
+import utils.file_utils as file_utils
 import utils.security as security
 
 security.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
@@ -1248,12 +1346,22 @@ from session.db_session import Base
 logger = get_logger()
 
 
+def cleanup_test_avatars():
+    """清理测试生成的头像文件，保留默认头像。"""
+    if not file_utils.STATIC_DIR.exists():
+        return
+    for avatar_file in file_utils.STATIC_DIR.iterdir():
+        if avatar_file.is_file() and avatar_file.name != "default.jpg":
+            avatar_file.unlink()
+
+
 def setup_module():
     """测试模块启动前清理遗留测试库。"""
     db_path = PROJECT_ROOT / "tests" / "_test_user_system.db"
     if db_path.exists():
         logger.info(f"删除遗留测试数据库: path={db_path}")
         db_path.unlink()
+    cleanup_test_avatars()
 
 
 def teardown_module():
@@ -1262,6 +1370,7 @@ def teardown_module():
     if db_path.exists():
         logger.info(f"清理测试数据库: path={db_path}")
         db_path.unlink()
+    cleanup_test_avatars()
 
 
 def build_test_client():
@@ -1298,6 +1407,7 @@ def build_test_client():
         )
         user_dao.create_user(db, admin_user, role_name="admin")
 
+    cleanup_test_avatars()
     client = TestClient(main.app)
     logger.success("测试客户端构建完成")
     return client, test_engine
@@ -1684,15 +1794,130 @@ def test_reset_password_user_not_found():
     finally:
         client.close()
         engine.dispose()
+
+
+def test_upload_avatar_success_with_png():
+    """验证用户可上传 PNG 头像，并写入数据库。"""
+    client, engine = build_test_client()
+    try:
+        user = create_user(client, username="avatar_user", email="avatar_user@example.com")
+        token = login(client, "avatar_user", "Aa123456!")
+
+        response = client.post(
+            f"/users/{user['id']}/avatar",
+            files={"file": ("avatar.png", b"fake-png-bytes", "image/png")},
+            headers=auth_headers(token),
+        )
+        assert response.status_code == 200, response.text
+        assert response.json()["code"] == 200
+
+        with db_session.SessionLocal() as db:
+            db_user = user_dao.get_user_by_id(db, user["id"])
+            assert db_user.avatar_url is not None
+            assert db_user.avatar_url.startswith("static/avatars/")
+            assert db_user.avatar_url.endswith(".png")
+            assert db_user.avatar_url != "static/avatars/default.jpg"
+            assert (PROJECT_ROOT / db_user.avatar_url).exists()
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_upload_avatar_reject_invalid_content_type():
+    """验证上传非图片文件时返回 400。"""
+    client, engine = build_test_client()
+    try:
+        user = create_user(client, username="bad_file_user", email="bad_file_user@example.com")
+        token = login(client, "bad_file_user", "Aa123456!")
+
+        response = client.post(
+            f"/users/{user['id']}/avatar",
+            files={"file": ("avatar.txt", b"not-an-image", "text/plain")},
+            headers=auth_headers(token),
+        )
+        assert response.status_code == 400, response.text
+        assert response.json()["code"] == 400
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_upload_avatar_reject_oversized_file():
+    """验证上传超过 2MB 的文件时返回 400。"""
+    client, engine = build_test_client()
+    try:
+        user = create_user(client, username="large_file_user", email="large_file_user@example.com")
+        token = login(client, "large_file_user", "Aa123456!")
+        large_content = b"a" * (2 * 1024 * 1024 + 1)
+
+        response = client.post(
+            f"/users/{user['id']}/avatar",
+            files={"file": ("avatar.jpg", large_content, "image/jpeg")},
+            headers=auth_headers(token),
+        )
+        assert response.status_code == 400, response.text
+        assert response.json()["code"] == 400
+    finally:
+        client.close()
+        engine.dispose()
 ```
 
-### utils/__init__.py
+### utils\__init__.py
 
 ```python
 # 工具包
 ```
 
-### utils/password_utils.py
+### utils\file_utils.py
+
+```python
+import os
+import time
+from pathlib import Path
+
+from fastapi import UploadFile, HTTPException
+
+# 限制文件类型和大小
+ALLOWED_TYPES = {"image/jpeg","image/png"}
+MAX_SIZE = 2 * 1024 * 1024 #限制2MB文件大小
+
+# 保存相对路径
+STATIC_DIR = Path(__file__).resolve().parents[1] / "static" / "avatars"
+
+
+def save_avatar(file: UploadFile,avatar_url) -> str:
+    # 校验类型
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(400, "只允许上传jpg/png图片")
+
+    # 校验大小 2MB
+    file.file.seek(0, os.SEEK_END)
+    size = file.file.tell()
+    file.file.seek(0) # 重置指针
+    if size > MAX_SIZE:
+        raise HTTPException(400,"图片大小不能超过2MB")
+
+    # 时间戳命名
+    suffix = Path(file.filename or "avatar.jpg").suffix or ".jpg"
+    filename = f"{int(time.time() * 1000)}{suffix}"
+
+    # 删除旧图片
+    if not avatar_url == "static/avatars/default.jpg":
+        static = Path(__file__).resolve().parents[1]
+        # 删除该图片
+        file_path = static / avatar_url
+        if file_path.exists():
+            file_path.unlink()
+    # 保存文件
+    STATIC_DIR.mkdir(parents=True, exist_ok=True)
+    file_path = STATIC_DIR / filename
+    with open(file_path,"wb") as f:
+        f.write(file.file.read())
+
+    return f"static/avatars/{filename}"
+```
+
+### utils\password_utils.py
 
 ```python
 from passlib.context import CryptContext
@@ -1727,47 +1952,43 @@ def validate_password(password: str) -> bool:
     return True
 ```
 
-### utils/security.py
+### utils\security.py
 
 ```python
 # 核心安全逻辑
 import os
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Optional
 
-from jose import JWTError, jwt
+from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
 from sqlalchemy.orm import Session
-from dotenv import load_dotenv
 
 from dao import user_dao as crud
+from models import User
 from session.db_session import get_db
-from models import User # 导入User模型用于类型提示
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
-# 配置项
-# 生成一个安全的 SECRET_KEY: 终端运行 openssl rand -hex 32
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise RuntimeError("未配置 SECRET_KEY，请在环境变量或 .env 文件中设置 SECRET_KEY")
 ALGORITHM = "HS256"
-#  # Token 过期时间
 ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 
-# JWT Token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    # 生成JWT Token
     to_encode = data.copy()
     now = datetime.now(timezone.utc)
     if expires_delta:
         expire = now + expires_delta
     else:
         expire = now + timedelta(minutes=15)
-    # 显式写入 Unix 时间戳，避免时区和 naive datetime 的解释差异
     to_encode.update({
         "iat": int(now.timestamp()),
         "exp": int(expire.timestamp())
@@ -1795,8 +2016,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise credentials_exception
     return user
 
-# 获取当前管理员的依赖项
 async def get_current_admin(current_user: User = Depends(get_current_user)):
+    # 依赖项： 通过Token获取当前用户，用于保护接口
     if current_user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -1804,3 +2025,4 @@ async def get_current_admin(current_user: User = Depends(get_current_user)):
         )
     return current_user
 ```
+

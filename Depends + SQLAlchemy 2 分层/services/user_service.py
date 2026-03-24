@@ -132,9 +132,9 @@ def upload_avatar(db: Session,
     if db_user.id != current_user.id:
         raise HTTPException(status_code=403, detail="无权修改他人头像")
     # 3.使用工具保存文件到 static/avatars，并获取 avatar_url
-    avatar_url = save_avatar(file)
+    new_avatar_url = save_avatar(file,db_user.avatar_url)
     # 4.更新数据库
-    updated_user = user_dao.update_user_avatar(db, user_id, avatar_url)
+    updated_user = user_dao.update_user_avatar(db, user_id, new_avatar_url)
     if not updated_user:
         raise HTTPException(status_code=404, detail="用户不存在")
     return updated_user

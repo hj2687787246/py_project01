@@ -4,12 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 静态文件挂载">
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 解决List类型问题">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/dao/user_dao.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/role_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/role_schema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/user_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/schemas/user_schema.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/user_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pydantic/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pydantic/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/utils/file_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/utils/file_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +61,7 @@
     <urls />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="AISelfReview" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -377,7 +380,9 @@
       <workItem from="1774185762313" duration="178000" />
       <workItem from="1774226027472" duration="17840000" />
       <workItem from="1774248404383" duration="19449000" />
-      <workItem from="1774271700744" duration="1882000" />
+      <workItem from="1774271700744" duration="1933000" />
+      <workItem from="1774312969387" duration="1245000" />
+      <workItem from="1774314257587" duration="8211000" />
     </task>
     <task id="LOCAL-00001" summary="3.19">
       <option name="closed" value="true" />
@@ -763,7 +768,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774270132687</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="3.23 解决List类型问题">
+      <option name="closed" value="true" />
+      <created>1774273611714</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1774273611714</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -784,7 +797,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="3.20 数据库CURD实战结合 Depends + SQLAlchemy 2 注释添加" />
     <MESSAGE value="3.20 NP61-NP75错题练习" />
     <MESSAGE value="3.21 &#10;✅ 定义了带 updated_at 自动时间戳的 ORM 模型&#10;✅ 跑通了完整的 CURD&#10;✅ 加了模糊查询&#10;✅ 加了统一返回格式" />
     <MESSAGE value="3.21 修复时区bug，新增创建时间字段" />
@@ -809,7 +821,8 @@
     <MESSAGE value="3.23 用户头像上传" />
     <MESSAGE value="3.23 修复已知bug" />
     <MESSAGE value="3.23 静态文件挂载" />
-    <option name="LAST_COMMIT_MESSAGE" value="3.23 静态文件挂载" />
+    <MESSAGE value="3.23 解决List类型问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="3.23 解决List类型问题" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/py_project01$NP72_.coverage" NAME="NP72 生成字典 覆盖结果" MODIFIED="1774009569628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
@@ -833,7 +846,7 @@
     <SUITE FILE_PATH="coverage/py_project01$11__list.coverage" NAME="11.数据容器-list 覆盖结果" MODIFIED="1773292966578" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$10_2.coverage" NAME="10.循环案例2 覆盖结果" MODIFIED="1773235049181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$01_.coverage" NAME="01.爬虫入门程序 覆盖结果" MODIFIED="1773629412393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第四章" />
-    <SUITE FILE_PATH="coverage/py_project01$.coverage" NAME=" 覆盖结果" MODIFIED="1774270160282" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
+    <SUITE FILE_PATH="coverage/py_project01$.coverage" NAME=" 覆盖结果" MODIFIED="1774314279881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
     <SUITE FILE_PATH="coverage/py_project01$02_json.coverage" NAME="02.json文件入门 覆盖结果" MODIFIED="1773554005108" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
     <SUITE FILE_PATH="coverage/py_project01$01_mysql.coverage" NAME="01.mysql练习 覆盖结果" MODIFIED="1773811734774" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$my_fun.coverage" NAME="my_fun 覆盖结果" MODIFIED="1773388602924" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章/module02" />
@@ -848,7 +861,7 @@
     <SUITE FILE_PATH="coverage/py_project01$17_.coverage" NAME="17.函数进阶 覆盖结果" MODIFIED="1773377182586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$08_1.coverage" NAME="08.递归练习1 覆盖结果" MODIFIED="1773889691436" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
     <SUITE FILE_PATH="coverage/py_project01$13__tuple.coverage" NAME="13.数据容器-tuple元组 覆盖结果" MODIFIED="1773299014566" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
-    <SUITE FILE_PATH="coverage/py_project01$main.coverage" NAME="main 覆盖结果" MODIFIED="1774271125625" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
+    <SUITE FILE_PATH="coverage/py_project01$main.coverage" NAME="main 覆盖结果" MODIFIED="1774273549287" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
     <SUITE FILE_PATH="coverage/py_project01$19_2.coverage" NAME="19.函数进阶2 覆盖结果" MODIFIED="1773382414050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$02_mysql.coverage" NAME="02.mysql练习 覆盖结果" MODIFIED="1773817531286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$NP21_.coverage" NAME="NP21 增加派对名单（二） 覆盖结果" MODIFIED="1773748588441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />

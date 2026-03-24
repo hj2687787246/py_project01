@@ -1,4 +1,4 @@
-from typing import Sequence, Optional, TypedDict, cast, List
+from typing import Sequence, Optional, TypedDict, List
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, joinedload
 from core.logger import get_logger
 from dao import role_dao
 import models
-from schemas import UserCreate, UserUpdate
+import schemas
 from utils.password_utils import get_password_hash
 
 logger = get_logger()
@@ -19,7 +19,7 @@ class DeleteUserResult(TypedDict):
 
 # C: Create 创建用户
 # 通过角色名查询 role_id，避免路由层直接写死角色主键。
-def create_user(db: Session, user: UserCreate, role_name: str = "user") -> models.User:
+def create_user(db: Session, user: schemas.UserCreate, role_name: str = "user") -> models.User:
     """创建用户并写入关联角色。"""
     hashed_pwd = get_password_hash(user.password)
     role = role_dao.get_role_by_name(db, role_name)
@@ -46,15 +46,16 @@ def create_user(db: Session, user: UserCreate, role_name: str = "user") -> model
         db.rollback()
         raise
 
-# R: Read 根据ID查询查询角色关系
+# R: Read 根据ID查询查询角色关系 Optional表示 models | None
 def get_user_with_role(db: Session, user_id: int) -> Optional[models.User]:
     """根据用户 ID 查询用户及其角色关系。"""
     logger.info(f"数据层查询用户角色关系: user_id={user_id}")
+    # 查询User表的时候同时连接查询Role表，避免后续响应序列化时再懒加载。一次性加载关联数据
     stmt = select(models.User).options(joinedload(models.User.role_info)).where(models.User.id == user_id)
     return db.scalar(stmt)
 
 
-# R: Read 按 ID 查询，同时预加载角色，避免后续响应序列化时再懒加载。
+# R: Read 按 ID 查询，同时预加载角色，避免后续响应序列化时再懒加载。一次性加载关联数据
 def get_user_by_id(db: Session, user_id: int) -> Optional[models.User]:
     """根据用户 ID 查询单个用户。"""
     logger.info(f"数据层按ID查询用户: user_id={user_id}")
@@ -106,7 +107,7 @@ def search_users(db: Session, keyword: str) -> Sequence[models.User]:
 
 
 # U: Update 更新用户
-def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[models.User]:
+def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate) -> Optional[models.User]:
     """更新用户可变字段。"""
     db_user = get_user_by_id(db, user_id)
     if not db_user:
