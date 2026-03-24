@@ -27,13 +27,17 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-# 创建用户请求体
-class UserCreate(BaseModel):
-    """创建用户请求模型。"""
+# 提取用户通用字段，和 role_schema 保持一致的组织方式
+class UserBase(BaseModel):
+    """用户通用字段。"""
     username: str = Field(min_length=3,max_length=50,description="用户名")
-    password: str = Field(min_length=6,description="密码") #新增
     age: int = Field(ge=0,le=150,description="年龄")
     email: str = Field(pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$", description="邮箱地址")
+
+# 创建用户请求体
+class UserCreate(UserBase):
+    """创建用户请求模型。"""
+    password: str = Field(min_length=6,description="密码") #新增
 
 # 更新用户请求体
 class UserUpdate(BaseModel):
@@ -45,16 +49,13 @@ class UserUpdate(BaseModel):
     role_id: Optional[int] = None #只有管理员能修改这个字段
 
 # 用户响应体 不返回密码
-class UserResponse(BaseModel):
+class UserResponse(UserBase):
     """用户响应模型。"""
     # 模型配置 把「数据库模型层 (Model)」转换成「DTO」
     model_config = ConfigDict(from_attributes=True)
-
     id:int
-    username: str
     role: Optional[str]
-    age: Optional[int]
-    email: str
+    # 响应模型里允许头像为空，兼容默认值和历史数据
     avatar_url: Optional[str] = None
     created_at: datetime
     updated_at: datetime
