@@ -1,4 +1,4 @@
-import os
+﻿import os
 import sys
 from pathlib import Path
 
@@ -102,8 +102,8 @@ def auth_headers(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
-def login(client: TestClient, username: str, password: str) -> tuple[str, str]:
-    """执行登录并返回访问令牌和刷新令牌。"""
+def login_response(client: TestClient, username: str, password: str) -> dict:
+    """执行登录并返回完整响应数据。"""
     logger.info(f"测试登录: username={username}")
     response = client.post(
         "/users/login",
@@ -112,6 +112,12 @@ def login(client: TestClient, username: str, password: str) -> tuple[str, str]:
     assert response.status_code == 200, response.text
     data = response.json()["data"]
     logger.success(f"测试登录成功: username={username}")
+    return data
+
+
+def login(client: TestClient, username: str, password: str) -> tuple[str, str]:
+    """执行登录并返回访问令牌和刷新令牌。"""
+    data = login_response(client, username, password)
     return data["access_token"], data["refresh_token"]
 
 
@@ -179,22 +185,64 @@ def test_user_basic_flow():
 
 
 def test_login_and_refresh_flow():
-    """验证登录返回 access/refresh token，并可刷新 access token。"""
+    """验证登录返回 token 和当前用户信息，并可刷新 access token。"""
     client, engine = build_test_client()
     try:
         create_user(client)
-        access_token, refresh_token = login(client, "alice", "Aa123456!")
-        assert access_token
-        assert refresh_token
+        login_data = login_response(client, "alice", "Aa123456!")
+        assert login_data["access_token"]
+        assert login_data["refresh_token"]
+        assert login_data["token_type"] == "bearer"
+        assert login_data["user"]["username"] == "alice"
+        assert login_data["user"]["role"] == "user"
 
         refresh_response = client.post(
             "/users/auth/refresh",
-            json={"refresh_token": refresh_token},
+            json={"refresh_token": login_data["refresh_token"]},
         )
         assert refresh_response.status_code == 200, refresh_response.text
         refresh_data = refresh_response.json()["data"]
         assert refresh_data["access_token"]
         assert refresh_data["token_type"] == "bearer"
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_get_current_user_profile():
+    """验证可通过 token 获取当前登录用户信息。"""
+    client, engine = build_test_client()
+    try:
+        create_user(client)
+        access_token, _ = login(client, "alice", "Aa123456!")
+
+        response = client.get(
+            "/users/me",
+            headers=auth_headers(access_token),
+        )
+        assert response.status_code == 200, response.text
+        data = response.json()["data"]
+        assert data["username"] == "alice"
+        assert data["role"] == "user"
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_swagger_oauth2_token_endpoint():
+    """验证 Swagger OAuth2 标准 token 接口。"""
+    client, engine = build_test_client()
+    try:
+        create_user(client)
+
+        response = client.post(
+            "/users/token",
+            data={"username": "alice", "password": "Aa123456!"},
+        )
+        assert response.status_code == 200, response.text
+        data = response.json()
+        assert data["access_token"]
+        assert data["token_type"] == "bearer"
     finally:
         client.close()
         engine.dispose()
@@ -423,8 +471,8 @@ def test_reset_password_by_self():
         user_access_token, _ = login(client, "alice", "Aa123456!")
 
         response = client.post(
-            f"/roles/{user['id']}/reset-password",
-            json="654321",
+            f"/users/{user['id']}/reset-password",
+            json={"password": "Aa123456!", "new_password": "Bb123456!"},
             headers=auth_headers(user_access_token),
         )
         assert response.status_code == 200, response.text
@@ -436,7 +484,7 @@ def test_reset_password_by_self():
         )
         assert bad_login.status_code == 400, bad_login.text
 
-        new_access_token, _ = login(client, "alice", "654321")
+        new_access_token, _ = login(client, "alice", "Bb123456!")
         assert new_access_token
     finally:
         client.close()
@@ -451,14 +499,14 @@ def test_reset_password_by_admin():
         admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
-            f"/roles/{user['id']}/reset-password",
-            json="654321",
+            f"/users/{user['id']}/reset-password",
+            json={"password": "Aa123456!", "new_password": "Bb123456!"},
             headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         assert response.json()["data"]["message"] == "密码重置成功"
 
-        new_access_token, _ = login(client, "alice", "654321")
+        new_access_token, _ = login(client, "alice", "Bb123456!")
         assert new_access_token
     finally:
         client.close()
@@ -474,8 +522,8 @@ def test_reset_password_permission_denied():
         alice_access_token, _ = login(client, "alice", "Aa123456!")
 
         response = client.post(
-            f"/roles/{bob['id']}/reset-password",
-            json="654321",
+            f"/users/{bob['id']}/reset-password",
+            json={"password": "whatever123", "new_password": "654321"},
             headers=auth_headers(alice_access_token),
         )
         assert response.status_code == 403, response.text
@@ -492,8 +540,8 @@ def test_reset_password_user_not_found():
         admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
-            "/roles/999/reset-password",
-            json="654321",
+            "/users/999/reset-password",
+            json={"password": "123456", "new_password": "654321"},
             headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 404, response.text

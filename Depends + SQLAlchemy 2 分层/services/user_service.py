@@ -39,7 +39,7 @@ def _ensure_password_valid(password: str) -> None:
         raise BusinessException(status_code=400, code=4003, message="密码至少8位，包含大小写、数字、特殊字符")
 
 # 重置密码
-def reset_password(db: Session, user_id: int, current_user: models.User, new_password: str) -> User:
+def reset_password(db: Session, user_id: int, current_user: models.User, password: str, new_password: str) -> User:
     """重置指定用户密码，并校验操作权限。"""
     db_user = user_dao.get_user_by_id(db, user_id)
     if not db_user:
@@ -48,27 +48,32 @@ def reset_password(db: Session, user_id: int, current_user: models.User, new_pas
     if current_user.id != user_id and current_user.role != "admin":
         raise HTTPException(status_code=403, detail="无权重置他人密码")
 
+    if not verify_password(password, db_user.hashed_password):
+        raise HTTPException(status_code=400, detail="原密码错误")
+
+    # 密码复杂度验证
+    _ensure_password_valid(new_password)
     hashed_password = get_password_hash(new_password)
     return user_dao.update_user_password(db, db_user, hashed_password)
 
 # 登录校验
 def login_user(db: Session, username: str, password: str, settings: Settings) -> LoginResult:
     """完成用户查找、密码校验和 token 生成。"""
-    user = user_dao.get_user_by_username(db, username=username)
-    if not user or not verify_password(password, user.hashed_password):
+    db_user = user_dao.get_user_by_username(db, username=username)
+    if not db_user or not verify_password(password, db_user.hashed_password):
         raise HTTPException(status_code=400, detail="用户名或密码错误", headers={"WWW-Authenticate": "Bearer"})
     #生成两个Token：payload里都放{"sub": username}
-    access_token = create_access_token(data={"sub": user.username}, settings=settings)
-    refresh_token = create_refresh_token(data={"sub": user.username}, settings=settings)
+    access_token = create_access_token(data={"sub": db_user.username}, settings=settings)
+    refresh_token = create_refresh_token(data={"sub": db_user.username}, settings=settings)
 
-    return user, access_token, refresh_token
+    return db_user, access_token, refresh_token
 
 # 刷新 Token 接口
 def get_new_access_token(request, settings) -> str:
 
     exception = HTTPException(401, detail="Refresh Token 无效")
-    user = verify_token(request.refresh_token, exception, settings)
-    new_access_token = create_access_token(data={"sub": user}, settings=settings)
+    username = verify_token(request.refresh_token, exception, settings)
+    new_access_token = create_access_token(data={"sub": username}, settings=settings)
 
     return new_access_token
 

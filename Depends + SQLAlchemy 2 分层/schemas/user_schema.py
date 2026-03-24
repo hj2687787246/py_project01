@@ -1,4 +1,4 @@
-# Pydantic 请求 / 响应模型
+﻿# Pydantic 请求 / 响应模型
 from datetime import datetime
 from typing import Optional,Generic,TypeVar,List
 from zoneinfo import ZoneInfo
@@ -20,12 +20,12 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer" # 默认是bearer，前端不用传
+    user: "UserResponse"
 
 # 3.刷新Token接口的请求体结构
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
-# 统一返回格式
 class UnifiedResponse(BaseModel,Generic[T]):
     """统一响应结构。"""
     # 模型配置 把「数据库模型层 (Model)」转换成「DTO」

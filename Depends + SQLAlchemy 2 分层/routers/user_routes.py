@@ -39,42 +39,52 @@ def login_for_swagger_oauth2(
     """提供给 Swagger Authorize 的标准 OAuth2 Password Flow 接口。"""
     logger.info(f"收到 Swagger OAuth2 登录请求: username={form_data.username}")
     try:
-        user, access_token, _ = user_service.login_user(
+        db_user, access_token, _ = user_service.login_user(
             db, form_data.username, form_data.password, settings
         )
     except HTTPException:
         logger.error(f"Swagger OAuth2 登录失败: username={form_data.username}, reason=账号或密码错误")
         raise
-    logger.success(f"Swagger OAuth2 登录成功: user_id={user.id}, username={user.username}, role={user.role}")
+    logger.success(f"Swagger OAuth2 登录成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
     return {"access_token": access_token, "token_type": "bearer"}
 
 # 登录
-@router.post("/login", response_model=schemas.UnifiedResponse, summary="登录获取 Token")
+# response_model = 接口返回数据的标准 + 安全锁
+# 用你的 DTO 模型 做格式约束
+# 自动过滤敏感字段、校验数据
+# 不用手动写 model_validate/model_dump
+# 是 FastAPI 生产环境必写的规范 ✅
+@router.post("/login", response_model=schemas.UnifiedResponse[schemas.TokenResponse], summary="登录获取 Token")
 # 限流接口 防止暴力请求 比如1分钟最多5次
 # 测试环境关闭限流
 @(limiter.limit("5/minute") if os.getenv("TESTING") != "1" else (lambda func: func))
 def login_for_access_token(request: Request, user_data: UserLogin,db: Session = Depends(get_db),settings: Settings = Depends(get_settings)):
     logger.info(f"收到登录请求: username={user_data.username}")
     try:
-        user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
+        db_user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
     except HTTPException:
         logger.error(f"登录失败: username={user_data.username}, reason=账号或密码错误")
         raise
-    logger.success(f"登录成功: user_id={user.id}, username={user.username}, role={user.role}")
-    token_data = schemas.TokenResponse(access_token=access_token,refresh_token=refresh_token).model_dump()
+    logger.success(f"登录成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
+    # 把User转换为UserResponse 必须配合 from_attributes=True 允许直接接收数据库模型对象
+    # 如果数据库里的字段和 DTO 不匹配，直接报错，保证数据安全
+    user_data = schemas.UserResponse.model_validate(db_user)
+    # model_dump把DTO对象转换为字典
+    token_data = schemas.TokenResponse(access_token=access_token, refresh_token=refresh_token, user=user_data).model_dump()
     return schemas.UnifiedResponse(data=token_data)
 
 # 重置密码
 @router.post("/{user_id}/reset-password", response_model=schemas.UnifiedResponse[dict],summary="重置密码")
 def reset_password_api(user_id: int,
-                   new_password: str = Body(..., min_length=6),
-                   db: Session = Depends(get_db),
-                   current_user: models.User = Depends(get_current_user)):
+                       password: str = Body(..., min_length=6),
+                       new_password: str = Body(..., min_length=6),
+                       db: Session = Depends(get_db),
+                       current_user: models.User = Depends(get_current_user)):
     logger.info(f"收到重置密码请求: operator_id={current_user.id}, operator={current_user.username}, "
                 f"target_user_id={user_id}")
     try:
         # 更新密码
-        user_service.reset_password(db, user_id, current_user, new_password)
+        user_service.reset_password(db, user_id, current_user, password, new_password)
     except HTTPException as exc:
         if exc.status_code == 404:
             logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
@@ -126,7 +136,15 @@ def create_user_api(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return schemas.UnifiedResponse(data=db_user)
 
 
-# 按 ID 查询用户，增加 Depends(get_current_user) 保护
+# 当前登录用户信息 从token中获取username，再从get_current_user中获取user信息
+@router.get("/me", response_model=schemas.UnifiedResponse[schemas.UserResponse], summary="获取当前登录用户信息")
+def get_current_user_profile(current_user: models.User = Depends(get_current_user)):
+    """返回当前访问令牌对应的用户信息。"""
+    logger.info(f"收到当前登录用户信息请求: user_id={current_user.id}, username={current_user.username}, role={current_user.role}")
+    user_data = schemas.UserResponse.model_validate(current_user)
+    logger.success(f"获取当前登录用户信息成功: user_id={current_user.id}, username={current_user.username}, role={current_user.role}")
+    return schemas.UnifiedResponse(data=user_data)
+
 @router.get("/{user_id}", response_model=schemas.UnifiedResponse[schemas.UserResponse],summary="根据ID查询用户")
 def get_user_api(user_id: int,
                  db: Session = Depends(get_db),

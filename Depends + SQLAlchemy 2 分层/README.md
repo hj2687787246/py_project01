@@ -1,4 +1,4 @@
-# FastAPI 分层项目源码归档
+﻿# FastAPI 分层项目源码归档
 
 ## 文档用途
 
@@ -673,7 +673,7 @@ def reset_password_api(user_id: int,
 
 ### routers\user_routes.py
 
-```python
+`$InfoString
 import os
 from typing import List
 
@@ -681,7 +681,8 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File, Body
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 import models
 import schemas
@@ -702,30 +703,85 @@ if hasattr(router, "state"):
     router.state.limiter = limiter
 if hasattr(router, "add_exception_handler"):
     router.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+@router.post("/token", summary="Swagger OAuth2 登录")
+@(limiter.limit("5/minute") if os.getenv("TESTING") != "1" else (lambda func: func))
+def login_for_swagger_oauth2(
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+):
+    """提供给 Swagger Authorize 的标准 OAuth2 Password Flow 接口。"""
+    logger.info(f"收到 Swagger OAuth2 登录请求: username={form_data.username}")
+    try:
+        db_user, access_token, _ = user_service.login_user(
+            db, form_data.username, form_data.password, settings
+        )
+    except HTTPException:
+        logger.error(f"Swagger OAuth2 登录失败: username={form_data.username}, reason=账号或密码错误")
+        raise
+    logger.success(f"Swagger OAuth2 登录成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
+    return {"access_token": access_token, "token_type": "bearer"}
+
 # 登录
-@router.post("/login", response_model=schemas.UnifiedResponse, summary="登录获取 Token")
+@router.post("/login", response_model=schemas.UnifiedResponse[schemas.TokenResponse], summary="登录获取 Token")
 # 限流接口 防止暴力请求 比如1分钟最多5次
 # 测试环境关闭限流
 @(limiter.limit("5/minute") if os.getenv("TESTING") != "1" else (lambda func: func))
 def login_for_access_token(request: Request, user_data: UserLogin,db: Session = Depends(get_db),settings: Settings = Depends(get_settings)):
     logger.info(f"收到登录请求: username={user_data.username}")
     try:
-        user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
+        db_user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
     except HTTPException:
         logger.error(f"登录失败: username={user_data.username}, reason=账号或密码错误")
         raise
-    logger.success(f"登录成功: user_id={user.id}, username={user.username}, role={user.role}")
-    token_data = schemas.TokenResponse(access_token=access_token,refresh_token=refresh_token).model_dump()
+    logger.success(f"登录成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
+    # 把User转换为UserResponse 必须配合 from_attributes=True 允许直接接收数据库模型对象
+    # 如果数据库里的字段和 DTO 不匹配，直接报错，保证数据安全
+    user_data = schemas.UserResponse.model_validate(db_user)
+    # model_dump把DTO对象转换为字典
+    token_data = schemas.TokenResponse(access_token=access_token, refresh_token=refresh_token, user=user_data).model_dump()
     return schemas.UnifiedResponse(data=token_data)
 
+# 重置密码
+@router.post("/{user_id}/reset-password", response_model=schemas.UnifiedResponse[dict],summary="重置密码")
+def reset_password_api(user_id: int,
+                       password: str,
+                       new_password: str = Body(..., min_length=6),
+                       db: Session = Depends(get_db),
+                       current_user: models.User = Depends(get_current_user)):
+    logger.info(f"收到重置密码请求: operator_id={current_user.id}, operator={current_user.username}, "
+                f"target_user_id={user_id}")
+    try:
+        # 更新密码
+        user_service.reset_password(db, user_id, current_user, password, new_password)
+    except HTTPException as exc:
+        if exc.status_code == 404:
+            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
+                           f"target_user_id={user_id}, reason=用户不存在")
+        elif exc.status_code == 403:
+            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
+                           f"target_user_id={user_id}, reason=无权重置他人密码")
+        raise
+    logger.success(f"重置密码成功: operator_id={current_user.id}, operator={current_user.username}, "
+                   f"target_user_id={user_id}")
+    return schemas.UnifiedResponse(data={"message":"密码重置成功"})
 
-@router.post("/auth/refresh", response_model=schemas.UnifiedResponse)
-def refresh_token(
+# 刷新Token
+@router.post("/auth/refresh", response_model=schemas.UnifiedResponse, summary="刷新 Access Token")
+def refresh_token_api(
     request: schemas.RefreshTokenRequest,
     settings: Settings = Depends(get_settings)
 ):
-    # 刷新令牌
-    new_access_token = user_service.get_new_access_token(request,settings)
+    logger.info("收到刷新Token请求")
+    try:
+        # 刷新令牌
+        new_access_token = user_service.get_new_access_token(request,settings)
+    except HTTPException as exc:
+        logger.error(f"刷新Token失败: reason={exc.detail}")
+        raise
+    logger.success("刷新Token成功")
     return schemas.UnifiedResponse(data={"access_token": new_access_token, "token_type": "bearer"})
 
 
@@ -751,7 +807,15 @@ def create_user_api(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return schemas.UnifiedResponse(data=db_user)
 
 
-# 按 ID 查询用户，增加 Depends(get_current_user) 保护
+# 当前登录用户信息 从token中获取username，再从get_current_user中获取user信息
+@router.get("/me", response_model=schemas.UnifiedResponse[schemas.UserResponse], summary="获取当前登录用户信息")
+def get_current_user_profile(current_user: models.User = Depends(get_current_user)):
+    """返回当前访问令牌对应的用户信息。"""
+    logger.info(f"收到当前登录用户信息请求: user_id={current_user.id}, username={current_user.username}, role={current_user.role}")
+    user_data = schemas.UserResponse.model_validate(current_user)
+    logger.success(f"获取当前登录用户信息成功: user_id={current_user.id}, username={current_user.username}, role={current_user.role}")
+    return schemas.UnifiedResponse(data=user_data)
+
 @router.get("/{user_id}", response_model=schemas.UnifiedResponse[schemas.UserResponse],summary="根据ID查询用户")
 def get_user_api(user_id: int,
                  db: Session = Depends(get_db),
@@ -906,7 +970,7 @@ def upload_avatar_api(user_id: int,
 
 ### schemas\__init__.py
 
-```python
+`$InfoString
 # Pydantic 请求 / 响应模型
 from .user_schema import RefreshTokenRequest, TokenResponse, UnifiedResponse, UserCreate, UserResponse, UserUpdate, PageParams, PageResult
 from .role_schema import RoleResponse,RoleCreate
@@ -939,7 +1003,7 @@ class RoleResponse(RoleBase):
 
 ### schemas\user_schema.py
 
-```python
+`$InfoString
 # Pydantic 请求 / 响应模型
 from datetime import datetime
 from typing import Optional,Generic,TypeVar,List
@@ -962,12 +1026,12 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer" # 默认是bearer，前端不用传
+    user: "UserResponse"
 
 # 3.刷新Token接口的请求体结构
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
-# 统一返回格式
 class UnifiedResponse(BaseModel,Generic[T]):
     """统一响应结构。"""
     # 模型配置 把「数据库模型层 (Model)」转换成「DTO」
@@ -1324,7 +1388,7 @@ def get_db():
 
 ### tests\test_user_system.py
 
-```python
+`$InfoString
 import os
 import sys
 from pathlib import Path
@@ -1429,8 +1493,8 @@ def auth_headers(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
-def login(client: TestClient, username: str, password: str) -> tuple[str, str]:
-    """执行登录并返回访问令牌和刷新令牌。"""
+def login_response(client: TestClient, username: str, password: str) -> dict:
+    """执行登录并返回完整响应数据。"""
     logger.info(f"测试登录: username={username}")
     response = client.post(
         "/users/login",
@@ -1439,6 +1503,12 @@ def login(client: TestClient, username: str, password: str) -> tuple[str, str]:
     assert response.status_code == 200, response.text
     data = response.json()["data"]
     logger.success(f"测试登录成功: username={username}")
+    return data
+
+
+def login(client: TestClient, username: str, password: str) -> tuple[str, str]:
+    """执行登录并返回访问令牌和刷新令牌。"""
+    data = login_response(client, username, password)
     return data["access_token"], data["refresh_token"]
 
 
@@ -1506,22 +1576,64 @@ def test_user_basic_flow():
 
 
 def test_login_and_refresh_flow():
-    """验证登录返回 access/refresh token，并可刷新 access token。"""
+    """验证登录返回 token 和当前用户信息，并可刷新 access token。"""
     client, engine = build_test_client()
     try:
         create_user(client)
-        access_token, refresh_token = login(client, "alice", "Aa123456!")
-        assert access_token
-        assert refresh_token
+        login_data = login_response(client, "alice", "Aa123456!")
+        assert login_data["access_token"]
+        assert login_data["refresh_token"]
+        assert login_data["token_type"] == "bearer"
+        assert login_data["user"]["username"] == "alice"
+        assert login_data["user"]["role"] == "user"
 
         refresh_response = client.post(
             "/users/auth/refresh",
-            json={"refresh_token": refresh_token},
+            json={"refresh_token": login_data["refresh_token"]},
         )
         assert refresh_response.status_code == 200, refresh_response.text
         refresh_data = refresh_response.json()["data"]
         assert refresh_data["access_token"]
         assert refresh_data["token_type"] == "bearer"
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_get_current_user_profile():
+    """验证可通过 token 获取当前登录用户信息。"""
+    client, engine = build_test_client()
+    try:
+        create_user(client)
+        access_token, _ = login(client, "alice", "Aa123456!")
+
+        response = client.get(
+            "/users/me",
+            headers=auth_headers(access_token),
+        )
+        assert response.status_code == 200, response.text
+        data = response.json()["data"]
+        assert data["username"] == "alice"
+        assert data["role"] == "user"
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_swagger_oauth2_token_endpoint():
+    """验证 Swagger OAuth2 标准 token 接口。"""
+    client, engine = build_test_client()
+    try:
+        create_user(client)
+
+        response = client.post(
+            "/users/token",
+            data={"username": "alice", "password": "Aa123456!"},
+        )
+        assert response.status_code == 200, response.text
+        data = response.json()
+        assert data["access_token"]
+        assert data["token_type"] == "bearer"
     finally:
         client.close()
         engine.dispose()
@@ -1904,7 +2016,7 @@ def test_upload_avatar_reject_oversized_file():
 
 ### utils\auth.py
 
-```python
+`$InfoString
 from passlib.context import CryptContext
 import re
 # 核心安全逻辑
@@ -1928,7 +2040,7 @@ pwd_context = CryptContext(
     deprecated="auto",
 )
 # 2. 初始化OAuth2方案：指定登录接口是"/users/login"，FastAPI会自动从Header取Authorization: Bearer <token>
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
 
 # 密码相关函数
 # 验证密码：输入明文密码和数据库里的哈希密码，返回是否匹配
