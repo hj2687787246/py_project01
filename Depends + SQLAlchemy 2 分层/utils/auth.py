@@ -1,4 +1,4 @@
-from passlib.context import CryptContext
+﻿from passlib.context import CryptContext
 import re
 # 核心安全逻辑
 from datetime import datetime, timedelta, timezone
@@ -21,7 +21,7 @@ pwd_context = CryptContext(
     deprecated="auto",
 )
 # 2. 初始化OAuth2方案：指定登录接口是"/users/login"，FastAPI会自动从Header取Authorization: Bearer <token>
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
 
 # 密码相关函数
 # 验证密码：输入明文密码和数据库里的哈希密码，返回是否匹配

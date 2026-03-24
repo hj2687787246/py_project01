@@ -1,4 +1,4 @@
-import os
+﻿import os
 from typing import List
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -6,6 +6,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File, Body
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 import models
 import schemas
@@ -26,6 +27,27 @@ if hasattr(router, "state"):
     router.state.limiter = limiter
 if hasattr(router, "add_exception_handler"):
     router.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+@router.post("/token", summary="Swagger OAuth2 登录")
+@(limiter.limit("5/minute") if os.getenv("TESTING") != "1" else (lambda func: func))
+def login_for_swagger_oauth2(
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+):
+    """提供给 Swagger Authorize 的标准 OAuth2 Password Flow 接口。"""
+    logger.info(f"收到 Swagger OAuth2 登录请求: username={form_data.username}")
+    try:
+        user, access_token, _ = user_service.login_user(
+            db, form_data.username, form_data.password, settings
+        )
+    except HTTPException:
+        logger.error(f"Swagger OAuth2 登录失败: username={form_data.username}, reason=账号或密码错误")
+        raise
+    logger.success(f"Swagger OAuth2 登录成功: user_id={user.id}, username={user.username}, role={user.role}")
+    return {"access_token": access_token, "token_type": "bearer"}
+
 # 登录
 @router.post("/login", response_model=schemas.UnifiedResponse, summary="登录获取 Token")
 # 限流接口 防止暴力请求 比如1分钟最多5次
