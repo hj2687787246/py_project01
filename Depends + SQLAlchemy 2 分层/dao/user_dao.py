@@ -7,7 +7,7 @@ from core.logger import get_logger
 from dao import role_dao
 import models
 import schemas
-from utils.password_utils import get_password_hash
+from utils.auth import get_password_hash
 
 logger = get_logger()
 

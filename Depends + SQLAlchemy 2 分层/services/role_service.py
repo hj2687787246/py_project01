@@ -1,14 +1,10 @@
 from typing import List, TypeAlias
-
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
-import models
 import schemas
+
 from core.exceptions import BusinessException
 from dao import role_dao, user_dao
 from models import Role, User
-from utils.password_utils import get_password_hash
 
 # 角色列表的统一返回类型。
 RoleListResult: TypeAlias = List[Role]
@@ -42,15 +38,4 @@ def get_all_roles(db: Session) -> list[type[Role]]:
     return role_dao.get_all_roles(db)
 
 
-# 重置密码
-def reset_password(db: Session, user_id: int, current_user: models.User, new_password: str) -> User:
-    """重置指定用户密码，并校验操作权限。"""
-    db_user = user_dao.get_user_by_id(db, user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="用户不存在")
 
-    if current_user.id != user_id and current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="无权重置他人密码")
-
-    hashed_password = get_password_hash(new_password)
-    return user_dao.update_user_password(db, db_user, hashed_password)

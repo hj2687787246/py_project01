@@ -14,16 +14,13 @@ from core.logger import get_logger
 
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
 os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
+os.environ.setdefault("REFRESH_TOKEN_EXPIRE_DAYS", "7")
 # 测试环境关闭登录限流，避免批量用例触发 429。
 os.environ.setdefault("TESTING", "1")
 
 import main
-import routers.user_routes as user_routes
 import utils.file_utils as file_utils
-import utils.security as security
-
-security.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
-user_routes.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
+from config import get_settings
 from dao import role_dao, user_dao
 from schemas import UserCreate
 from session import db_session
@@ -76,6 +73,7 @@ def build_test_client():
     db_session.SessionLocal = testing_session_local
     main.engine = test_engine
     main.SessionLocal = testing_session_local
+    get_settings.cache_clear()
 
     # 每次构建测试客户端都重置库，确保测试之间互不污染。
     Base.metadata.drop_all(bind=test_engine)
@@ -104,16 +102,17 @@ def auth_headers(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
-def login(client: TestClient, username: str, password: str) -> str:
-    """执行登录并返回访问令牌。"""
+def login(client: TestClient, username: str, password: str) -> tuple[str, str]:
+    """执行登录并返回访问令牌和刷新令牌。"""
     logger.info(f"测试登录: username={username}")
     response = client.post(
-        "/users/token",
-        data={"username": username, "password": password},
+        "/users/login",
+        json={"username": username, "password": password},
     )
     assert response.status_code == 200, response.text
+    data = response.json()["data"]
     logger.success(f"测试登录成功: username={username}")
-    return response.json()["access_token"]
+    return data["access_token"], data["refresh_token"]
 
 
 def create_user(
@@ -156,11 +155,11 @@ def test_user_basic_flow():
     client, engine = build_test_client()
     try:
         created_user = create_user(client)
-        token = login(client, "alice", "Aa123456!")
+        access_token, _ = login(client, "alice", "Aa123456!")
 
         get_response = client.get(
             f"/users/{created_user['id']}",
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert get_response.status_code == 200, get_response.text
         assert get_response.json()["data"]["username"] == "alice"
@@ -169,11 +168,33 @@ def test_user_basic_flow():
         update_response = client.put(
             f"/users/{created_user['id']}",
             json={"age": 20, "email": "alice.updated@example.com"},
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert update_response.status_code == 200, update_response.text
         assert update_response.json()["data"]["age"] == 20
         assert update_response.json()["data"]["email"] == "alice.updated@example.com"
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_login_and_refresh_flow():
+    """验证登录返回 access/refresh token，并可刷新 access token。"""
+    client, engine = build_test_client()
+    try:
+        create_user(client)
+        access_token, refresh_token = login(client, "alice", "Aa123456!")
+        assert access_token
+        assert refresh_token
+
+        refresh_response = client.post(
+            "/users/auth/refresh",
+            json={"refresh_token": refresh_token},
+        )
+        assert refresh_response.status_code == 200, refresh_response.text
+        refresh_data = refresh_response.json()["data"]
+        assert refresh_data["access_token"]
+        assert refresh_data["token_type"] == "bearer"
     finally:
         client.close()
         engine.dispose()
@@ -210,8 +231,8 @@ def test_exception_responses():
         assert duplicate_email.json()["code"] == 4002
 
         bad_login = client.post(
-            "/users/token",
-            data={"username": "alice", "password": "wrong-password"},
+            "/users/login",
+            json={"username": "alice", "password": "wrong-password"},
         )
         assert bad_login.status_code == 400, bad_login.text
         assert bad_login.json()["code"] == 400
@@ -229,20 +250,20 @@ def test_permission_and_admin_flows():
     client, engine = build_test_client()
     try:
         user = create_user(client)
-        user_token = login(client, "alice", "Aa123456!")
-        admin_token = login(client, "admin", "123456")
+        user_access_token, _ = login(client, "alice", "Aa123456!")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         forbidden_role_update = client.put(
             f"/users/{user['id']}",
             json={"role_id": 1},
-            headers=auth_headers(user_token),
+            headers=auth_headers(user_access_token),
         )
         assert forbidden_role_update.status_code == 403, forbidden_role_update.text
         assert forbidden_role_update.json()["code"] == 4004
 
         list_response = client.get(
             "/users?page=1&page_size=10",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert list_response.status_code == 200, list_response.text
         list_data = list_response.json()["data"]
@@ -251,21 +272,21 @@ def test_permission_and_admin_flows():
 
         search_response = client.get(
             "/users/search/?keyword=alice",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert search_response.status_code == 200, search_response.text
         assert len(search_response.json()["data"]) == 1
 
         delete_admin = client.delete(
             "/users/1",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert delete_admin.status_code == 403, delete_admin.text
         assert delete_admin.json()["code"] == 4003
 
         delete_user_response = client.delete(
             f"/users/{user['id']}",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert delete_user_response.status_code == 200, delete_user_response.text
         assert delete_user_response.json()["data"]["user_id"] == user["id"]
@@ -278,7 +299,7 @@ def test_create_admin_user_api():
     """验证管理员创建管理员账号接口。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             "/roles/admin/users",
@@ -288,7 +309,7 @@ def test_create_admin_user_api():
                 "age": 35,
                 "email": "boss2@example.com",
             },
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         data = response.json()["data"]
@@ -303,7 +324,7 @@ def test_create_admin_user_api_duplicate_cases():
     """验证创建管理员账号时的重复校验。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
         create_user(client, username="alice", email="alice@example.com")
 
         duplicate_username = client.post(
@@ -314,7 +335,7 @@ def test_create_admin_user_api_duplicate_cases():
                 "age": 28,
                 "email": "alice_admin@example.com",
             },
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert duplicate_username.status_code == 400, duplicate_username.text
         assert duplicate_username.json()["code"] == 4001
@@ -327,7 +348,7 @@ def test_create_admin_user_api_duplicate_cases():
                 "age": 28,
                 "email": "alice@example.com",
             },
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert duplicate_email.status_code == 400, duplicate_email.text
         assert duplicate_email.json()["code"] == 4002
@@ -340,12 +361,12 @@ def test_create_role_api():
     """验证管理员创建角色接口。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             "/roles",
             json={"name": "editor", "description": "编辑角色"},
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         data = response.json()["data"]
@@ -360,12 +381,12 @@ def test_create_role_api_duplicate_role():
     """验证创建重复角色时返回业务错误。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             "/roles",
             json={"name": "admin", "description": "系统管理员"},
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 400, response.text
         assert response.json()["code"] == 4006
@@ -378,11 +399,11 @@ def test_get_all_roles():
     """验证管理员查询全部角色接口。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.get(
             "/roles",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         data = response.json()["data"]
@@ -399,24 +420,24 @@ def test_reset_password_by_self():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="alice", email="alice@example.com")
-        user_token = login(client, "alice", "Aa123456!")
+        user_access_token, _ = login(client, "alice", "Aa123456!")
 
         response = client.post(
             f"/roles/{user['id']}/reset-password",
             json="654321",
-            headers=auth_headers(user_token),
+            headers=auth_headers(user_access_token),
         )
         assert response.status_code == 200, response.text
         assert response.json()["data"]["message"] == "密码重置成功"
 
         bad_login = client.post(
-            "/users/token",
-            data={"username": "alice", "password": "Aa123456!"},
+            "/users/login",
+            json={"username": "alice", "password": "Aa123456!"},
         )
         assert bad_login.status_code == 400, bad_login.text
 
-        new_token = login(client, "alice", "654321")
-        assert new_token
+        new_access_token, _ = login(client, "alice", "654321")
+        assert new_access_token
     finally:
         client.close()
         engine.dispose()
@@ -427,18 +448,18 @@ def test_reset_password_by_admin():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="alice", email="alice@example.com")
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             f"/roles/{user['id']}/reset-password",
             json="654321",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         assert response.json()["data"]["message"] == "密码重置成功"
 
-        new_token = login(client, "alice", "654321")
-        assert new_token
+        new_access_token, _ = login(client, "alice", "654321")
+        assert new_access_token
     finally:
         client.close()
         engine.dispose()
@@ -448,14 +469,14 @@ def test_reset_password_permission_denied():
     """验证普通用户不能重置他人密码。"""
     client, engine = build_test_client()
     try:
-        alice = create_user(client, username="alice", email="alice@example.com")
+        create_user(client, username="alice", email="alice@example.com")
         bob = create_user(client, username="bob", email="bob@example.com")
-        alice_token = login(client, "alice", "Aa123456!")
+        alice_access_token, _ = login(client, "alice", "Aa123456!")
 
         response = client.post(
             f"/roles/{bob['id']}/reset-password",
             json="654321",
-            headers=auth_headers(alice_token),
+            headers=auth_headers(alice_access_token),
         )
         assert response.status_code == 403, response.text
         assert response.json()["code"] == 403
@@ -468,12 +489,12 @@ def test_reset_password_user_not_found():
     """验证重置不存在用户密码时返回 404。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             "/roles/999/reset-password",
             json="654321",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 404, response.text
         assert response.json()["code"] == 404
@@ -487,12 +508,12 @@ def test_upload_avatar_success_with_png():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="avatar_user", email="avatar_user@example.com")
-        token = login(client, "avatar_user", "Aa123456!")
+        access_token, _ = login(client, "avatar_user", "Aa123456!")
 
         response = client.post(
             f"/users/{user['id']}/avatar",
             files={"file": ("avatar.png", b"fake-png-bytes", "image/png")},
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert response.status_code == 200, response.text
         assert response.json()["code"] == 200
@@ -514,12 +535,12 @@ def test_upload_avatar_reject_invalid_content_type():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="bad_file_user", email="bad_file_user@example.com")
-        token = login(client, "bad_file_user", "Aa123456!")
+        access_token, _ = login(client, "bad_file_user", "Aa123456!")
 
         response = client.post(
             f"/users/{user['id']}/avatar",
             files={"file": ("avatar.txt", b"not-an-image", "text/plain")},
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert response.status_code == 400, response.text
         assert response.json()["code"] == 400
@@ -533,13 +554,13 @@ def test_upload_avatar_reject_oversized_file():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="large_file_user", email="large_file_user@example.com")
-        token = login(client, "large_file_user", "Aa123456!")
+        access_token, _ = login(client, "large_file_user", "Aa123456!")
         large_content = b"a" * (2 * 1024 * 1024 + 1)
 
         response = client.post(
             f"/users/{user['id']}/avatar",
             files={"file": ("avatar.jpg", large_content, "image/jpeg")},
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert response.status_code == 400, response.text
         assert response.json()["code"] == 400

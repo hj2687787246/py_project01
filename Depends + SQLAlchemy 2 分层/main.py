@@ -1,4 +1,5 @@
-﻿from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager
+from pathlib import Path
 import traceback
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -15,6 +16,8 @@ from routers import router as users_router
 
 # 配置日志
 logger = get_logger()
+# 基于当前文件定位静态目录，避免从不同工作目录启动时找不到 static
+BASE_DIR = Path(__file__).resolve().parent
 
 
 # FastAPI 启动前执行数据库初始化检查
@@ -34,7 +37,7 @@ async def lifespan(app: FastAPI):
             if not db.query(User).first():
                 from schemas.user_schema import UserCreate
                 from dao.user_dao import create_user
-                admin_user = UserCreate(username="admin", password="123456", age=26, email="2687787246@qq.com")
+                admin_user = UserCreate(username="admin", password="Hejie@2244", age=26, email="2687787246@qq.com")
                 create_user(db, admin_user, "admin")
                 logger.info("初始化管理员账号完成")
         except Exception as e:
@@ -55,7 +58,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 # 挂载静态文件目录（用于访问头像）
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 # 挂载路由
 app.include_router(users_router)
@@ -124,4 +127,3 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=False)
-

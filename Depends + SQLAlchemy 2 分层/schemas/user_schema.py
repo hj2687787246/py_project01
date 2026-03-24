@@ -10,6 +10,21 @@ from pydantic import BaseModel, ConfigDict, Field, field_serializer
 T = TypeVar("T")
 SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
 
+# 1.登录接口的请求体结构，只接收username和password
+class UserLogin(BaseModel):
+    username: str = Field(min_length=3,max_length=50,description="用户名")
+    password: str = Field(min_length=6,description="密码")
+
+# 2.登录/刷新接口的响应体结构：返回两个Token和token类型
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer" # 默认是bearer，前端不用传
+
+# 3.刷新Token接口的请求体结构
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
 # 统一返回格式
 class UnifiedResponse(BaseModel,Generic[T]):
     """统一响应结构。"""
@@ -19,13 +34,6 @@ class UnifiedResponse(BaseModel,Generic[T]):
     code: int = Field(default=200,description="状态码")
     message: str = Field(default="success",description="提示信息")
     data: Optional[T] = Field(default=None,description="响应数据")
-
-# 新增Token 响应模型
-class Token(BaseModel):
-    """登录接口返回的 Token 结构。"""
-
-    access_token: str
-    token_type: str
 
 # 提取用户通用字段，和 role_schema 保持一致的组织方式
 class UserBase(BaseModel):

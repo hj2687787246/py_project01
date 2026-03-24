@@ -9,7 +9,7 @@ from core.exceptions import BusinessException
 from core.logger import get_logger
 from services import role_service
 from session.db_session import get_db
-from utils.security import get_current_admin, get_current_user
+from utils.auth import get_current_admin, get_current_user
 
 logger = get_logger()
 router = APIRouter(prefix="/roles", tags=["角色管理"])
@@ -41,7 +41,7 @@ def create_admin_user_api(user: schemas.UserCreate,
 
     return schemas.UnifiedResponse(data=db_user)
 # 新增角色
-@router.post("", response_model=schemas.UnifiedResponse[schemas.RoleResponse])
+@router.post("", response_model=schemas.UnifiedResponse[schemas.RoleResponse],summary="新增角色")
 def create_role_api(role: schemas.RoleCreate,
                     db: Session = Depends(get_db),
                     current_admin: models.User = Depends(get_current_admin)):
@@ -58,7 +58,7 @@ def create_role_api(role: schemas.RoleCreate,
     return schemas.UnifiedResponse(data=new_role)
 
 # 查询所有角色
-@router.get("", response_model=schemas.UnifiedResponse[List[schemas.RoleResponse]])
+@router.get("", response_model=schemas.UnifiedResponse[List[schemas.RoleResponse]],summary="查询所有角色")
 def get_all_roles_api(db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
     logger.info(f"收到查询全部角色请求: operator_id={current_admin.id}, operator={current_admin.username}")
     roles = role_service.get_all_roles(db)
@@ -66,25 +66,3 @@ def get_all_roles_api(db: Session = Depends(get_db), current_admin: models.User 
                    f"count={len(roles)}")
     return schemas.UnifiedResponse(data=roles)
 
-# 重置密码
-@router.post("/{user_id}/reset-password", response_model=schemas.UnifiedResponse[dict])
-def reset_password_api(user_id: int,
-                   new_password: str = Body(..., min_length=6),
-                   db: Session = Depends(get_db),
-                   current_user: models.User = Depends(get_current_user)):
-    logger.info(f"收到重置密码请求: operator_id={current_user.id}, operator={current_user.username}, "
-                f"target_user_id={user_id}")
-    try:
-        # 更新密码
-        role_service.reset_password(db, user_id, current_user, new_password)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
-                           f"target_user_id={user_id}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
-                           f"target_user_id={user_id}, reason=无权重置他人密码")
-        raise
-    logger.success(f"重置密码成功: operator_id={current_user.id}, operator={current_user.username}, "
-                   f"target_user_id={user_id}")
-    return schemas.UnifiedResponse(data={"message":"密码重置成功"})

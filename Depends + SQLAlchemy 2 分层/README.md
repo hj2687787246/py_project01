@@ -7,62 +7,12 @@
 说明:
 
 - 代码文件来源于当前项目实际文件清单，自动收录，不再手工挑选。
-- 当前已收录全部文本代码文件：`.env`, `core\__init__.py`, `core\exceptions.py`, `core\logger.py`, `dao\__init__.py`, `dao\role_dao.py`, `dao\user_dao.py`, `main.py`, `models\__init__.py`, `models\role.py`, `models\user.py`, `requirements.txt`, `routers\__init__.py`, `routers\role_routes.py`, `routers\user_routes.py`, `schemas\__init__.py`, `schemas\role_schema.py`, `schemas\user_schema.py`, `services\__init__.py`, `services\role_service.py`, `services\user_service.py`, `session\__init__.py`, `session\db_session.py`, `tests\test_user_system.py`, `utils\__init__.py`, `utils\file_utils.py`, `utils\password_utils.py`, `utils\security.py`。
+- 当前已收录全部文本代码文件：`.env`, `config.py`, `core\__init__.py`, `core\exceptions.py`, `core\logger.py`, `dao\__init__.py`, `dao\role_dao.py`, `dao\user_dao.py`, `main.py`, `models\__init__.py`, `models\role.py`, `models\user.py`, `requirements.txt`, `routers\__init__.py`, `routers\role_routes.py`, `routers\user_routes.py`, `schemas\__init__.py`, `schemas\role_schema.py`, `schemas\user_schema.py`, `services\__init__.py`, `services\role_service.py`, `services\user_service.py`, `session\__init__.py`, `session\db_session.py`, `tests\test_user_system.py`, `utils\__init__.py`, `utils\auth.py`, `utils\file_utils.py`。
 - 二进制文件只列路径，不展开内容。
 - `.env` 中的 `SECRET_KEY` 已脱敏。
 
-## 实际目录结构
-
-```text
-Depends + SQLAlchemy 2 分层/
-├── .env
-├── core
-├── __init__.py
-├── exceptions.py
-├── logger.py
-├── dao
-├── __init__.py
-├── role_dao.py
-├── user_dao.py
-├── main.py
-├── models
-├── __init__.py
-├── role.py
-├── user.py
-├── requirements.txt
-├── routers
-├── __init__.py
-├── role_routes.py
-├── user_routes.py
-├── schemas
-├── __init__.py
-├── role_schema.py
-├── user_schema.py
-├── services
-├── __init__.py
-├── role_service.py
-├── user_service.py
-├── session
-├── __init__.py
-├── db_session.py
-├── tests
-├── test_user_system.py
-├── utils
-├── __init__.py
-├── file_utils.py
-├── password_utils.py
-├── security.py
-├── static
-├── avatars
-│   ├── 1774315893089.jpg
-│   ├── 1774317347273.jpg
-│   ├── default.jpg
-```
-
 ## 二进制文件
 
-- `static\avatars\1774315893089.jpg` (41710 bytes)
-- `static\avatars\1774317347273.jpg` (41710 bytes)
 - `static\avatars\default.jpg` (48903 bytes)
 
 ## 全部代码
@@ -77,6 +27,36 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 # 数据库链接地址
 SQLALCHEMY_DATABASE_URL="sqlite:///./fastapi_test.db"
+```
+
+### config.py
+
+```python
+from functools import lru_cache
+from pathlib import Path
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+BASE_DIR = Path(__file__).resolve().parent
+
+
+class Settings(BaseSettings):
+    # JWT签名密钥（生产环境必须换成复杂的随机字符串，现在先用这个测试）
+    SECRET_KEY: str = "f8b7a9d3e5c8f2b1a4e7d9c8b7a6f5e489c7b6a5d4e3f2a1b0c9d8e7f6a5b4c3"
+    # JWT加密算法，固定用HS256即可
+    ALGORITHM: str = "HS256"
+    # access_token过期时间：30分钟（经常用，泄露风险大，所以短）
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    # refresh_token过期时间：7天（只在刷新时用，存得安全，所以长）
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+
+    # 允许 .env 中存在当前 Settings 未声明的其他配置，避免和仓库里别的项目变量冲突
+    model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
+
+
+@lru_cache(maxsize=None)  # 缓存配置对象，只在第一次调用时创建Settings对象，后续都返回缓存，提升性能
+def get_settings():
+    return Settings()
 ```
 
 ### core\__init__.py
@@ -197,8 +177,8 @@ from sqlalchemy.orm import Session, joinedload
 from core.logger import get_logger
 from dao import role_dao
 import models
-from schemas import UserCreate, UserUpdate
-from utils.password_utils import get_password_hash
+import schemas
+from utils.auth import get_password_hash
 
 logger = get_logger()
 
@@ -210,7 +190,7 @@ class DeleteUserResult(TypedDict):
 
 # C: Create 创建用户
 # 通过角色名查询 role_id，避免路由层直接写死角色主键。
-def create_user(db: Session, user: UserCreate, role_name: str = "user") -> models.User:
+def create_user(db: Session, user: schemas.UserCreate, role_name: str = "user") -> models.User:
     """创建用户并写入关联角色。"""
     hashed_pwd = get_password_hash(user.password)
     role = role_dao.get_role_by_name(db, role_name)
@@ -298,7 +278,7 @@ def search_users(db: Session, keyword: str) -> Sequence[models.User]:
 
 
 # U: Update 更新用户
-def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[models.User]:
+def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate) -> Optional[models.User]:
     """更新用户可变字段。"""
     db_user = get_user_by_id(db, user_id)
     if not db_user:
@@ -363,6 +343,7 @@ def update_user_avatar(db: Session, user_id: int, avatar_url: str) -> models.Use
 
 ```python
 from contextlib import asynccontextmanager
+from pathlib import Path
 import traceback
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -379,6 +360,8 @@ from routers import router as users_router
 
 # 配置日志
 logger = get_logger()
+# 基于当前文件定位静态目录，避免从不同工作目录启动时找不到 static
+BASE_DIR = Path(__file__).resolve().parent
 
 
 # FastAPI 启动前执行数据库初始化检查
@@ -419,7 +402,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 # 挂载静态文件目录（用于访问头像）
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 # 挂载路由
 app.include_router(users_router)
@@ -607,7 +590,7 @@ from core.exceptions import BusinessException
 from core.logger import get_logger
 from services import role_service
 from session.db_session import get_db
-from utils.security import get_current_admin, get_current_user
+from utils.auth import get_current_admin, get_current_user
 
 logger = get_logger()
 router = APIRouter(prefix="/roles", tags=["角色管理"])
@@ -699,16 +682,16 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-
 import models
 import schemas
 from core.exceptions import BusinessException
 from core.logger import get_logger
+from schemas.user_schema import UserLogin
 from services import user_service
 from session.db_session import get_db
-from utils.security import get_current_admin, get_current_user
+from utils.auth import get_current_admin, get_current_user
+from config import Settings,get_settings
 
 logger = get_logger()
 router = APIRouter(prefix="/users", tags=["用户管理"])
@@ -720,20 +703,30 @@ if hasattr(router, "state"):
 if hasattr(router, "add_exception_handler"):
     router.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # 登录
-@router.post("/token", response_model=schemas.Token, summary="登录获取 Token")
+@router.post("/login", response_model=schemas.UnifiedResponse, summary="登录获取 Token")
 # 限流接口 防止暴力请求 比如1分钟最多5次
 # 测试环境关闭限流
 @(limiter.limit("5/minute") if os.getenv("TESTING") != "1" else (lambda func: func))
-def login_for_access_token(request: Request, form_data: OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
-    logger.info(f"收到登录请求: username={form_data.username}")
+def login_for_access_token(request: Request, user_data: UserLogin,db: Session = Depends(get_db),settings: Settings = Depends(get_settings)):
+    logger.info(f"收到登录请求: username={user_data.username}")
     try:
-        user, access_token = user_service.login_user(db, form_data.username, form_data.password)
+        user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
     except HTTPException:
-        logger.error(f"登录失败: username={form_data.username}, reason=用户名或密码错误")
+        logger.error(f"登录失败: username={user_data.username}, reason=账号或密码错误")
         raise
-
     logger.success(f"登录成功: user_id={user.id}, username={user.username}, role={user.role}")
-    return {"access_token": access_token, "token_type": "bearer"}
+    token_data = schemas.TokenResponse(access_token=access_token,refresh_token=refresh_token).model_dump()
+    return schemas.UnifiedResponse(data=token_data)
+
+
+@router.post("/auth/refresh", response_model=schemas.UnifiedResponse)
+def refresh_token(
+    request: schemas.RefreshTokenRequest,
+    settings: Settings = Depends(get_settings)
+):
+    # 刷新令牌
+    new_access_token = user_service.get_new_access_token(request,settings)
+    return schemas.UnifiedResponse(data={"access_token": new_access_token, "token_type": "bearer"})
 
 
 # 创建用户
@@ -915,7 +908,7 @@ def upload_avatar_api(user_id: int,
 
 ```python
 # Pydantic 请求 / 响应模型
-from .user_schema import Token, UnifiedResponse, UserCreate, UserResponse, UserUpdate, PageParams, PageResult
+from .user_schema import RefreshTokenRequest, TokenResponse, UnifiedResponse, UserCreate, UserResponse, UserUpdate, PageParams, PageResult
 from .role_schema import RoleResponse,RoleCreate
 ```
 
@@ -923,13 +916,13 @@ from .role_schema import RoleResponse,RoleCreate
 
 ```python
 from typing import Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict,Field
 
 class RoleBase(BaseModel):
     """角色基础模型。"""
 
-    name: str
-    description: Optional[str] = None
+    name: str = Field(min_length=3,max_length=50,description="角色名")
+    description: Optional[str] = Field(min_length=3,max_length=50,description="角色描述")
 
 class RoleCreate(RoleBase):
     """创建角色请求模型。"""
@@ -938,7 +931,7 @@ class RoleCreate(RoleBase):
 
 class RoleResponse(RoleBase):
     """角色响应模型。"""
-
+    # 模型配置 把「数据库模型层 (Model)」转换成「DTO」
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -959,30 +952,42 @@ from pydantic import BaseModel, ConfigDict, Field, field_serializer
 T = TypeVar("T")
 SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
 
+# 1.登录接口的请求体结构，只接收username和password
+class UserLogin(BaseModel):
+    username: str = Field(min_length=3,max_length=50,description="用户名")
+    password: str = Field(min_length=6,description="密码")
+
+# 2.登录/刷新接口的响应体结构：返回两个Token和token类型
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer" # 默认是bearer，前端不用传
+
+# 3.刷新Token接口的请求体结构
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
 # 统一返回格式
 class UnifiedResponse(BaseModel,Generic[T]):
     """统一响应结构。"""
-    # 模型配置
+    # 模型配置 把「数据库模型层 (Model)」转换成「DTO」
     model_config = ConfigDict(from_attributes=True)
 
     code: int = Field(default=200,description="状态码")
     message: str = Field(default="success",description="提示信息")
     data: Optional[T] = Field(default=None,description="响应数据")
 
-# 新增Token 响应模型
-class Token(BaseModel):
-    """登录接口返回的 Token 结构。"""
-
-    access_token: str
-    token_type: str
-
-# 创建用户请求体
-class UserCreate(BaseModel):
-    """创建用户请求模型。"""
+# 提取用户通用字段，和 role_schema 保持一致的组织方式
+class UserBase(BaseModel):
+    """用户通用字段。"""
     username: str = Field(min_length=3,max_length=50,description="用户名")
-    password: str = Field(min_length=6,description="密码") #新增
     age: int = Field(ge=0,le=150,description="年龄")
     email: str = Field(pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$", description="邮箱地址")
+
+# 创建用户请求体
+class UserCreate(UserBase):
+    """创建用户请求模型。"""
+    password: str = Field(min_length=6,description="密码") #新增
 
 # 更新用户请求体
 class UserUpdate(BaseModel):
@@ -994,16 +999,13 @@ class UserUpdate(BaseModel):
     role_id: Optional[int] = None #只有管理员能修改这个字段
 
 # 用户响应体 不返回密码
-class UserResponse(BaseModel):
+class UserResponse(UserBase):
     """用户响应模型。"""
-
+    # 模型配置 把「数据库模型层 (Model)」转换成「DTO」
     model_config = ConfigDict(from_attributes=True)
-
     id:int
-    username: str
     role: Optional[str]
-    age: Optional[int]
-    email: str
+    # 响应模型里允许头像为空，兼容默认值和历史数据
     avatar_url: Optional[str] = None
     created_at: datetime
     updated_at: datetime
@@ -1075,7 +1077,7 @@ import schemas
 from core.exceptions import BusinessException
 from dao import role_dao, user_dao
 from models import Role, User
-from utils.password_utils import get_password_hash
+from utils.auth import get_password_hash
 
 # 角色列表的统一返回类型。
 RoleListResult: TypeAlias = List[Role]
@@ -1126,8 +1128,7 @@ def reset_password(db: Session, user_id: int, current_user: models.User, new_pas
 ### services\user_service.py
 
 ```python
-from datetime import timedelta
-from typing import List, Tuple, TypeAlias, Sequence, Any
+from typing import List, Tuple, TypeAlias, Sequence
 
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -1138,12 +1139,14 @@ from core.exceptions import BusinessException
 from dao import user_dao
 from dao.user_dao import DeleteUserResult
 from models import User
+from utils.auth import create_refresh_token
 from utils.file_utils import save_avatar
-from utils.password_utils import validate_password, verify_password
-from utils.security import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
+from utils.auth import validate_password, verify_password, verify_token, create_access_token
+from config import Settings
 
 # 登录后返回“用户对象 + token”的统一结构。
-LoginResult: TypeAlias = Tuple[models.User, str]
+LoginResult: TypeAlias = Tuple[models.User, str, str]
+
 # 分页查询返回“数据列表 + 总数”的统一结构。
 UserListResult: TypeAlias = tuple[List[models.User], int]
 
@@ -1167,15 +1170,25 @@ def _ensure_password_valid(password: str) -> None:
 
 
 # 登录校验
-def login_user(db: Session, username: str, password: str) -> LoginResult:
+def login_user(db: Session, username: str, password: str, settings: Settings) -> LoginResult:
     """完成用户查找、密码校验和 token 生成。"""
     user = user_dao.get_user_by_username(db, username=username)
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=400, detail="用户名或密码错误", headers={"WWW-Authenticate": "Bearer"})
+    #生成两个Token：payload里都放{"sub": username}
+    access_token = create_access_token(data={"sub": user.username}, settings=settings)
+    refresh_token = create_refresh_token(data={"sub": user.username}, settings=settings)
 
-    access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
-    return user, access_token
+    return user, access_token, refresh_token
+
+# 刷新 Token 接口
+def get_new_access_token(request, settings) -> str:
+
+    exception = HTTPException(401, detail="Refresh Token 无效")
+    user = verify_token(request.refresh_token, exception, settings)
+    new_access_token = create_access_token(data={"sub": user}, settings=settings)
+
+    return new_access_token
 
 # 创建用户
 def create_user(db: Session, user: schemas.UserCreate) -> models.User:
@@ -1328,16 +1341,13 @@ from core.logger import get_logger
 
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
 os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
+os.environ.setdefault("REFRESH_TOKEN_EXPIRE_DAYS", "7")
 # 测试环境关闭登录限流，避免批量用例触发 429。
 os.environ.setdefault("TESTING", "1")
 
 import main
-import routers.user_routes as user_routes
 import utils.file_utils as file_utils
-import utils.security as security
-
-security.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
-user_routes.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
+from config import get_settings
 from dao import role_dao, user_dao
 from schemas import UserCreate
 from session import db_session
@@ -1390,6 +1400,7 @@ def build_test_client():
     db_session.SessionLocal = testing_session_local
     main.engine = test_engine
     main.SessionLocal = testing_session_local
+    get_settings.cache_clear()
 
     # 每次构建测试客户端都重置库，确保测试之间互不污染。
     Base.metadata.drop_all(bind=test_engine)
@@ -1418,16 +1429,17 @@ def auth_headers(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
-def login(client: TestClient, username: str, password: str) -> str:
-    """执行登录并返回访问令牌。"""
+def login(client: TestClient, username: str, password: str) -> tuple[str, str]:
+    """执行登录并返回访问令牌和刷新令牌。"""
     logger.info(f"测试登录: username={username}")
     response = client.post(
-        "/users/token",
-        data={"username": username, "password": password},
+        "/users/login",
+        json={"username": username, "password": password},
     )
     assert response.status_code == 200, response.text
+    data = response.json()["data"]
     logger.success(f"测试登录成功: username={username}")
-    return response.json()["access_token"]
+    return data["access_token"], data["refresh_token"]
 
 
 def create_user(
@@ -1470,11 +1482,11 @@ def test_user_basic_flow():
     client, engine = build_test_client()
     try:
         created_user = create_user(client)
-        token = login(client, "alice", "Aa123456!")
+        access_token, _ = login(client, "alice", "Aa123456!")
 
         get_response = client.get(
             f"/users/{created_user['id']}",
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert get_response.status_code == 200, get_response.text
         assert get_response.json()["data"]["username"] == "alice"
@@ -1483,11 +1495,33 @@ def test_user_basic_flow():
         update_response = client.put(
             f"/users/{created_user['id']}",
             json={"age": 20, "email": "alice.updated@example.com"},
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert update_response.status_code == 200, update_response.text
         assert update_response.json()["data"]["age"] == 20
         assert update_response.json()["data"]["email"] == "alice.updated@example.com"
+    finally:
+        client.close()
+        engine.dispose()
+
+
+def test_login_and_refresh_flow():
+    """验证登录返回 access/refresh token，并可刷新 access token。"""
+    client, engine = build_test_client()
+    try:
+        create_user(client)
+        access_token, refresh_token = login(client, "alice", "Aa123456!")
+        assert access_token
+        assert refresh_token
+
+        refresh_response = client.post(
+            "/users/auth/refresh",
+            json={"refresh_token": refresh_token},
+        )
+        assert refresh_response.status_code == 200, refresh_response.text
+        refresh_data = refresh_response.json()["data"]
+        assert refresh_data["access_token"]
+        assert refresh_data["token_type"] == "bearer"
     finally:
         client.close()
         engine.dispose()
@@ -1524,8 +1558,8 @@ def test_exception_responses():
         assert duplicate_email.json()["code"] == 4002
 
         bad_login = client.post(
-            "/users/token",
-            data={"username": "alice", "password": "wrong-password"},
+            "/users/login",
+            json={"username": "alice", "password": "wrong-password"},
         )
         assert bad_login.status_code == 400, bad_login.text
         assert bad_login.json()["code"] == 400
@@ -1543,20 +1577,20 @@ def test_permission_and_admin_flows():
     client, engine = build_test_client()
     try:
         user = create_user(client)
-        user_token = login(client, "alice", "Aa123456!")
-        admin_token = login(client, "admin", "123456")
+        user_access_token, _ = login(client, "alice", "Aa123456!")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         forbidden_role_update = client.put(
             f"/users/{user['id']}",
             json={"role_id": 1},
-            headers=auth_headers(user_token),
+            headers=auth_headers(user_access_token),
         )
         assert forbidden_role_update.status_code == 403, forbidden_role_update.text
         assert forbidden_role_update.json()["code"] == 4004
 
         list_response = client.get(
             "/users?page=1&page_size=10",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert list_response.status_code == 200, list_response.text
         list_data = list_response.json()["data"]
@@ -1565,21 +1599,21 @@ def test_permission_and_admin_flows():
 
         search_response = client.get(
             "/users/search/?keyword=alice",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert search_response.status_code == 200, search_response.text
         assert len(search_response.json()["data"]) == 1
 
         delete_admin = client.delete(
             "/users/1",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert delete_admin.status_code == 403, delete_admin.text
         assert delete_admin.json()["code"] == 4003
 
         delete_user_response = client.delete(
             f"/users/{user['id']}",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert delete_user_response.status_code == 200, delete_user_response.text
         assert delete_user_response.json()["data"]["user_id"] == user["id"]
@@ -1592,7 +1626,7 @@ def test_create_admin_user_api():
     """验证管理员创建管理员账号接口。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             "/roles/admin/users",
@@ -1602,7 +1636,7 @@ def test_create_admin_user_api():
                 "age": 35,
                 "email": "boss2@example.com",
             },
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         data = response.json()["data"]
@@ -1617,7 +1651,7 @@ def test_create_admin_user_api_duplicate_cases():
     """验证创建管理员账号时的重复校验。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
         create_user(client, username="alice", email="alice@example.com")
 
         duplicate_username = client.post(
@@ -1628,7 +1662,7 @@ def test_create_admin_user_api_duplicate_cases():
                 "age": 28,
                 "email": "alice_admin@example.com",
             },
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert duplicate_username.status_code == 400, duplicate_username.text
         assert duplicate_username.json()["code"] == 4001
@@ -1641,7 +1675,7 @@ def test_create_admin_user_api_duplicate_cases():
                 "age": 28,
                 "email": "alice@example.com",
             },
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert duplicate_email.status_code == 400, duplicate_email.text
         assert duplicate_email.json()["code"] == 4002
@@ -1654,12 +1688,12 @@ def test_create_role_api():
     """验证管理员创建角色接口。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             "/roles",
             json={"name": "editor", "description": "编辑角色"},
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         data = response.json()["data"]
@@ -1674,12 +1708,12 @@ def test_create_role_api_duplicate_role():
     """验证创建重复角色时返回业务错误。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             "/roles",
             json={"name": "admin", "description": "系统管理员"},
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 400, response.text
         assert response.json()["code"] == 4006
@@ -1692,11 +1726,11 @@ def test_get_all_roles():
     """验证管理员查询全部角色接口。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.get(
             "/roles",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         data = response.json()["data"]
@@ -1713,24 +1747,24 @@ def test_reset_password_by_self():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="alice", email="alice@example.com")
-        user_token = login(client, "alice", "Aa123456!")
+        user_access_token, _ = login(client, "alice", "Aa123456!")
 
         response = client.post(
             f"/roles/{user['id']}/reset-password",
             json="654321",
-            headers=auth_headers(user_token),
+            headers=auth_headers(user_access_token),
         )
         assert response.status_code == 200, response.text
         assert response.json()["data"]["message"] == "密码重置成功"
 
         bad_login = client.post(
-            "/users/token",
-            data={"username": "alice", "password": "Aa123456!"},
+            "/users/login",
+            json={"username": "alice", "password": "Aa123456!"},
         )
         assert bad_login.status_code == 400, bad_login.text
 
-        new_token = login(client, "alice", "654321")
-        assert new_token
+        new_access_token, _ = login(client, "alice", "654321")
+        assert new_access_token
     finally:
         client.close()
         engine.dispose()
@@ -1741,18 +1775,18 @@ def test_reset_password_by_admin():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="alice", email="alice@example.com")
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             f"/roles/{user['id']}/reset-password",
             json="654321",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         assert response.json()["data"]["message"] == "密码重置成功"
 
-        new_token = login(client, "alice", "654321")
-        assert new_token
+        new_access_token, _ = login(client, "alice", "654321")
+        assert new_access_token
     finally:
         client.close()
         engine.dispose()
@@ -1762,14 +1796,14 @@ def test_reset_password_permission_denied():
     """验证普通用户不能重置他人密码。"""
     client, engine = build_test_client()
     try:
-        alice = create_user(client, username="alice", email="alice@example.com")
+        create_user(client, username="alice", email="alice@example.com")
         bob = create_user(client, username="bob", email="bob@example.com")
-        alice_token = login(client, "alice", "Aa123456!")
+        alice_access_token, _ = login(client, "alice", "Aa123456!")
 
         response = client.post(
             f"/roles/{bob['id']}/reset-password",
             json="654321",
-            headers=auth_headers(alice_token),
+            headers=auth_headers(alice_access_token),
         )
         assert response.status_code == 403, response.text
         assert response.json()["code"] == 403
@@ -1782,12 +1816,12 @@ def test_reset_password_user_not_found():
     """验证重置不存在用户密码时返回 404。"""
     client, engine = build_test_client()
     try:
-        admin_token = login(client, "admin", "123456")
+        admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
             "/roles/999/reset-password",
             json="654321",
-            headers=auth_headers(admin_token),
+            headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 404, response.text
         assert response.json()["code"] == 404
@@ -1801,12 +1835,12 @@ def test_upload_avatar_success_with_png():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="avatar_user", email="avatar_user@example.com")
-        token = login(client, "avatar_user", "Aa123456!")
+        access_token, _ = login(client, "avatar_user", "Aa123456!")
 
         response = client.post(
             f"/users/{user['id']}/avatar",
             files={"file": ("avatar.png", b"fake-png-bytes", "image/png")},
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert response.status_code == 200, response.text
         assert response.json()["code"] == 200
@@ -1828,12 +1862,12 @@ def test_upload_avatar_reject_invalid_content_type():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="bad_file_user", email="bad_file_user@example.com")
-        token = login(client, "bad_file_user", "Aa123456!")
+        access_token, _ = login(client, "bad_file_user", "Aa123456!")
 
         response = client.post(
             f"/users/{user['id']}/avatar",
             files={"file": ("avatar.txt", b"not-an-image", "text/plain")},
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert response.status_code == 400, response.text
         assert response.json()["code"] == 400
@@ -1847,13 +1881,13 @@ def test_upload_avatar_reject_oversized_file():
     client, engine = build_test_client()
     try:
         user = create_user(client, username="large_file_user", email="large_file_user@example.com")
-        token = login(client, "large_file_user", "Aa123456!")
+        access_token, _ = login(client, "large_file_user", "Aa123456!")
         large_content = b"a" * (2 * 1024 * 1024 + 1)
 
         response = client.post(
             f"/users/{user['id']}/avatar",
             files={"file": ("avatar.jpg", large_content, "image/jpeg")},
-            headers=auth_headers(token),
+            headers=auth_headers(access_token),
         )
         assert response.status_code == 400, response.text
         assert response.json()["code"] == 400
@@ -1866,6 +1900,158 @@ def test_upload_avatar_reject_oversized_file():
 
 ```python
 # 工具包
+```
+
+### utils\auth.py
+
+```python
+from passlib.context import CryptContext
+import re
+# 核心安全逻辑
+from datetime import datetime, timedelta, timezone
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from sqlalchemy.orm import Session
+from config import Settings, get_settings
+
+from dao import user_dao
+from models import User
+from session.db_session import get_db
+
+
+# 1. 初始化密码加密上下文：改用 pbkdf2_sha256，避免当前环境下 bcrypt 兼容问题
+pwd_context = CryptContext(
+    schemes=["pbkdf2_sha256"],
+    default="pbkdf2_sha256",
+    pbkdf2_sha256__default_rounds=100000,
+    deprecated="auto",
+)
+# 2. 初始化OAuth2方案：指定登录接口是"/users/login"，FastAPI会自动从Header取Authorization: Bearer <token>
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+
+# 密码相关函数
+# 验证密码：输入明文密码和数据库里的哈希密码，返回是否匹配
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # 验证密码：明文 vs 哈希值
+    return pwd_context.verify(plain_password, hashed_password)
+
+# 生成密码哈希：注册或修改密码时用，不存明文密码到数据库
+def get_password_hash(password: str) -> str:
+    # 获取密码的哈希值
+    return pwd_context.hash(password)
+
+# 校验密码复杂度
+def validate_password(password: str) -> bool:
+    # 校验密码复杂度：至少8位，包含大小写、数字、特殊字符
+    if len(password) < 8:
+        return False
+    if not re.search(r"[A-Z]", password):
+        return False
+    if not re.search(r"[a-z]", password):
+        return False
+    if not re.search(r"[0-9]", password):
+        return False
+    if not re.search(r"[!@#$%^&*()_+=-]", password):
+        return False
+    return True
+
+# Token生成函数 接收数据、过期时间、配置，返回Token
+def create_token(data: dict, expires_delta: timedelta, settings: Settings) -> str:
+    """
+    生成JWT认证令牌
+    参数:data: 要存入Token的核心数据（通常存放用户唯一标识，如sub: 用户ID/用户名）
+        expires_delta: Token的有效时长（timedelta对象）
+        settings: 项目配置实例，获取密钥和加密算法
+    返回:生成的JWT字符串（令牌）
+    """
+    # 浅拷贝原始数据字典，避免直接修改传入的原数据（保证函数无副作用）
+    to_encode = data.copy()
+    # 获取【带时区的UTC当前时间】：JWT标准时间格式，杜绝时区bug
+    now = datetime.now(timezone.utc)
+    # 计算Token过期时间
+    if expires_delta:
+        # 传入了有效时长 → 使用指定时长计算过期时间
+        expire = now + expires_delta
+    else:
+        # 未传入有效时长 → 默认设置15分钟过期（安全兜底）
+        expire = now + timedelta(minutes=15)
+    # 向JWT载荷(payload)中添加标准声明字段
+    to_encode.update({
+        "iat": int(now.timestamp()),  # iat = Issued at → 令牌签发时间（标准时间戳）
+        "exp": int(expire.timestamp())  # exp = Expiration time → 令牌过期时间（标准时间戳）
+    })
+    # 生成最终的JWT令牌
+    # 使用密钥签名 + 指定算法加密，保证令牌不可篡改
+    encoded_jwt = jwt.encode(to_encode,settings.SECRET_KEY,algorithm=settings.ALGORITHM)
+    # 返回生成好的JWT令牌
+    return encoded_jwt
+
+# 生成access_token：调用通用函数，传短的过期时间
+def create_access_token(data: dict, settings: Settings) -> str:
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    return create_token(data, access_token_expires, settings)
+
+# 生成refresh_token：调用通用函数，传长的过期时间
+def create_refresh_token(data: dict, settings: Settings) -> str:
+    refresh_token_expires = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    return create_token(data, refresh_token_expires, settings)
+
+# 通用Token验证函数：接收Token、异常对象、配置，返回Token里的数据
+def verify_token(token: str,credentials_exception: HTTPException,settings: Settings) -> str:
+    """
+    通用JWT Token验证
+    :param token: 请求头中的Token
+    :param credentials_exception: 认证失败异常
+    :param settings: 配置类
+    :return: 从Token中解析出的用户名
+    """
+    try:
+        # 解码Token：验证签名、过期时间
+        payload = jwt.decode(token,settings.SECRET_KEY,algorithms=[settings.ALGORITHM])
+        # 获取用户标识（sub是JWT标准字段，存用户名/ID）
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        return username
+    # 捕获所有Token错误（过期、签名错误、格式非法）
+    except JWTError:
+        raise credentials_exception
+
+# ====================== 接口依赖：获取当前登录用户 ======================
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),  # 自动从请求头取Token
+    db: Session = Depends(get_db),  # 注入数据库会话
+    settings: Settings = Depends(get_settings)  # 注入配置
+):
+    """
+    接口鉴权依赖：验证Token并返回当前登录的用户
+    用法：在接口参数中写 current_user = Depends(get_current_user)
+    """
+    # 定义认证失败的统一异常
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="无法验证凭据",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    # 1. 调用通用函数校验Token，获取用户名
+    username = verify_token(token, credentials_exception, settings)
+    # 2. 查询数据库，获取完整用户信息
+    user = user_dao.get_user_by_username(db, username=username)
+    if user is None:
+        raise credentials_exception
+    # 3. 返回用户对象，供接口使用
+    return user
+
+async def get_current_admin(current_user: User = Depends(get_current_user)):
+    # 依赖项： 通过Token获取当前用户，用于保护接口
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="权限不足，需要管理员权限"
+        )
+    return current_user
 ```
 
 ### utils\file_utils.py
@@ -1915,114 +2101,5 @@ def save_avatar(file: UploadFile,avatar_url) -> str:
         f.write(file.file.read())
 
     return f"static/avatars/{filename}"
-```
-
-### utils\password_utils.py
-
-```python
-from passlib.context import CryptContext
-import re
-pwd_context = CryptContext(
-    schemes=["pbkdf2_sha256"],
-    default="pbkdf2_sha256",
-    pbkdf2_sha256__default_rounds=100000, # 迭代次数（越高越安全，默认10万次）
-    deprecated="auto",
-)
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    # 验证密码：明文 vs 哈希值
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password: str) -> str:
-    # 获取密码的哈希值
-    return pwd_context.hash(password)
-
-def validate_password(password: str) -> bool:
-    # 校验密码复杂度：至少8位，包含大小写、数字、特殊字符
-    if len(password) < 8:
-        return False
-    if not re.search(r"[A-Z]", password):
-        return False
-    if not re.search(r"[a-z]", password):
-        return False
-    if not re.search(r"[0-9]", password):
-        return False
-    if not re.search(r"[!@#$%^&*()_+=-]", password):
-        return False
-    return True
-```
-
-### utils\security.py
-
-```python
-# 核心安全逻辑
-import os
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
-from typing import Optional
-
-from dotenv import load_dotenv
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-from sqlalchemy.orm import Session
-
-from dao import user_dao as crud
-from models import User
-from session.db_session import get_db
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-if not SECRET_KEY:
-    raise RuntimeError("未配置 SECRET_KEY，请在环境变量或 .env 文件中设置 SECRET_KEY")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    now = datetime.now(timezone.utc)
-    if expires_delta:
-        expire = now + expires_delta
-    else:
-        expire = now + timedelta(minutes=15)
-    to_encode.update({
-        "iat": int(now.timestamp()),
-        "exp": int(expire.timestamp())
-    })
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    # 依赖项： 通过Token获取当前用户，用于保护接口
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="无法验证凭据",
-        headers={"WWW-Authenticate": "Bearer"}
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-
-    user = crud.get_user_by_username(db, username=username)
-    if user is None:
-        raise credentials_exception
-    return user
-
-async def get_current_admin(current_user: User = Depends(get_current_user)):
-    # 依赖项： 通过Token获取当前用户，用于保护接口
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="权限不足，需要管理员权限"
-        )
-    return current_user
 ```
 

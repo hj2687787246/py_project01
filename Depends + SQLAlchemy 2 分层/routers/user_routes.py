@@ -5,17 +5,17 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File, Body
 from sqlalchemy.orm import Session
-
 import models
 import schemas
 from core.exceptions import BusinessException
 from core.logger import get_logger
+from schemas.user_schema import UserLogin
 from services import user_service
 from session.db_session import get_db
-from utils.security import get_current_admin, get_current_user
+from utils.auth import get_current_admin, get_current_user
+from config import Settings,get_settings
 
 logger = get_logger()
 router = APIRouter(prefix="/users", tags=["用户管理"])
@@ -27,20 +27,59 @@ if hasattr(router, "state"):
 if hasattr(router, "add_exception_handler"):
     router.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # 登录
-@router.post("/token", response_model=schemas.Token, summary="登录获取 Token")
+@router.post("/login", response_model=schemas.UnifiedResponse, summary="登录获取 Token")
 # 限流接口 防止暴力请求 比如1分钟最多5次
 # 测试环境关闭限流
 @(limiter.limit("5/minute") if os.getenv("TESTING") != "1" else (lambda func: func))
-def login_for_access_token(request: Request, form_data: OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
-    logger.info(f"收到登录请求: username={form_data.username}")
+def login_for_access_token(request: Request, user_data: UserLogin,db: Session = Depends(get_db),settings: Settings = Depends(get_settings)):
+    logger.info(f"收到登录请求: username={user_data.username}")
     try:
-        user, access_token = user_service.login_user(db, form_data.username, form_data.password)
+        user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
     except HTTPException:
-        logger.error(f"登录失败: username={form_data.username}, reason=用户名或密码错误")
+        logger.error(f"登录失败: username={user_data.username}, reason=账号或密码错误")
         raise
-
     logger.success(f"登录成功: user_id={user.id}, username={user.username}, role={user.role}")
-    return {"access_token": access_token, "token_type": "bearer"}
+    token_data = schemas.TokenResponse(access_token=access_token,refresh_token=refresh_token).model_dump()
+    return schemas.UnifiedResponse(data=token_data)
+
+# 重置密码
+@router.post("/{user_id}/reset-password", response_model=schemas.UnifiedResponse[dict],summary="重置密码")
+def reset_password_api(user_id: int,
+                   new_password: str = Body(..., min_length=6),
+                   db: Session = Depends(get_db),
+                   current_user: models.User = Depends(get_current_user)):
+    logger.info(f"收到重置密码请求: operator_id={current_user.id}, operator={current_user.username}, "
+                f"target_user_id={user_id}")
+    try:
+        # 更新密码
+        user_service.reset_password(db, user_id, current_user, new_password)
+    except HTTPException as exc:
+        if exc.status_code == 404:
+            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
+                           f"target_user_id={user_id}, reason=用户不存在")
+        elif exc.status_code == 403:
+            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
+                           f"target_user_id={user_id}, reason=无权重置他人密码")
+        raise
+    logger.success(f"重置密码成功: operator_id={current_user.id}, operator={current_user.username}, "
+                   f"target_user_id={user_id}")
+    return schemas.UnifiedResponse(data={"message":"密码重置成功"})
+
+# 刷新Token
+@router.post("/auth/refresh", response_model=schemas.UnifiedResponse, summary="刷新 Access Token")
+def refresh_token_api(
+    request: schemas.RefreshTokenRequest,
+    settings: Settings = Depends(get_settings)
+):
+    logger.info("收到刷新Token请求")
+    try:
+        # 刷新令牌
+        new_access_token = user_service.get_new_access_token(request,settings)
+    except HTTPException as exc:
+        logger.error(f"刷新Token失败: reason={exc.detail}")
+        raise
+    logger.success("刷新Token成功")
+    return schemas.UnifiedResponse(data={"access_token": new_access_token, "token_type": "bearer"})
 
 
 # 创建用户

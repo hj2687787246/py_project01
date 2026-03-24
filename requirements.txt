@@ -85,3 +85,6 @@ passlib
 loguru
 loguru
 slowapi
+pydantic-settings
+python-dotenv
+python-jose

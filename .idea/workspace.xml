@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 修复头像问题" />
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 JWT 过期 + 刷新 Token">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/role_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/role_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/routers/user_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/role_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/role_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层/services/user_service.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -212,7 +219,7 @@
       <recent name="D:\Develop\Python-Project\py_project01\牛客错题代码练习\3_17" />
     </key>
   </component>
-  <component name="RunManager" selected="Python 测试.Python 测试 (test_user_system.py 内)">
+  <component name="RunManager" selected="Python.main">
     <configuration name="06.ai_parther_4" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
@@ -314,9 +321,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
         <item itemvalue="Python 测试.Python 测试 (test_user_system.py 内)" />
         <item itemvalue="Python 测试.tests.test_user_system.test_health_check 的 Python 测试" />
-        <item itemvalue="Python.main" />
         <item itemvalue="Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试" />
         <item itemvalue="Python.06.ai_parther_4" />
       </list>
@@ -373,47 +380,7 @@
       <workItem from="1774248404383" duration="19449000" />
       <workItem from="1774271700744" duration="1933000" />
       <workItem from="1774312969387" duration="1245000" />
-      <workItem from="1774314257587" duration="8637000" />
-    </task>
-    <task id="LOCAL-00002" summary="3.19 faskApi 接口文档、路由分发、request对象">
-      <option name="closed" value="true" />
-      <created>1773902090775</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1773902090775</updated>
-    </task>
-    <task id="LOCAL-00003" summary="3.19 faskApi 路径参数 &amp; 查询参数进阶">
-      <option name="closed" value="true" />
-      <created>1773904666527</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1773904666527</updated>
-    </task>
-    <task id="LOCAL-00004" summary="3.19 faskApi 同步访问">
-      <option name="closed" value="true" />
-      <created>1773916071881</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1773916071882</updated>
-    </task>
-    <task id="LOCAL-00005" summary="3.19 faskApi 异步数据库">
-      <option name="closed" value="true" />
-      <created>1773917196063</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1773917196063</updated>
-    </task>
-    <task id="LOCAL-00006" summary="3.19 faskApi 异步数据库">
-      <option name="closed" value="true" />
-      <created>1773917204215</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1773917204215</updated>
+      <workItem from="1774314257587" duration="18657000" />
     </task>
     <task id="LOCAL-00007" summary="3.19 faskApi 异步数据库">
       <option name="closed" value="true" />
@@ -767,7 +734,47 @@
       <option name="project" value="LOCAL" />
       <updated>1774331085413</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="3.23 提取基类UserBase">
+      <option name="closed" value="true" />
+      <created>1774331521544</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1774331521544</updated>
+    </task>
+    <task id="LOCAL-00052" summary="3.23 JWT 过期 + 刷新 Token">
+      <option name="closed" value="true" />
+      <created>1774337934874</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1774337934874</updated>
+    </task>
+    <task id="LOCAL-00053" summary="3.23 JWT 过期 + 刷新 Token">
+      <option name="closed" value="true" />
+      <created>1774338345704</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1774338345704</updated>
+    </task>
+    <task id="LOCAL-00054" summary="3.23 JWT 过期 + 刷新 Token">
+      <option name="closed" value="true" />
+      <created>1774339786952</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1774339786953</updated>
+    </task>
+    <task id="LOCAL-00055" summary="3.23 JWT 过期 + 刷新 Token">
+      <option name="closed" value="true" />
+      <created>1774340067613</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1774340067614</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -788,8 +795,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="3.21 &#10;✅ 定义了带 updated_at 自动时间戳的 ORM 模型&#10;✅ 跑通了完整的 CURD&#10;✅ 加了模糊查询&#10;✅ 加了统一返回格式" />
-    <MESSAGE value="3.21 修复时区bug，新增创建时间字段" />
     <MESSAGE value="3.21 Depends + SQLAlchemy 2 分层" />
     <MESSAGE value="3.21 测试" />
     <MESSAGE value="3.21 codex修改" />
@@ -813,7 +818,9 @@
     <MESSAGE value="3.23 静态文件挂载" />
     <MESSAGE value="3.23 解决List类型问题" />
     <MESSAGE value="3.23 修复头像问题" />
-    <option name="LAST_COMMIT_MESSAGE" value="3.23 修复头像问题" />
+    <MESSAGE value="3.23 提取基类UserBase" />
+    <MESSAGE value="3.23 JWT 过期 + 刷新 Token" />
+    <option name="LAST_COMMIT_MESSAGE" value="3.23 JWT 过期 + 刷新 Token" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/py_project01$NP72_.coverage" NAME="NP72 生成字典 覆盖结果" MODIFIED="1774009569628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
@@ -837,7 +844,7 @@
     <SUITE FILE_PATH="coverage/py_project01$11__list.coverage" NAME="11.数据容器-list 覆盖结果" MODIFIED="1773292966578" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$10_2.coverage" NAME="10.循环案例2 覆盖结果" MODIFIED="1773235049181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$01_.coverage" NAME="01.爬虫入门程序 覆盖结果" MODIFIED="1773629412393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第四章" />
-    <SUITE FILE_PATH="coverage/py_project01$.coverage" NAME=" 覆盖结果" MODIFIED="1774330921508" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
+    <SUITE FILE_PATH="coverage/py_project01$.coverage" NAME=" 覆盖结果" MODIFIED="1774340484897" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
     <SUITE FILE_PATH="coverage/py_project01$02_json.coverage" NAME="02.json文件入门 覆盖结果" MODIFIED="1773554005108" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
     <SUITE FILE_PATH="coverage/py_project01$01_mysql.coverage" NAME="01.mysql练习 覆盖结果" MODIFIED="1773811734774" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$my_fun.coverage" NAME="my_fun 覆盖结果" MODIFIED="1773388602924" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章/module02" />
@@ -852,7 +859,7 @@
     <SUITE FILE_PATH="coverage/py_project01$17_.coverage" NAME="17.函数进阶 覆盖结果" MODIFIED="1773377182586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$08_1.coverage" NAME="08.递归练习1 覆盖结果" MODIFIED="1773889691436" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
     <SUITE FILE_PATH="coverage/py_project01$13__tuple.coverage" NAME="13.数据容器-tuple元组 覆盖结果" MODIFIED="1773299014566" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
-    <SUITE FILE_PATH="coverage/py_project01$main.coverage" NAME="main 覆盖结果" MODIFIED="1774273549287" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
+    <SUITE FILE_PATH="coverage/py_project01$main.coverage" NAME="main 覆盖结果" MODIFIED="1774341329742" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
     <SUITE FILE_PATH="coverage/py_project01$19_2.coverage" NAME="19.函数进阶2 覆盖结果" MODIFIED="1773382414050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$02_mysql.coverage" NAME="02.mysql练习 覆盖结果" MODIFIED="1773817531286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$NP21_.coverage" NAME="NP21 增加派对名单（二） 覆盖结果" MODIFIED="1773748588441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />

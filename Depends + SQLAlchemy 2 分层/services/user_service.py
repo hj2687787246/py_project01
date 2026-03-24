@@ -1,5 +1,4 @@
-from datetime import timedelta
-from typing import List, Tuple, TypeAlias, Sequence, Any
+from typing import List, Tuple, TypeAlias, Sequence
 
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -10,12 +9,14 @@ from core.exceptions import BusinessException
 from dao import user_dao
 from dao.user_dao import DeleteUserResult
 from models import User
+from utils.auth import create_refresh_token
 from utils.file_utils import save_avatar
-from utils.password_utils import validate_password, verify_password
-from utils.security import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
+from utils.auth import validate_password, verify_password, verify_token, create_access_token, get_password_hash
+from config import Settings
 
 # 登录后返回“用户对象 + token”的统一结构。
-LoginResult: TypeAlias = Tuple[models.User, str]
+LoginResult: TypeAlias = Tuple[models.User, str, str]
+
 # 分页查询返回“数据列表 + 总数”的统一结构。
 UserListResult: TypeAlias = tuple[List[models.User], int]
 
@@ -37,17 +38,39 @@ def _ensure_password_valid(password: str) -> None:
     if not validate_password(password):
         raise BusinessException(status_code=400, code=4003, message="密码至少8位，包含大小写、数字、特殊字符")
 
+# 重置密码
+def reset_password(db: Session, user_id: int, current_user: models.User, new_password: str) -> User:
+    """重置指定用户密码，并校验操作权限。"""
+    db_user = user_dao.get_user_by_id(db, user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="用户不存在")
+
+    if current_user.id != user_id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="无权重置他人密码")
+
+    hashed_password = get_password_hash(new_password)
+    return user_dao.update_user_password(db, db_user, hashed_password)
 
 # 登录校验
-def login_user(db: Session, username: str, password: str) -> LoginResult:
+def login_user(db: Session, username: str, password: str, settings: Settings) -> LoginResult:
     """完成用户查找、密码校验和 token 生成。"""
     user = user_dao.get_user_by_username(db, username=username)
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=400, detail="用户名或密码错误", headers={"WWW-Authenticate": "Bearer"})
+    #生成两个Token：payload里都放{"sub": username}
+    access_token = create_access_token(data={"sub": user.username}, settings=settings)
+    refresh_token = create_refresh_token(data={"sub": user.username}, settings=settings)
 
-    access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
-    return user, access_token
+    return user, access_token, refresh_token
+
+# 刷新 Token 接口
+def get_new_access_token(request, settings) -> str:
+
+    exception = HTTPException(401, detail="Refresh Token 无效")
+    user = verify_token(request.refresh_token, exception, settings)
+    new_access_token = create_access_token(data={"sub": user}, settings=settings)
+
+    return new_access_token
 
 # 创建用户
 def create_user(db: Session, user: schemas.UserCreate) -> models.User:
