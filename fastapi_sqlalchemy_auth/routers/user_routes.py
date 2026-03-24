@@ -5,18 +5,17 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File, Body
+from fastapi import APIRouter, Depends, Query, Request, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 import models
 import schemas
-from core.exceptions import BusinessException
 from core.logger import get_logger
 from schemas.user_schema import UserLogin
 from services import user_service
 from session.db_session import get_db
 from utils.auth import get_current_admin, get_current_user
-from config import Settings,get_settings
+from config import Settings, get_settings
 
 logger = get_logger()
 router = APIRouter(prefix="/users", tags=["用户管理"])
@@ -38,13 +37,9 @@ def login_for_swagger_oauth2(
 ):
     """提供给 Swagger Authorize 的标准 OAuth2 Password Flow 接口。"""
     logger.info(f"收到 Swagger OAuth2 登录请求: username={form_data.username}")
-    try:
-        db_user, access_token, _ = user_service.login_user(
-            db, form_data.username, form_data.password, settings
-        )
-    except HTTPException:
-        logger.error(f"Swagger OAuth2 登录失败: username={form_data.username}, reason=账号或密码错误")
-        raise
+    db_user, access_token, _ = user_service.login_user(
+        db, form_data.username, form_data.password, settings
+    )
     logger.success(f"Swagger OAuth2 登录成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -60,11 +55,7 @@ def login_for_swagger_oauth2(
 @(limiter.limit("5/minute") if os.getenv("TESTING") != "1" else (lambda func: func))
 def login_for_access_token(request: Request, user_data: UserLogin,db: Session = Depends(get_db),settings: Settings = Depends(get_settings)):
     logger.info(f"收到登录请求: username={user_data.username}")
-    try:
-        db_user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
-    except HTTPException:
-        logger.error(f"登录失败: username={user_data.username}, reason=账号或密码错误")
-        raise
+    db_user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
     logger.success(f"登录成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
     # 把User转换为UserResponse 必须配合 from_attributes=True 允许直接接收数据库模型对象
     # 如果数据库里的字段和 DTO 不匹配，直接报错，保证数据安全
@@ -76,23 +67,13 @@ def login_for_access_token(request: Request, user_data: UserLogin,db: Session = 
 # 重置密码
 @router.post("/{user_id}/reset-password", response_model=schemas.UnifiedResponse[dict],summary="重置密码")
 def reset_password_api(user_id: int,
-                       password: str = Body(..., min_length=6),
-                       new_password: str = Body(..., min_length=6),
+                       payload: schemas.ResetPasswordRequest,
                        db: Session = Depends(get_db),
                        current_user: models.User = Depends(get_current_user)):
     logger.info(f"收到重置密码请求: operator_id={current_user.id}, operator={current_user.username}, "
                 f"target_user_id={user_id}")
-    try:
-        # 更新密码
-        user_service.reset_password(db, user_id, current_user, password, new_password)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
-                           f"target_user_id={user_id}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
-                           f"target_user_id={user_id}, reason=无权重置他人密码")
-        raise
+    # 更新密码
+    user_service.reset_password(db, user_id, current_user, payload.password, payload.new_password)
     logger.success(f"重置密码成功: operator_id={current_user.id}, operator={current_user.username}, "
                    f"target_user_id={user_id}")
     return schemas.UnifiedResponse(data={"message":"密码重置成功"})
@@ -104,12 +85,8 @@ def refresh_token_api(
     settings: Settings = Depends(get_settings)
 ):
     logger.info("收到刷新Token请求")
-    try:
-        # 刷新令牌
-        new_access_token = user_service.get_new_access_token(request,settings)
-    except HTTPException as exc:
-        logger.error(f"刷新Token失败: reason={exc.detail}")
-        raise
+    # 刷新令牌
+    new_access_token = user_service.get_new_access_token(request,settings)
     logger.success("刷新Token成功")
     return schemas.UnifiedResponse(data={"access_token": new_access_token, "token_type": "bearer"})
 
@@ -119,18 +96,8 @@ def refresh_token_api(
 def create_user_api(user: schemas.UserCreate, db: Session = Depends(get_db)):
     """创建普通用户账号。"""
     logger.info(f"收到创建用户请求: username={user.username}, email={user.email}")
-
-    try:
-        # 普通注册入口固定创建 user 角色，避免通过该接口直接注册管理员。
-        db_user = user_service.create_user(db, user)
-    except BusinessException as exc:
-        if exc.code == 4001:
-            logger.error(f"创建用户失败: username={user.username}, reason=用户名已存在")
-        elif exc.code == 4002:
-            logger.error(f"创建用户失败: username={user.username}, email={user.email}, reason=邮箱已存在")
-        elif exc.code == 4003:
-            logger.error(f"创建用户失败: username={user.username}, password={user.password}, reason=密码至少8位，包含大小写、数字、特殊字符")
-        raise
+    # 普通注册入口固定创建 user 角色，避免通过该接口直接注册管理员。
+    db_user = user_service.create_user(db, user)
     logger.success(f"创建用户成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
 
     return schemas.UnifiedResponse(data=db_user)
@@ -153,17 +120,7 @@ def get_user_api(user_id: int,
     logger.info(f"收到查询用户请求: operator_id={current_user.id}, operator={current_user.username}, "
                 f"role={current_user.role}, target_user_id={user_id}")
 
-    try:
-        db_user = user_service.get_user_detail(db, user_id, current_user)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.error(f"查询用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.error(f"查询用户被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=无权查看他人信息")
-        raise
-
+    db_user = user_service.get_user_detail(db, user_id, current_user)
     logger.success(f"查询用户成功: operator_id={current_user.id}, operator={current_user.username}, "
                    f"target_user_id={user_id}")
 
@@ -212,31 +169,7 @@ def update_user_api( user_id: int,
     logger.info(f"收到更新用户请求: operator_id={current_user.id}, operator={current_user.username}, "
                 f"role={current_user.role}, target_user_id={user_id}")
 
-    try:
-        updated_user = user_service.update_user(db, user_id, user_update, current_user)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.error(f"更新用户被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=无权修改他人信息")
-        raise
-    except BusinessException as exc:
-        if exc.code == 4004:
-            logger.error(f"更新用户角色被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=无管理员权限")
-        elif exc.code == 4005:
-            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, role_id={user_update.role_id}, reason=角色不存在")
-        elif exc.code == 4001:
-            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, username={user_update.username}, reason=用户名已被占用")
-        elif exc.code == 4002:
-            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, email={user_update.email}, reason=邮箱已被占用")
-        raise
-
+    updated_user = user_service.update_user(db, user_id, user_update, current_user)
     logger.success(f"更新用户成功: operator_id={current_user.id}, operator={current_user.username}, "
                    f"target_user_id={user_id}")
     return schemas.UnifiedResponse(data=updated_user)
@@ -251,17 +184,7 @@ def delete_user_api(user_id: int,
     logger.info(f"收到删除用户请求: operator_id={current_admin.id}, operator={current_admin.username}, "
                 f"role={current_admin.role}, target_user_id={user_id}")
 
-    try:
-        user_service.delete_user(db, user_id)
-    except BusinessException:
-        logger.warning(f"删除用户失败: operator_id={current_admin.id}, operator={current_admin.username}, "
-                       f"target_user_id={user_id}, reason=不能删除 admin 角色用户")
-        raise
-    except HTTPException:
-        logger.error(f"删除用户失败: operator_id={current_admin.id}, operator={current_admin.username}, "
-                     f"target_user_id={user_id}, reason=用户不存在")
-        raise
-
+    user_service.delete_user(db, user_id)
     logger.success(f"删除用户成功: operator_id={current_admin.id}, operator={current_admin.username}, "
                    f"target_user_id={user_id}")
 
@@ -277,21 +200,7 @@ def upload_avatar_api(user_id: int,
     """上传当前用户头像。"""
     logger.info(f"收到上传头像请求: operator_id={current_user.id}, operator={current_user.username}, "
                 f"role={current_user.role}, target_user_id={user_id}, filename={file.filename}, content_type={file.content_type}")
-
-    try:
-        updated_user = user_service.upload_avatar(db, user_id, current_user, file)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, filename={file.filename}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.error(f"上传头像被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, filename={file.filename}, reason=无权修改他人头像")
-        elif exc.status_code == 400:
-            logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, filename={file.filename}, content_type={file.content_type}, reason={exc.detail}")
-        raise
-
+    updated_user = user_service.upload_avatar(db, user_id, current_user, file)
     logger.success(f"上传头像成功: operator_id={current_user.id}, operator={current_user.username}, "
                    f"target_user_id={user_id}, avatar_url={updated_user.avatar_url}")
     return schemas.UnifiedResponse(data=updated_user)

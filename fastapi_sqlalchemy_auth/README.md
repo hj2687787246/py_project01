@@ -1,19 +1,19 @@
-﻿# FastAPI 分层项目源码归档
+# fastapi_sqlalchemy_auth 项目源码归档
 
 ## 文档用途
 
-这份文档用于把 `Depends + SQLAlchemy 2 分层` 项目的目录结构和全部代码文件集中到一个 Markdown 文件里，方便直接发给豆包或其他 AI。
+这份文档基于 `fastapi_sqlalchemy_auth` 当前目录的实际文件生成，用于归档项目结构和代码内容，方便查看、对比或发给 AI。
 
 说明:
 
-- 代码文件来源于当前项目实际文件清单，自动收录，不再手工挑选。
-- 当前已收录全部文本代码文件：`.env`, `config.py`, `core\__init__.py`, `core\exceptions.py`, `core\logger.py`, `dao\__init__.py`, `dao\role_dao.py`, `dao\user_dao.py`, `main.py`, `models\__init__.py`, `models\role.py`, `models\user.py`, `requirements.txt`, `routers\__init__.py`, `routers\role_routes.py`, `routers\user_routes.py`, `schemas\__init__.py`, `schemas\role_schema.py`, `schemas\user_schema.py`, `services\__init__.py`, `services\role_service.py`, `services\user_service.py`, `session\__init__.py`, `session\db_session.py`, `tests\test_user_system.py`, `utils\__init__.py`, `utils\auth.py`, `utils\file_utils.py`。
-- 二进制文件只列路径，不展开内容。
-- `.env` 中的 `SECRET_KEY` 已脱敏。
+- 文档内容以当前项目文件为准，已按最新代码重新生成。
+- 已排除 `.pytest_cache`、`__pycache__` 等缓存目录。
+- `.env` 中的 `SECRET_KEY` 和 `DEFAULT_ADMIN_PASSWORD` 已脱敏。
+- 当前已收录文本文件：`.env`，`config.py`，`core\__init__.py`，`core\exceptions.py`，`core\logger.py`，`dao\__init__.py`，`dao\role_dao.py`，`dao\user_dao.py`，`main.py`，`models\__init__.py`，`models\role.py`，`models\user.py`，`requirements.txt`，`routers\__init__.py`，`routers\role_routes.py`，`routers\user_routes.py`，`schemas\__init__.py`，`schemas\role_schema.py`，`schemas\user_schema.py`，`services\__init__.py`，`services\role_service.py`，`services\startup_service.py`，`services\user_service.py`，`session\__init__.py`，`session\db_session.py`，`tests\test_user_system.py`，`utils\__init__.py`，`utils\auth.py`，`utils\file_utils.py`。
 
 ## 二进制文件
 
-- `static\avatars\default.jpg` (48903 bytes)
+- `static\\avatars\\default.jpg` (48903 bytes)
 
 ## 全部代码
 
@@ -22,11 +22,17 @@
 ```dotenv
 # 密码规则
 SECRET_KEY="<your-secret-key>"
+# 默认管理员初始密码
+DEFAULT_ADMIN_PASSWORD="<your-admin-password>"
 # Token 30分钟过期
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 # 数据库链接地址
 SQLALCHEMY_DATABASE_URL="sqlite:///./fastapi_test.db"
+# JWT加密算法
+ALGORITHM=HS256
+# Refresh Token 7天过期
+REFRESH_TOKEN_EXPIRE_DAYS=7
 ```
 
 ### config.py
@@ -41,8 +47,8 @@ BASE_DIR = Path(__file__).resolve().parent
 
 
 class Settings(BaseSettings):
-    # JWT签名密钥（生产环境必须换成复杂的随机字符串，现在先用这个测试）
-    SECRET_KEY: str = "f8b7a9d3e5c8f2b1a4e7d9c8b7a6f5e489c7b6a5d4e3f2a1b0c9d8e7f6a5b4c3"
+    # JWT签名密钥（生产环境必须配置复杂的随机字符串，禁止使用代码内置默认值）
+    SECRET_KEY: str
     # JWT加密算法，固定用HS256即可
     ALGORITHM: str = "HS256"
     # access_token过期时间：30分钟（经常用，泄露风险大，所以短）
@@ -59,7 +65,7 @@ def get_settings():
     return Settings()
 ```
 
-### core\__init__.py
+### core\\__init__.py
 
 ```python
 # 核心能力
@@ -67,7 +73,7 @@ from .logger import get_logger
 from .exceptions import BusinessException
 ```
 
-### core\exceptions.py
+### core\\exceptions.py
 
 ```python
 # 自定义业务异常
@@ -79,7 +85,7 @@ class BusinessException(Exception):
         self.message = message
 ```
 
-### core\logger.py
+### core\\logger.py
 
 ```python
 # 日志配置文件
@@ -118,18 +124,17 @@ def get_logger():
     return logger
 ```
 
-### dao\__init__.py
+### dao\\__init__.py
 
 ```python
 # 数据访问层
 # 集中导出 DAO 模块和常用返回结构，便于 service 层复用。
 from . import role_dao, user_dao
-from .user_dao import DeleteUserResult
 
-__all__ = ["role_dao", "user_dao", "DeleteUserResult"]
+__all__ = ["role_dao", "user_dao"]
 ```
 
-### dao\role_dao.py
+### dao\\role_dao.py
 
 ```python
 from typing import Optional
@@ -166,10 +171,10 @@ def get_all_roles(db: Session) -> list[type[Role]]:
     return db.query(Role).all()
 ```
 
-### dao\user_dao.py
+### dao\\user_dao.py
 
 ```python
-from typing import Sequence, Optional, TypedDict, List
+from typing import List, Optional, Sequence
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
@@ -181,12 +186,6 @@ import schemas
 from utils.auth import get_password_hash
 
 logger = get_logger()
-
-
-class DeleteUserResult(TypedDict):
-    success: bool
-    reason: str
-
 
 # C: Create 创建用户
 # 通过角色名查询 role_id，避免路由层直接写死角色主键。
@@ -278,30 +277,24 @@ def search_users(db: Session, keyword: str) -> Sequence[models.User]:
 
 
 # U: Update 更新用户
-def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate) -> Optional[models.User]:
-    """更新用户可变字段。"""
-    db_user = get_user_by_id(db, user_id)
-    if not db_user:
-        logger.warning(f"数据层更新用户失败: user_id={user_id}, reason=用户不存在")
-        return None
-
+def update_user(db: Session, db_user: models.User, user_update: schemas.UserUpdate) -> models.User:
     # 这里把 Pydantic 的增量更新数据转成字典，统一循环写回 ORM 对象。
     update_data = user_update.model_dump(exclude_unset=True)
-    logger.info(f"数据层更新用户: user_id={user_id}, fields={list(update_data.keys())}")
+    logger.info(f"数据层更新用户: user_id={db_user.id}, fields={list(update_data.keys())}")
     for key, value in update_data.items():
         setattr(db_user, key, value)
 
     db.commit()
     db.refresh(db_user)
-    logger.success(f"数据层更新用户成功: user_id={user_id}")
+    logger.success(f"数据层更新用户成功: user_id={db_user.id}")
     return db_user
 
 
 # U: Update 重置密码
-def update_user_password(db: Session, db_user: models.User, hashed_password: str) -> models.User:
+def update_user_password(db: Session, db_user: models.User, new_hashed_password: str) -> models.User:
     """更新用户密码并持久化。"""
     logger.info(f"数据层重置密码: user_id={db_user.id}, username={db_user.username}")
-    db_user.hashed_password = hashed_password
+    db_user.hashed_password = new_hashed_password
     db.commit()
     db.refresh(db_user)
     logger.success(f"数据层重置密码成功: user_id={db_user.id}")
@@ -309,33 +302,20 @@ def update_user_password(db: Session, db_user: models.User, hashed_password: str
 
 
 # D: Delete 删除用户
-def delete_user(db: Session, user_id: int) -> DeleteUserResult:
-    """删除普通用户，管理员账号禁止删除。"""
-    db_user = get_user_by_id(db, user_id)
-    if not db_user:
-        logger.warning(f"数据层删除用户失败: user_id={user_id}, reason=用户不存在")
-        return {"success": False, "reason": "not_found"}
-
-    if db_user.role == "admin":
-        logger.warning(f"数据层删除用户失败: user_id={user_id}, reason=该角色为管理员")
-        return {"success": False, "reason": "admin_forbidden"}
-
-    logger.info(f"数据层删除用户: user_id={user_id}, username={db_user.username}")
+def delete_user(db: Session, db_user: models.User) -> None:
+    logger.info(f"数据层删除用户: user_id={db_user.id}, username={db_user.username}")
     db.delete(db_user)
     db.commit()
-    logger.success(f"数据层删除用户成功: user_id={user_id}")
-    return {"success": True, "reason": "deleted"}
+    logger.success(f"数据层删除用户成功: user_id={db_user.id}")
 
 # 更新用户头像
-def update_user_avatar(db: Session, user_id: int, avatar_url: str) -> models.User | None:
-    """更新用户头像地址。"""
-    db_user = get_user_by_id(db, user_id)
-    if not db_user:
-        return None
+def update_user_avatar(db: Session, db_user: models.User, avatar_url: str) -> models.User:
     # 更新用户头像
+    logger.info(f"数据层更新头像: user_id={db_user.id}, username={db_user.username}")
     db_user.avatar_url = avatar_url
     db.commit()
     db.refresh(db_user)
+    logger.success(f"数据层更新头像成功: user_id={db_user.id}")
     return db_user
 ```
 
@@ -353,10 +333,8 @@ from starlette.staticfiles import StaticFiles
 from core.exceptions import BusinessException
 from core.logger import get_logger
 import schemas
-from session.db_session import Base, engine, SessionLocal
-from models.role import Role
-from models.user import User
 from routers import router as users_router
+from services.startup_service import initialize_database
 
 # 配置日志
 logger = get_logger()
@@ -368,29 +346,10 @@ BASE_DIR = Path(__file__).resolve().parent
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
-        Base.metadata.create_all(bind=engine)
-        logger.info("数据库表初始化检查完成")
-        # 初始化角色数据
-        db = SessionLocal()
-        try:
-            if not db.query(Role).first():
-                from dao.role_dao import create_role
-                create_role(db, name="admin", description="系统管理员")
-                create_role(db, name="user", description="普通用户")
-                logger.info("初始化角色数据完成")
-            if not db.query(User).first():
-                from schemas.user_schema import UserCreate
-                from dao.user_dao import create_user
-                admin_user = UserCreate(username="admin", password="123456", age=26, email="2687787246@qq.com")
-                create_user(db, admin_user, "admin")
-                logger.info("初始化管理员账号完成")
-        except Exception as e:
-            logger.warning(f"初始化角色数据跳过或失败: {e}")
-        finally:
-            db.close()
+        initialize_database()
 
     except Exception as e:
-        logger.exception(f"数据库表初始化检查失败: {e}")
+        logger.exception(f"数据库表初始化失败: {e}")
         raise
     yield
 
@@ -473,7 +432,7 @@ if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=False)
 ```
 
-### models\__init__.py
+### models\\__init__.py
 
 ```python
 # 模型层
@@ -481,7 +440,7 @@ from .user import User
 from .role import Role
 ```
 
-### models\role.py
+### models\\role.py
 
 ```python
 from session.db_session import Base
@@ -501,7 +460,7 @@ class Role(Base):
     users: Mapped[list["User"]] = relationship("User", back_populates="role_info")
 ```
 
-### models\user.py
+### models\\user.py
 
 ```python
 from datetime import datetime, timezone
@@ -560,9 +519,11 @@ loguru>=0.7.2
 httpx>=0.28.1
 tzdata>=2024.1
 pytest>=8.3.0
+
+
 ```
 
-### routers\__init__.py
+### routers\\__init__.py
 
 ```python
 # 路由层
@@ -576,21 +537,20 @@ router.include_router(user_router)
 router.include_router(role_router)
 ```
 
-### routers\role_routes.py
+### routers\\role_routes.py
 
 ```python
 from typing import List
 
-from fastapi import APIRouter, Depends, Body, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 import models
 import schemas
-from core.exceptions import BusinessException
 from core.logger import get_logger
 from services import role_service
 from session.db_session import get_db
-from utils.auth import get_current_admin, get_current_user
+from utils.auth import get_current_admin
 
 logger = get_logger()
 router = APIRouter(prefix="/roles", tags=["角色管理"])
@@ -605,75 +565,37 @@ def create_admin_user_api(user: schemas.UserCreate,
     logger.info(f"收到创建管理员账号请求: operator_id={current_admin.id}, operator={current_admin.username}, "
                 f"username={user.username}, email={user.email}")
 
-    try:
-        # 管理员创建管理员时，统一走角色名映射，避免写死 role_id。
-        db_user = role_service.create_admin_user(db, user)
-    except BusinessException as exc:
-        if exc.code == 4001:
-            logger.error(f"创建管理员账号失败: operator_id={current_admin.id}, operator={current_admin.username}, "
-                         f"username={user.username}, reason=用户名已存在")
-        elif exc.code == 4002:
-            logger.error(f"创建管理员账号失败: operator_id={current_admin.id}, operator={current_admin.username}, "
-                         f"email={user.email}, reason=邮箱已存在")
-        raise
-
+    # 管理员创建管理员时，统一走角色名映射，避免写死 role_id。
+    db_user = role_service.create_admin_user(db, user)
     logger.success(f"创建管理员账号成功: operator_id={current_admin.id}, operator={current_admin.username}, "
                    f"user_id={db_user.id}, username={db_user.username}")
 
     return schemas.UnifiedResponse(data=db_user)
 # 新增角色
-@router.post("", response_model=schemas.UnifiedResponse[schemas.RoleResponse])
+@router.post("", response_model=schemas.UnifiedResponse[schemas.RoleResponse],summary="新增角色")
 def create_role_api(role: schemas.RoleCreate,
                     db: Session = Depends(get_db),
                     current_admin: models.User = Depends(get_current_admin)):
     logger.info(f"收到创建角色请求: operator_id={current_admin.id}, operator={current_admin.username}, "
                 f"role_name={role.name}")
-    try:
-        new_role = role_service.create_role(db, role)
-    except BusinessException:
-        logger.warning(f"创建角色失败: operator_id={current_admin.id}, operator={current_admin.username}, "
-                       f"role_name={role.name}, reason=角色已存在")
-        raise
+    new_role = role_service.create_role(db, role)
     logger.success(f"创建角色成功: operator_id={current_admin.id}, operator={current_admin.username}, "
                    f"role_id={new_role.id}, role_name={new_role.name}")
     return schemas.UnifiedResponse(data=new_role)
 
 # 查询所有角色
-@router.get("", response_model=schemas.UnifiedResponse[List[schemas.RoleResponse]])
+@router.get("", response_model=schemas.UnifiedResponse[List[schemas.RoleResponse]],summary="查询所有角色")
 def get_all_roles_api(db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin)):
     logger.info(f"收到查询全部角色请求: operator_id={current_admin.id}, operator={current_admin.username}")
     roles = role_service.get_all_roles(db)
     logger.success(f"查询全部角色成功: operator_id={current_admin.id}, operator={current_admin.username}, "
                    f"count={len(roles)}")
     return schemas.UnifiedResponse(data=roles)
-
-# 重置密码
-@router.post("/{user_id}/reset-password", response_model=schemas.UnifiedResponse[dict])
-def reset_password_api(user_id: int,
-                   new_password: str = Body(..., min_length=6),
-                   db: Session = Depends(get_db),
-                   current_user: models.User = Depends(get_current_user)):
-    logger.info(f"收到重置密码请求: operator_id={current_user.id}, operator={current_user.username}, "
-                f"target_user_id={user_id}")
-    try:
-        # 更新密码
-        role_service.reset_password(db, user_id, current_user, new_password)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
-                           f"target_user_id={user_id}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
-                           f"target_user_id={user_id}, reason=无权重置他人密码")
-        raise
-    logger.success(f"重置密码成功: operator_id={current_user.id}, operator={current_user.username}, "
-                   f"target_user_id={user_id}")
-    return schemas.UnifiedResponse(data={"message":"密码重置成功"})
 ```
 
-### routers\user_routes.py
+### routers\\user_routes.py
 
-`$InfoString
+```python
 import os
 from typing import List
 
@@ -681,18 +603,17 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File, Body
+from fastapi import APIRouter, Depends, Query, Request, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 import models
 import schemas
-from core.exceptions import BusinessException
 from core.logger import get_logger
 from schemas.user_schema import UserLogin
 from services import user_service
 from session.db_session import get_db
 from utils.auth import get_current_admin, get_current_user
-from config import Settings,get_settings
+from config import Settings, get_settings
 
 logger = get_logger()
 router = APIRouter(prefix="/users", tags=["用户管理"])
@@ -714,28 +635,25 @@ def login_for_swagger_oauth2(
 ):
     """提供给 Swagger Authorize 的标准 OAuth2 Password Flow 接口。"""
     logger.info(f"收到 Swagger OAuth2 登录请求: username={form_data.username}")
-    try:
-        db_user, access_token, _ = user_service.login_user(
-            db, form_data.username, form_data.password, settings
-        )
-    except HTTPException:
-        logger.error(f"Swagger OAuth2 登录失败: username={form_data.username}, reason=账号或密码错误")
-        raise
+    db_user, access_token, _ = user_service.login_user(
+        db, form_data.username, form_data.password, settings
+    )
     logger.success(f"Swagger OAuth2 登录成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
     return {"access_token": access_token, "token_type": "bearer"}
 
 # 登录
+# response_model = 接口返回数据的标准 + 安全锁
+# 用你的 DTO 模型 做格式约束
+# 自动过滤敏感字段、校验数据
+# 不用手动写 model_validate/model_dump
+# 是 FastAPI 生产环境必写的规范 ✅
 @router.post("/login", response_model=schemas.UnifiedResponse[schemas.TokenResponse], summary="登录获取 Token")
 # 限流接口 防止暴力请求 比如1分钟最多5次
 # 测试环境关闭限流
 @(limiter.limit("5/minute") if os.getenv("TESTING") != "1" else (lambda func: func))
 def login_for_access_token(request: Request, user_data: UserLogin,db: Session = Depends(get_db),settings: Settings = Depends(get_settings)):
     logger.info(f"收到登录请求: username={user_data.username}")
-    try:
-        db_user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
-    except HTTPException:
-        logger.error(f"登录失败: username={user_data.username}, reason=账号或密码错误")
-        raise
+    db_user, access_token, refresh_token = user_service.login_user(db, user_data.username, user_data.password, settings)
     logger.success(f"登录成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
     # 把User转换为UserResponse 必须配合 from_attributes=True 允许直接接收数据库模型对象
     # 如果数据库里的字段和 DTO 不匹配，直接报错，保证数据安全
@@ -747,23 +665,13 @@ def login_for_access_token(request: Request, user_data: UserLogin,db: Session = 
 # 重置密码
 @router.post("/{user_id}/reset-password", response_model=schemas.UnifiedResponse[dict],summary="重置密码")
 def reset_password_api(user_id: int,
-                       password: str,
-                       new_password: str = Body(..., min_length=6),
+                       payload: schemas.ResetPasswordRequest,
                        db: Session = Depends(get_db),
                        current_user: models.User = Depends(get_current_user)):
     logger.info(f"收到重置密码请求: operator_id={current_user.id}, operator={current_user.username}, "
                 f"target_user_id={user_id}")
-    try:
-        # 更新密码
-        user_service.reset_password(db, user_id, current_user, password, new_password)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
-                           f"target_user_id={user_id}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, "
-                           f"target_user_id={user_id}, reason=无权重置他人密码")
-        raise
+    # 更新密码
+    user_service.reset_password(db, user_id, current_user, payload.password, payload.new_password)
     logger.success(f"重置密码成功: operator_id={current_user.id}, operator={current_user.username}, "
                    f"target_user_id={user_id}")
     return schemas.UnifiedResponse(data={"message":"密码重置成功"})
@@ -775,12 +683,8 @@ def refresh_token_api(
     settings: Settings = Depends(get_settings)
 ):
     logger.info("收到刷新Token请求")
-    try:
-        # 刷新令牌
-        new_access_token = user_service.get_new_access_token(request,settings)
-    except HTTPException as exc:
-        logger.error(f"刷新Token失败: reason={exc.detail}")
-        raise
+    # 刷新令牌
+    new_access_token = user_service.get_new_access_token(request,settings)
     logger.success("刷新Token成功")
     return schemas.UnifiedResponse(data={"access_token": new_access_token, "token_type": "bearer"})
 
@@ -790,18 +694,8 @@ def refresh_token_api(
 def create_user_api(user: schemas.UserCreate, db: Session = Depends(get_db)):
     """创建普通用户账号。"""
     logger.info(f"收到创建用户请求: username={user.username}, email={user.email}")
-
-    try:
-        # 普通注册入口固定创建 user 角色，避免通过该接口直接注册管理员。
-        db_user = user_service.create_user(db, user)
-    except BusinessException as exc:
-        if exc.code == 4001:
-            logger.error(f"创建用户失败: username={user.username}, reason=用户名已存在")
-        elif exc.code == 4002:
-            logger.error(f"创建用户失败: username={user.username}, email={user.email}, reason=邮箱已存在")
-        elif exc.code == 4003:
-            logger.error(f"创建用户失败: username={user.username}, password={user.password}, reason=密码至少8位，包含大小写、数字、特殊字符")
-        raise
+    # 普通注册入口固定创建 user 角色，避免通过该接口直接注册管理员。
+    db_user = user_service.create_user(db, user)
     logger.success(f"创建用户成功: user_id={db_user.id}, username={db_user.username}, role={db_user.role}")
 
     return schemas.UnifiedResponse(data=db_user)
@@ -824,17 +718,7 @@ def get_user_api(user_id: int,
     logger.info(f"收到查询用户请求: operator_id={current_user.id}, operator={current_user.username}, "
                 f"role={current_user.role}, target_user_id={user_id}")
 
-    try:
-        db_user = user_service.get_user_detail(db, user_id, current_user)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.error(f"查询用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.error(f"查询用户被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=无权查看他人信息")
-        raise
-
+    db_user = user_service.get_user_detail(db, user_id, current_user)
     logger.success(f"查询用户成功: operator_id={current_user.id}, operator={current_user.username}, "
                    f"target_user_id={user_id}")
 
@@ -883,31 +767,7 @@ def update_user_api( user_id: int,
     logger.info(f"收到更新用户请求: operator_id={current_user.id}, operator={current_user.username}, "
                 f"role={current_user.role}, target_user_id={user_id}")
 
-    try:
-        updated_user = user_service.update_user(db, user_id, user_update, current_user)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.error(f"更新用户被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=无权修改他人信息")
-        raise
-    except BusinessException as exc:
-        if exc.code == 4004:
-            logger.error(f"更新用户角色被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, reason=无管理员权限")
-        elif exc.code == 4005:
-            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, role_id={user_update.role_id}, reason=角色不存在")
-        elif exc.code == 4001:
-            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, username={user_update.username}, reason=用户名已被占用")
-        elif exc.code == 4002:
-            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, email={user_update.email}, reason=邮箱已被占用")
-        raise
-
+    updated_user = user_service.update_user(db, user_id, user_update, current_user)
     logger.success(f"更新用户成功: operator_id={current_user.id}, operator={current_user.username}, "
                    f"target_user_id={user_id}")
     return schemas.UnifiedResponse(data=updated_user)
@@ -922,17 +782,7 @@ def delete_user_api(user_id: int,
     logger.info(f"收到删除用户请求: operator_id={current_admin.id}, operator={current_admin.username}, "
                 f"role={current_admin.role}, target_user_id={user_id}")
 
-    try:
-        user_service.delete_user(db, user_id)
-    except BusinessException:
-        logger.warning(f"删除用户失败: operator_id={current_admin.id}, operator={current_admin.username}, "
-                       f"target_user_id={user_id}, reason=不能删除 admin 角色用户")
-        raise
-    except HTTPException:
-        logger.error(f"删除用户失败: operator_id={current_admin.id}, operator={current_admin.username}, "
-                     f"target_user_id={user_id}, reason=用户不存在")
-        raise
-
+    user_service.delete_user(db, user_id)
     logger.success(f"删除用户成功: operator_id={current_admin.id}, operator={current_admin.username}, "
                    f"target_user_id={user_id}")
 
@@ -948,35 +798,21 @@ def upload_avatar_api(user_id: int,
     """上传当前用户头像。"""
     logger.info(f"收到上传头像请求: operator_id={current_user.id}, operator={current_user.username}, "
                 f"role={current_user.role}, target_user_id={user_id}, filename={file.filename}, content_type={file.content_type}")
-
-    try:
-        updated_user = user_service.upload_avatar(db, user_id, current_user, file)
-    except HTTPException as exc:
-        if exc.status_code == 404:
-            logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, filename={file.filename}, reason=用户不存在")
-        elif exc.status_code == 403:
-            logger.error(f"上传头像被拒绝: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, filename={file.filename}, reason=无权修改他人头像")
-        elif exc.status_code == 400:
-            logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, "
-                         f"target_user_id={user_id}, filename={file.filename}, content_type={file.content_type}, reason={exc.detail}")
-        raise
-
+    updated_user = user_service.upload_avatar(db, user_id, current_user, file)
     logger.success(f"上传头像成功: operator_id={current_user.id}, operator={current_user.username}, "
                    f"target_user_id={user_id}, avatar_url={updated_user.avatar_url}")
     return schemas.UnifiedResponse(data=updated_user)
 ```
 
-### schemas\__init__.py
+### schemas\\__init__.py
 
-`$InfoString
+```python
 # Pydantic 请求 / 响应模型
-from .user_schema import RefreshTokenRequest, TokenResponse, UnifiedResponse, UserCreate, UserResponse, UserUpdate, PageParams, PageResult
+from .user_schema import ResetPasswordRequest, RefreshTokenRequest, TokenResponse, UnifiedResponse, UserCreate, UserResponse, UserUpdate, PageParams, PageResult
 from .role_schema import RoleResponse,RoleCreate
 ```
 
-### schemas\role_schema.py
+### schemas\\role_schema.py
 
 ```python
 from typing import Optional
@@ -1001,9 +837,9 @@ class RoleResponse(RoleBase):
     id: int
 ```
 
-### schemas\user_schema.py
+### schemas\\user_schema.py
 
-`$InfoString
+```python
 # Pydantic 请求 / 响应模型
 from datetime import datetime
 from typing import Optional,Generic,TypeVar,List
@@ -1062,6 +898,11 @@ class UserUpdate(BaseModel):
     email: Optional[str] = Field(pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$", default=None)
     role_id: Optional[int] = None #只有管理员能修改这个字段
 
+# 重置密码请求体
+class ResetPasswordRequest(BaseModel):
+    password: str = Field(min_length=6, description="原密码")
+    new_password:str =Field(min_length=6,description="新密码")
+
 # 用户响应体 不返回密码
 class UserResponse(UserBase):
     """用户响应模型。"""
@@ -1110,7 +951,7 @@ from .role_schema import RoleResponse
 UserResponse.model_rebuild()
 ```
 
-### services\__init__.py
+### services\\__init__.py
 
 ```python
 # 服务层
@@ -1128,20 +969,19 @@ __all__ = [
 ]
 ```
 
-### services\role_service.py
+### services\\role_service.py
 
 ```python
 from typing import List, TypeAlias
-
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
-import models
 import schemas
+
 from core.exceptions import BusinessException
+from core.logger import get_logger
 from dao import role_dao, user_dao
 from models import Role, User
-from utils.auth import get_password_hash
+
+logger = get_logger()
 
 # 角色列表的统一返回类型。
 RoleListResult: TypeAlias = List[Role]
@@ -1150,9 +990,11 @@ RoleListResult: TypeAlias = List[Role]
 def _ensure_admin_user_unique(db: Session, user: schemas.UserCreate) -> None:
     """创建管理员前校验用户名和邮箱唯一性。"""
     if user_dao.get_user_by_username(db, user.username):
+        logger.error(f"创建管理员账号失败: username={user.username}, reason=用户名已存在")
         raise BusinessException(status_code=400, code=4001, message="用户名已存在")
 
     if user_dao.get_user_by_email(db, user.email):
+        logger.error(f"创建管理员账号失败: email={user.email}, reason=邮箱已存在")
         raise BusinessException(status_code=400, code=4002, message="邮箱已存在")
 
 
@@ -1166,47 +1008,107 @@ def create_admin_user(db: Session, user: schemas.UserCreate) -> User:
 # 创建角色
 def create_role(db: Session, role: schemas.RoleCreate) -> Role:
     """创建角色并校验重复。"""
-    return role_dao.create_role_with_check(db, role.name, role.description)
+    try:
+        return role_dao.create_role_with_check(db, role.name, role.description)
+    except BusinessException:
+        logger.warning(f"创建角色失败: role_name={role.name}, reason=角色已存在")
+        raise
 
 
 # 查询全部角色
-def get_all_roles(db: Session) -> list[type[Role]]:
+def get_all_roles(db: Session) -> list[Role]:
     """查询全部角色列表。"""
     return role_dao.get_all_roles(db)
-
-
-# 重置密码
-def reset_password(db: Session, user_id: int, current_user: models.User, new_password: str) -> User:
-    """重置指定用户密码，并校验操作权限。"""
-    db_user = user_dao.get_user_by_id(db, user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="用户不存在")
-
-    if current_user.id != user_id and current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="无权重置他人密码")
-
-    hashed_password = get_password_hash(new_password)
-    return user_dao.update_user_password(db, db_user, hashed_password)
 ```
 
-### services\user_service.py
+### services\\startup_service.py
 
 ```python
-from typing import List, Tuple, TypeAlias, Sequence
+import os
+from dataclasses import dataclass
+from sqlalchemy.orm import Session
+
+from core.logger import get_logger
+from dao import role_dao, user_dao
+from session import db_session
+
+logger = get_logger()
+
+
+@dataclass
+class _SeedAdminUser:
+    username: str
+    password: str
+    age: int
+    email: str
+
+
+def initialize_database() -> None:
+    """应用启动时初始化数据库表并补齐基础种子数据。"""
+    db_session.Base.metadata.create_all(bind=db_session.engine)
+    logger.info("数据库表初始化检查完成")
+    _seed_base_data()
+
+
+def _seed_base_data() -> None:
+    """确保默认角色和管理员账号存在。"""
+    # 初始化角色数据
+    with db_session.SessionLocal() as db:
+        _ensure_default_roles(db)
+        _ensure_default_admin(db)
+
+
+def _ensure_default_roles(db: Session) -> None:
+    created = False
+    if role_dao.get_role_by_name(db, "admin") is None:
+        role_dao.create_role(db, name="admin", description="系统管理员")
+        created = True
+    if role_dao.get_role_by_name(db, "user") is None:
+        role_dao.create_role(db, name="user", description="普通用户")
+        created = True
+    if created:
+        logger.info("初始化角色数据完成")
+
+
+def _ensure_default_admin(db: Session) -> None:
+    if user_dao.get_user_by_username(db, "admin") is not None:
+        return
+
+    # 避免在代码里写死默认管理员密码；未配置时只跳过初始化管理员账号。
+    default_admin_password = os.getenv("DEFAULT_ADMIN_PASSWORD")
+    if not default_admin_password:
+        logger.warning("未配置 DEFAULT_ADMIN_PASSWORD，跳过初始化管理员账号")
+        return
+
+    admin_user = _SeedAdminUser(
+        username="admin",
+        password=default_admin_password,
+        age=26,
+        email="2687787246@qq.com",
+    )
+    user_dao.create_user(db, admin_user, role_name="admin")
+    logger.info("初始化管理员账号完成")
+```
+
+### services\\user_service.py
+
+```python
+from typing import List, Sequence, Tuple, TypeAlias
 
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 import models
 import schemas
-from core.exceptions import BusinessException
-from dao import user_dao
-from dao.user_dao import DeleteUserResult
-from models import User
-from utils.auth import create_refresh_token
-from utils.file_utils import save_avatar
-from utils.auth import validate_password, verify_password, verify_token, create_access_token
 from config import Settings
+from core.exceptions import BusinessException
+from core.logger import get_logger
+from dao import user_dao
+from models import User
+from utils.auth import create_access_token, create_refresh_token, get_password_hash, validate_password, verify_password, verify_token
+from utils.file_utils import save_avatar
+
+logger = get_logger()
 
 # 登录后返回“用户对象 + token”的统一结构。
 LoginResult: TypeAlias = Tuple[models.User, str, str]
@@ -1220,9 +1122,11 @@ UserListResult: TypeAlias = tuple[List[models.User], int]
 def _ensure_user_unique(db: Session, user: schemas.UserCreate) -> None:
     """注册前检查用户名和邮箱是否已被使用。"""
     if user_dao.get_user_by_username(db, user.username):
+        logger.error(f"创建用户失败: username={user.username}, reason=用户名已存在")
         raise BusinessException(status_code=400, code=4001, message="用户名已存在")
 
     if user_dao.get_user_by_email(db, user.email):
+        logger.error(f"创建用户失败: username={user.username}, email={user.email}, reason=邮箱已存在")
         raise BusinessException(status_code=400, code=4002, message="邮箱已存在")
 
 
@@ -1230,27 +1134,54 @@ def _ensure_user_unique(db: Session, user: schemas.UserCreate) -> None:
 def _ensure_password_valid(password: str) -> None:
     """密码复杂度校验统一放在 service 层。"""
     if not validate_password(password):
+        logger.error(f"密码校验失败: password={password}, reason=密码至少8位，包含大小写、数字、特殊字符")
         raise BusinessException(status_code=400, code=4003, message="密码至少8位，包含大小写、数字、特殊字符")
 
+# 重置密码
+def reset_password(db: Session, user_id: int, current_user: models.User, password: str, new_password: str) -> User:
+    """重置指定用户密码，并校验操作权限。"""
+    db_user = user_dao.get_user_by_id(db, user_id)
+    if not db_user:
+        logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, reason=用户不存在")
+        raise HTTPException(status_code=404, detail="用户不存在")
+
+    if current_user.id != user_id and current_user.role != "admin":
+        logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, reason=无权重置他人密码")
+        raise HTTPException(status_code=403, detail="无权重置他人密码")
+
+    # 管理员重置他人密码时不校验旧密码；普通用户修改自己密码时必须校验旧密码。
+    if current_user.role != "admin" and not verify_password(password, db_user.hashed_password):
+        logger.warning(f"重置密码失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, reason=原密码错误")
+        raise HTTPException(status_code=400, detail="原密码错误")
+
+    # 密码复杂度验证
+    _ensure_password_valid(new_password)
+    new_hashed_password = get_password_hash(new_password)
+    return user_dao.update_user_password(db, db_user, new_hashed_password)
 
 # 登录校验
 def login_user(db: Session, username: str, password: str, settings: Settings) -> LoginResult:
     """完成用户查找、密码校验和 token 生成。"""
-    user = user_dao.get_user_by_username(db, username=username)
-    if not user or not verify_password(password, user.hashed_password):
+    db_user = user_dao.get_user_by_username(db, username=username)
+    if not db_user or not verify_password(password, db_user.hashed_password):
+        logger.error(f"登录失败: username={username}, reason=账号或密码错误")
         raise HTTPException(status_code=400, detail="用户名或密码错误", headers={"WWW-Authenticate": "Bearer"})
     #生成两个Token：payload里都放{"sub": username}
-    access_token = create_access_token(data={"sub": user.username}, settings=settings)
-    refresh_token = create_refresh_token(data={"sub": user.username}, settings=settings)
+    access_token = create_access_token(data={"sub": db_user.username}, settings=settings)
+    refresh_token = create_refresh_token(data={"sub": db_user.username}, settings=settings)
 
-    return user, access_token, refresh_token
+    return db_user, access_token, refresh_token
 
 # 刷新 Token 接口
-def get_new_access_token(request, settings) -> str:
+def get_new_access_token(request: schemas.RefreshTokenRequest, settings: Settings) -> str:
 
     exception = HTTPException(401, detail="Refresh Token 无效")
-    user = verify_token(request.refresh_token, exception, settings)
-    new_access_token = create_access_token(data={"sub": user}, settings=settings)
+    try:
+        username = verify_token(request.refresh_token, exception, settings)
+    except HTTPException as exc:
+        logger.error(f"刷新Token失败: reason={exc.detail}")
+        raise
+    new_access_token = create_access_token(data={"sub": username}, settings=settings)
 
     return new_access_token
 
@@ -1267,9 +1198,11 @@ def get_user_detail(db: Session, user_id: int, current_user: models.User) -> mod
     """完成用户存在性与查看权限校验，并返回用户详情。"""
     db_user = user_dao.get_user_by_id(db, user_id)
     if not db_user:
+        logger.error(f"查询用户失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, reason=用户不存在")
         raise HTTPException(status_code=404, detail="用户不存在")
 
     if db_user.id != current_user.id and current_user.role != "admin":
+        logger.error(f"查询用户被拒绝: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, reason=无权查看他人信息")
         raise HTTPException(status_code=403, detail="无权查看他人信息")
 
     return db_user
@@ -1292,36 +1225,45 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate, curr
     """完成权限、角色、唯一性校验并更新用户。"""
     db_user = user_dao.get_user_by_id(db, user_id)
     if not db_user:
+        logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, reason=用户不存在")
         raise HTTPException(status_code=404, detail="用户不存在")
 
     if db_user.id != current_user.id and current_user.role != "admin":
+        logger.error(f"更新用户被拒绝: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, reason=无权修改他人信息")
         raise HTTPException(status_code=403, detail="无权修改他人信息")
 
     if user_update.role_id is not None and current_user.role != "admin":
+        logger.error(f"更新用户角色被拒绝: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, reason=无管理员权限")
         raise BusinessException(status_code=403, code=4004, message="无权修改用户角色")
 
     if user_update.role_id is not None and not db.get(models.Role, user_update.role_id):
+        logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, role_id={user_update.role_id}, reason=角色不存在")
         raise BusinessException(status_code=400, code=4005, message="角色不存在")
 
     if user_update.username and user_update.username != db_user.username:
         if user_dao.get_user_by_username(db, user_update.username):
+            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, username={user_update.username}, reason=用户名已被占用")
             raise BusinessException(status_code=400, code=4001, message="用户名已被占用")
 
     if user_update.email and user_update.email != db_user.email:
         if user_dao.get_user_by_email(db, user_update.email):
+            logger.error(f"更新用户失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, email={user_update.email}, reason=邮箱已被占用")
             raise BusinessException(status_code=400, code=4002, message="邮箱已被占用")
 
-    return user_dao.update_user(db, user_id, user_update)
+    return user_dao.update_user(db, db_user, user_update)
 
 # 删除用户
-def delete_user(db: Session, user_id: int) -> DeleteUserResult:
-    """删除用户，并将 DAO 返回结果翻译成业务异常或 HTTP 异常。"""
-    delete_result = user_dao.delete_user(db, user_id)
-    if not delete_result["success"]:
-        if delete_result["reason"] == "admin_forbidden":
-            raise BusinessException(status_code=403, code=4003, message="不能删除 admin 角色账号")
+def delete_user(db: Session, user_id: int) -> None:
+    db_user = user_dao.get_user_by_id(db, user_id)
+    if not db_user:
+        logger.error(f"删除用户失败: target_user_id={user_id}, reason=用户不存在")
         raise HTTPException(status_code=404, detail="用户不存在")
-    return delete_result
+
+    if db_user.role == "admin":
+        logger.warning(f"删除用户失败: target_user_id={user_id}, reason=不能删除 admin 角色用户")
+        raise BusinessException(status_code=403, code=4003, message="不能删除 admin 角色账号")
+
+    user_dao.delete_user(db,db_user)
 
 # 头像保存
 def upload_avatar(db: Session,
@@ -1332,26 +1274,33 @@ def upload_avatar(db: Session,
     # 1.查找用户是否存在
     db_user = user_dao.get_user_by_id(db, user_id)
     if not db_user:
+        logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, filename={file.filename}, reason=用户不存在")
         raise HTTPException(status_code=404, detail="用户不存在")
     # 2.校验ID是否一致，只能改自己的
     if db_user.id != current_user.id:
+        logger.error(f"上传头像被拒绝: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, filename={file.filename}, reason=无权修改他人头像")
         raise HTTPException(status_code=403, detail="无权修改他人头像")
     # 3.使用工具保存文件到 static/avatars，并获取 avatar_url
-    new_avatar_url = save_avatar(file,db_user.avatar_url)
+    try:
+        new_avatar_url = save_avatar(file,db_user.avatar_url)
+    except HTTPException as exc:
+        logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, filename={file.filename}, content_type={file.content_type}, reason={exc.detail}")
+        raise
     # 4.更新数据库
-    updated_user = user_dao.update_user_avatar(db, user_id, new_avatar_url)
+    updated_user = user_dao.update_user_avatar(db, db_user, new_avatar_url)
     if not updated_user:
+        logger.error(f"上传头像失败: operator_id={current_user.id}, operator={current_user.username}, target_user_id={user_id}, filename={file.filename}, reason=用户不存在")
         raise HTTPException(status_code=404, detail="用户不存在")
     return updated_user
 ```
 
-### session\__init__.py
+### session\\__init__.py
 
 ```python
 # 会话层
 ```
 
-### session\db_session.py
+### session\\db_session.py
 
 ```python
 # 数据库连接配置
@@ -1386,9 +1335,9 @@ def get_db():
         yield db
 ```
 
-### tests\test_user_system.py
+### tests\\test_user_system.py
 
-`$InfoString
+```python
 import os
 import sys
 from pathlib import Path
@@ -1862,8 +1811,8 @@ def test_reset_password_by_self():
         user_access_token, _ = login(client, "alice", "Aa123456!")
 
         response = client.post(
-            f"/roles/{user['id']}/reset-password",
-            json="654321",
+            f"/users/{user['id']}/reset-password",
+            json={"password": "Aa123456!", "new_password": "Bb123456!"},
             headers=auth_headers(user_access_token),
         )
         assert response.status_code == 200, response.text
@@ -1875,7 +1824,7 @@ def test_reset_password_by_self():
         )
         assert bad_login.status_code == 400, bad_login.text
 
-        new_access_token, _ = login(client, "alice", "654321")
+        new_access_token, _ = login(client, "alice", "Bb123456!")
         assert new_access_token
     finally:
         client.close()
@@ -1890,14 +1839,14 @@ def test_reset_password_by_admin():
         admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
-            f"/roles/{user['id']}/reset-password",
-            json="654321",
+            f"/users/{user['id']}/reset-password",
+            json={"password": "Aa123456!", "new_password": "Bb123456!"},
             headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 200, response.text
         assert response.json()["data"]["message"] == "密码重置成功"
 
-        new_access_token, _ = login(client, "alice", "654321")
+        new_access_token, _ = login(client, "alice", "Bb123456!")
         assert new_access_token
     finally:
         client.close()
@@ -1913,8 +1862,8 @@ def test_reset_password_permission_denied():
         alice_access_token, _ = login(client, "alice", "Aa123456!")
 
         response = client.post(
-            f"/roles/{bob['id']}/reset-password",
-            json="654321",
+            f"/users/{bob['id']}/reset-password",
+            json={"password": "whatever123", "new_password": "654321"},
             headers=auth_headers(alice_access_token),
         )
         assert response.status_code == 403, response.text
@@ -1931,8 +1880,8 @@ def test_reset_password_user_not_found():
         admin_access_token, _ = login(client, "admin", "123456")
 
         response = client.post(
-            "/roles/999/reset-password",
-            json="654321",
+            "/users/999/reset-password",
+            json={"password": "123456", "new_password": "654321"},
             headers=auth_headers(admin_access_token),
         )
         assert response.status_code == 404, response.text
@@ -2008,15 +1957,15 @@ def test_upload_avatar_reject_oversized_file():
         engine.dispose()
 ```
 
-### utils\__init__.py
+### utils\\__init__.py
 
 ```python
 # 工具包
 ```
 
-### utils\auth.py
+### utils\\auth.py
 
-`$InfoString
+```python
 from passlib.context import CryptContext
 import re
 # 核心安全逻辑
@@ -2166,7 +2115,7 @@ async def get_current_admin(current_user: User = Depends(get_current_user)):
     return current_user
 ```
 
-### utils\file_utils.py
+### utils\\file_utils.py
 
 ```python
 import os

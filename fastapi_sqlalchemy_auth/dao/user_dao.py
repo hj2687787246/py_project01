@@ -1,4 +1,4 @@
-from typing import Sequence, Optional, TypedDict, List
+﻿from typing import List, Optional, Sequence
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
@@ -10,12 +10,6 @@ import schemas
 from utils.auth import get_password_hash
 
 logger = get_logger()
-
-
-class DeleteUserResult(TypedDict):
-    success: bool
-    reason: str
-
 
 # C: Create 创建用户
 # 通过角色名查询 role_id，避免路由层直接写死角色主键。
@@ -107,30 +101,24 @@ def search_users(db: Session, keyword: str) -> Sequence[models.User]:
 
 
 # U: Update 更新用户
-def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate) -> Optional[models.User]:
-    """更新用户可变字段。"""
-    db_user = get_user_by_id(db, user_id)
-    if not db_user:
-        logger.warning(f"数据层更新用户失败: user_id={user_id}, reason=用户不存在")
-        return None
-
+def update_user(db: Session, db_user: models.User, user_update: schemas.UserUpdate) -> models.User:
     # 这里把 Pydantic 的增量更新数据转成字典，统一循环写回 ORM 对象。
     update_data = user_update.model_dump(exclude_unset=True)
-    logger.info(f"数据层更新用户: user_id={user_id}, fields={list(update_data.keys())}")
+    logger.info(f"数据层更新用户: user_id={db_user.id}, fields={list(update_data.keys())}")
     for key, value in update_data.items():
         setattr(db_user, key, value)
 
     db.commit()
     db.refresh(db_user)
-    logger.success(f"数据层更新用户成功: user_id={user_id}")
+    logger.success(f"数据层更新用户成功: user_id={db_user.id}")
     return db_user
 
 
 # U: Update 重置密码
-def update_user_password(db: Session, db_user: models.User, hashed_password: str) -> models.User:
+def update_user_password(db: Session, db_user: models.User, new_hashed_password: str) -> models.User:
     """更新用户密码并持久化。"""
     logger.info(f"数据层重置密码: user_id={db_user.id}, username={db_user.username}")
-    db_user.hashed_password = hashed_password
+    db_user.hashed_password = new_hashed_password
     db.commit()
     db.refresh(db_user)
     logger.success(f"数据层重置密码成功: user_id={db_user.id}")
@@ -138,31 +126,18 @@ def update_user_password(db: Session, db_user: models.User, hashed_password: str
 
 
 # D: Delete 删除用户
-def delete_user(db: Session, user_id: int) -> DeleteUserResult:
-    """删除普通用户，管理员账号禁止删除。"""
-    db_user = get_user_by_id(db, user_id)
-    if not db_user:
-        logger.warning(f"数据层删除用户失败: user_id={user_id}, reason=用户不存在")
-        return {"success": False, "reason": "not_found"}
-
-    if db_user.role == "admin":
-        logger.warning(f"数据层删除用户失败: user_id={user_id}, reason=该角色为管理员")
-        return {"success": False, "reason": "admin_forbidden"}
-
-    logger.info(f"数据层删除用户: user_id={user_id}, username={db_user.username}")
+def delete_user(db: Session, db_user: models.User) -> None:
+    logger.info(f"数据层删除用户: user_id={db_user.id}, username={db_user.username}")
     db.delete(db_user)
     db.commit()
-    logger.success(f"数据层删除用户成功: user_id={user_id}")
-    return {"success": True, "reason": "deleted"}
+    logger.success(f"数据层删除用户成功: user_id={db_user.id}")
 
 # 更新用户头像
-def update_user_avatar(db: Session, user_id: int, avatar_url: str) -> models.User | None:
-    """更新用户头像地址。"""
-    db_user = get_user_by_id(db, user_id)
-    if not db_user:
-        return None
+def update_user_avatar(db: Session, db_user: models.User, avatar_url: str) -> models.User:
     # 更新用户头像
+    logger.info(f"数据层更新头像: user_id={db_user.id}, username={db_user.username}")
     db_user.avatar_url = avatar_url
     db.commit()
     db.refresh(db_user)
+    logger.success(f"数据层更新头像成功: user_id={db_user.id}")
     return db_user

@@ -1,4 +1,4 @@
-from functools import lru_cache
+﻿from functools import lru_cache
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -7,8 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent
 
 
 class Settings(BaseSettings):
-    # JWT签名密钥（生产环境必须换成复杂的随机字符串，现在先用这个测试）
-    SECRET_KEY: str = "f8b7a9d3e5c8f2b1a4e7d9c8b7a6f5e489c7b6a5d4e3f2a1b0c9d8e7f6a5b4c3"
+    # JWT签名密钥（生产环境必须配置复杂的随机字符串，禁止使用代码内置默认值）
+    SECRET_KEY: str
     # JWT加密算法，固定用HS256即可
     ALGORITHM: str = "HS256"
     # access_token过期时间：30分钟（经常用，泄露风险大，所以短）

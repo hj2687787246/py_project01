@@ -1,4 +1,4 @@
-from contextlib import asynccontextmanager
+﻿from contextlib import asynccontextmanager
 from pathlib import Path
 import traceback
 from fastapi import FastAPI, HTTPException, Request, status
@@ -9,10 +9,8 @@ from starlette.staticfiles import StaticFiles
 from core.exceptions import BusinessException
 from core.logger import get_logger
 import schemas
-from session.db_session import Base, engine, SessionLocal
-from models.role import Role
-from models.user import User
 from routers import router as users_router
+from services.startup_service import initialize_database
 
 # 配置日志
 logger = get_logger()
@@ -24,29 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
-        Base.metadata.create_all(bind=engine)
-        logger.info("数据库表初始化检查完成")
-        # 初始化角色数据
-        db = SessionLocal()
-        try:
-            if not db.query(Role).first():
-                from dao.role_dao import create_role
-                create_role(db, name="admin", description="系统管理员")
-                create_role(db, name="user", description="普通用户")
-                logger.info("初始化角色数据完成")
-            if not db.query(User).first():
-                from schemas.user_schema import UserCreate
-                from dao.user_dao import create_user
-                admin_user = UserCreate(username="admin", password="Hejie@2244", age=26, email="2687787246@qq.com")
-                create_user(db, admin_user, "admin")
-                logger.info("初始化管理员账号完成")
-        except Exception as e:
-            logger.warning(f"初始化角色数据跳过或失败: {e}")
-        finally:
-            db.close()
+        initialize_database()
 
     except Exception as e:
-        logger.exception(f"数据库表初始化检查失败: {e}")
+        logger.exception(f"数据库表初始化失败: {e}")
         raise
     yield
 

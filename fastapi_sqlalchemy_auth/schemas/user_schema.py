@@ -56,6 +56,11 @@ class UserUpdate(BaseModel):
     email: Optional[str] = Field(pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$", default=None)
     role_id: Optional[int] = None #只有管理员能修改这个字段
 
+# 重置密码请求体
+class ResetPasswordRequest(BaseModel):
+    password: str = Field(min_length=6, description="原密码")
+    new_password:str =Field(min_length=6,description="新密码")
+
 # 用户响应体 不返回密码
 class UserResponse(UserBase):
     """用户响应模型。"""
