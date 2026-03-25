@@ -4,14 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 项目名规范，结构规范">
-      <change beforePath="$PROJECT_DIR$/.idea/db-forest-config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/db-forest-config.xml" afterDir="false" />
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.25 数据库改用mysql">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/.env" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/session/db_session.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/session/db_session.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/tests/test_user_system.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/tests/test_user_system.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/schemas/user_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/schemas/user_schema.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -386,15 +381,8 @@
       <workItem from="1774314257587" duration="26312000" />
       <workItem from="1774353854783" duration="10080000" />
       <workItem from="1774404926636" duration="147000" />
-      <workItem from="1774405597631" duration="1613000" />
-    </task>
-    <task id="LOCAL-00018" summary="3.20 数据库CURD实战结合 Depends + SQLAlchemy 2 注释添加">
-      <option name="closed" value="true" />
-      <created>1774007395913</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1774007395913</updated>
+      <workItem from="1774405597631" duration="2108000" />
+      <workItem from="1774412960585" duration="808000" />
     </task>
     <task id="LOCAL-00019" summary="3.20 数据库CURD实战结合 Depends + SQLAlchemy 2 注释添加">
       <option name="closed" value="true" />
@@ -780,7 +768,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774404892180</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="3.25 数据库改用mysql">
+      <option name="closed" value="true" />
+      <created>1774407230402</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1774407230402</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -801,7 +797,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="3.21 jwt+token+管理员权限" />
     <MESSAGE value="3.21 NP76-NP100" />
     <MESSAGE value="3.22 显式写入 Unix 时间戳，避免时区和 naive datetime 的解释差异" />
     <MESSAGE value="3.22 添加全局异常、自定义异常、logger日志" />
@@ -826,7 +821,8 @@
     <MESSAGE value="3.23 完善重置密码、获取当前用户信息" />
     <MESSAGE value="3.23 项目名规范" />
     <MESSAGE value="3.23 项目名规范，结构规范" />
-    <option name="LAST_COMMIT_MESSAGE" value="3.23 项目名规范，结构规范" />
+    <MESSAGE value="3.25 数据库改用mysql" />
+    <option name="LAST_COMMIT_MESSAGE" value="3.25 数据库改用mysql" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -851,7 +847,7 @@
     <SUITE FILE_PATH="coverage/py_project01$NP75_.coverage" NAME="NP75 使用字典计数 覆盖结果" MODIFIED="1774010049366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
     <SUITE FILE_PATH="coverage/py_project01$09.coverage" NAME="练习题09 覆盖结果" MODIFIED="1773284854977" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP26_.coverage" NAME="NP26 牛牛的反转列表 覆盖结果" MODIFIED="1773836669214" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_18" />
-    <SUITE FILE_PATH="coverage/py_project01$fastapi_sqlalchemy_auth.coverage" NAME="fastapi_sqlalchemy_auth 覆盖结果" MODIFIED="1774406773431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
+    <SUITE FILE_PATH="coverage/py_project01$fastapi_sqlalchemy_auth.coverage" NAME="fastapi_sqlalchemy_auth 覆盖结果" MODIFIED="1774413764044" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
     <SUITE FILE_PATH="coverage/py_project01$06.coverage" NAME="练习题06 覆盖结果" MODIFIED="1773226628606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$03.coverage" NAME="练习题03 覆盖结果" MODIFIED="1773213704436" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP45_.coverage" NAME="NP45 禁止重复注册 覆盖结果" MODIFIED="1773837381988" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_18" />

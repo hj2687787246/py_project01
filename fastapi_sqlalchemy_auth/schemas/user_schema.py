@@ -42,7 +42,18 @@ class UserBase(BaseModel):
     age: int = Field(ge=0,le=150,description="年龄")
     email: str = Field(pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$", description="邮箱地址")
 
-# 创建用户请求体
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "username": "testuser",
+                "age": 18,
+                "email": "user@example.com",
+                "password": "Aa123456@123"
+            }
+        }
+    )
+
+    # 创建用户请求体
 class UserCreate(UserBase):
     """创建用户请求模型。"""
     password: str = Field(min_length=6,description="密码") #新增
