@@ -15,7 +15,8 @@ if not SQLALCHEMY_DATABASE_URL:
     raise RuntimeError("未配置 SQLALCHEMY_DATABASE_URL，请检查 .env 文件")
 
 # 创建数据库引擎
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+# engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
 
 # 会话工厂
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

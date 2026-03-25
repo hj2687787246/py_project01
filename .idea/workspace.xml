@@ -4,19 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 项目名规范">
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.23 项目名规范，结构规范">
+      <change beforePath="$PROJECT_DIR$/.idea/db-forest-config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/db-forest-config.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/.env" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/dao/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/dao/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/dao/user_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/dao/user_dao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/routers/role_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/routers/role_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/routers/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/routers/user_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/services/role_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/services/role_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/services/startup_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/services/startup_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/services/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/services/user_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/session/db_session.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/session/db_session.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/tests/test_user_system.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/tests/test_user_system.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,6 +81,7 @@
     &quot;Python 测试.Python 测试 (test_user_system.py 内).executor&quot;: &quot;Run&quot;,
     &quot;Python 测试.tests.test_user_system.test_health_check 的 Python 测试.executor&quot;: &quot;Run&quot;,
     &quot;Python 测试.tests.test_user_system.test_permission_and_admin_flows 的 Python 测试.executor&quot;: &quot;Run&quot;,
+    &quot;Python 测试.tests.test_user_system.test_upload_avatar_reject_oversized_file 的 Python 测试.executor&quot;: &quot;Run&quot;,
     &quot;Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试.executor&quot;: &quot;Run&quot;,
     &quot;Python.01.DeepSeek调用测试.executor&quot;: &quot;Run&quot;,
     &quot;Python.01.faskApi1.executor&quot;: &quot;Run&quot;,
@@ -227,30 +223,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.fastapi_sqlalchemy_auth">
-    <configuration name="06.ai_parther_4" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="py_project01" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/第3章" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/第3章/06.ai_parther_4.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="fastapi_sqlalchemy_auth" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
@@ -309,6 +281,23 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="tests.test_user_system.test_upload_avatar_reject_oversized_file 的 Python 测试" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="py_project01" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_user_system.test_upload_avatar_reject_oversized_file&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <configuration name="tests.test_user_system.test_user_basic_flow 的 Python 测试" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
@@ -327,8 +316,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.06.ai_parther_4" />
       <item itemvalue="Python.fastapi_sqlalchemy_auth" />
+      <item itemvalue="Python 测试.tests.test_user_system.test_upload_avatar_reject_oversized_file 的 Python 测试" />
       <item itemvalue="Python 测试.Python 测试 (test_user_system.py 内)" />
       <item itemvalue="Python 测试.tests.test_user_system.test_health_check 的 Python 测试" />
       <item itemvalue="Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试" />
@@ -337,9 +326,9 @@
       <list>
         <item itemvalue="Python.fastapi_sqlalchemy_auth" />
         <item itemvalue="Python 测试.Python 测试 (test_user_system.py 内)" />
+        <item itemvalue="Python 测试.tests.test_user_system.test_upload_avatar_reject_oversized_file 的 Python 测试" />
         <item itemvalue="Python 测试.tests.test_user_system.test_health_check 的 Python 测试" />
         <item itemvalue="Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试" />
-        <item itemvalue="Python.06.ai_parther_4" />
       </list>
     </recent_temporary>
   </component>
@@ -395,15 +384,9 @@
       <workItem from="1774271700744" duration="1933000" />
       <workItem from="1774312969387" duration="1245000" />
       <workItem from="1774314257587" duration="26312000" />
-      <workItem from="1774353854783" duration="9873000" />
-    </task>
-    <task id="LOCAL-00017" summary="3.20 数据库 CURD 实战 结合 Depends + SQLAlchemy 2">
-      <option name="closed" value="true" />
-      <created>1773993246537</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1773993246537</updated>
+      <workItem from="1774353854783" duration="10080000" />
+      <workItem from="1774404926636" duration="147000" />
+      <workItem from="1774405597631" duration="1613000" />
     </task>
     <task id="LOCAL-00018" summary="3.20 数据库CURD实战结合 Depends + SQLAlchemy 2 注释添加">
       <option name="closed" value="true" />
@@ -789,7 +772,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774402844029</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="3.23 项目名规范，结构规范">
+      <option name="closed" value="true" />
+      <created>1774404892180</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1774404892180</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -810,7 +801,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="3.21 jwt+token" />
     <MESSAGE value="3.21 jwt+token+管理员权限" />
     <MESSAGE value="3.21 NP76-NP100" />
     <MESSAGE value="3.22 显式写入 Unix 时间戳，避免时区和 naive datetime 的解释差异" />
@@ -835,7 +825,8 @@
     <MESSAGE value="3.23 Swagger OAuth2 登录" />
     <MESSAGE value="3.23 完善重置密码、获取当前用户信息" />
     <MESSAGE value="3.23 项目名规范" />
-    <option name="LAST_COMMIT_MESSAGE" value="3.23 项目名规范" />
+    <MESSAGE value="3.23 项目名规范，结构规范" />
+    <option name="LAST_COMMIT_MESSAGE" value="3.23 项目名规范，结构规范" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -860,6 +851,7 @@
     <SUITE FILE_PATH="coverage/py_project01$NP75_.coverage" NAME="NP75 使用字典计数 覆盖结果" MODIFIED="1774010049366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
     <SUITE FILE_PATH="coverage/py_project01$09.coverage" NAME="练习题09 覆盖结果" MODIFIED="1773284854977" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP26_.coverage" NAME="NP26 牛牛的反转列表 覆盖结果" MODIFIED="1773836669214" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_18" />
+    <SUITE FILE_PATH="coverage/py_project01$fastapi_sqlalchemy_auth.coverage" NAME="fastapi_sqlalchemy_auth 覆盖结果" MODIFIED="1774406773431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
     <SUITE FILE_PATH="coverage/py_project01$06.coverage" NAME="练习题06 覆盖结果" MODIFIED="1773226628606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$03.coverage" NAME="练习题03 覆盖结果" MODIFIED="1773213704436" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP45_.coverage" NAME="NP45 禁止重复注册 覆盖结果" MODIFIED="1773837381988" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_18" />
@@ -870,7 +862,7 @@
     <SUITE FILE_PATH="coverage/py_project01$11__list.coverage" NAME="11.数据容器-list 覆盖结果" MODIFIED="1773292966578" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$10_2.coverage" NAME="10.循环案例2 覆盖结果" MODIFIED="1773235049181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$01_.coverage" NAME="01.爬虫入门程序 覆盖结果" MODIFIED="1773629412393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第四章" />
-    <SUITE FILE_PATH="coverage/py_project01$.coverage" NAME=" 覆盖结果" MODIFIED="1774354029044" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
+    <SUITE FILE_PATH="coverage/py_project01$.coverage" NAME=" 覆盖结果" MODIFIED="1774405760213" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
     <SUITE FILE_PATH="coverage/py_project01$02_json.coverage" NAME="02.json文件入门 覆盖结果" MODIFIED="1773554005108" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
     <SUITE FILE_PATH="coverage/py_project01$01_mysql.coverage" NAME="01.mysql练习 覆盖结果" MODIFIED="1773811734774" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$my_fun.coverage" NAME="my_fun 覆盖结果" MODIFIED="1773388602924" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章/module02" />

@@ -1,4 +1,4 @@
-# fastapi_sqlalchemy_auth 项目源码归档
+﻿# fastapi_sqlalchemy_auth 项目源码归档
 
 ## 文档用途
 
@@ -28,7 +28,8 @@ DEFAULT_ADMIN_PASSWORD="<your-admin-password>"
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 # 数据库链接地址
-SQLALCHEMY_DATABASE_URL="sqlite:///./fastapi_test.db"
+# SQLALCHEMY_DATABASE_URL="sqlite:///./fastapi_test.db"
+SQLALCHEMY_DATABASE_URL="mysql+pymysql://root:hejie%402244@127.0.0.1:3306/fastapi_test?charset=utf8mb4"
 # JWT加密算法
 ALGORITHM=HS256
 # Refresh Token 7天过期
@@ -1320,7 +1321,8 @@ if not SQLALCHEMY_DATABASE_URL:
     raise RuntimeError("未配置 SQLALCHEMY_DATABASE_URL，请检查 .env 文件")
 
 # 创建数据库引擎
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+# engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
 
 # 会话工厂
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -1399,9 +1401,13 @@ def teardown_module():
 def build_test_client():
     """构建独立测试库和 TestClient。"""
     db_path = PROJECT_ROOT / "tests" / "_test_user_system.db"
-    logger.info(f"构建测试客户端: db_path={db_path}")
+    test_database_url = os.environ["TEST_SQLALCHEMY_DATABASE_URL"]
+    logger.info(f"构建测试客户端: database_url={test_database_url}")
+    # test_engine = create_engine(
+    #     f"sqlite:///{db_path}", connect_args={"check_same_thread": False}
+    # )
     test_engine = create_engine(
-        f"sqlite:///{db_path}", connect_args={"check_same_thread": False}
+        test_database_url, pool_pre_ping=True
     )
     testing_session_local = sessionmaker(
         autocommit=False,
@@ -2163,4 +2169,7 @@ def save_avatar(file: UploadFile,avatar_url) -> str:
 
     return f"static/avatars/{filename}"
 ```
+
+
+
 

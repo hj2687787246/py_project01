@@ -17,6 +17,10 @@ os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 os.environ.setdefault("REFRESH_TOKEN_EXPIRE_DAYS", "7")
 # 测试环境关闭登录限流，避免批量用例触发 429。
 os.environ.setdefault("TESTING", "1")
+os.environ.setdefault(
+    "TEST_SQLALCHEMY_DATABASE_URL",
+    "mysql+pymysql://root:hejie%402244@127.0.0.1:3306/fastapi_test?charset=utf8mb4",
+)
 
 import main
 import utils.file_utils as file_utils
@@ -41,7 +45,8 @@ def cleanup_test_avatars():
 def setup_module():
     """测试模块启动前清理遗留测试库。"""
     db_path = PROJECT_ROOT / "tests" / "_test_user_system.db"
-    if db_path.exists():
+    test_database_url = os.environ["TEST_SQLALCHEMY_DATABASE_URL"]
+    if test_database_url.startswith("sqlite:///") and db_path.exists():
         logger.info(f"删除遗留测试数据库: path={db_path}")
         db_path.unlink()
     cleanup_test_avatars()
@@ -50,7 +55,8 @@ def setup_module():
 def teardown_module():
     """测试模块结束后清理测试库。"""
     db_path = PROJECT_ROOT / "tests" / "_test_user_system.db"
-    if db_path.exists():
+    test_database_url = os.environ["TEST_SQLALCHEMY_DATABASE_URL"]
+    if test_database_url.startswith("sqlite:///") and db_path.exists():
         logger.info(f"清理测试数据库: path={db_path}")
         db_path.unlink()
     cleanup_test_avatars()
@@ -59,10 +65,12 @@ def teardown_module():
 def build_test_client():
     """构建独立测试库和 TestClient。"""
     db_path = PROJECT_ROOT / "tests" / "_test_user_system.db"
-    logger.info(f"构建测试客户端: db_path={db_path}")
-    test_engine = create_engine(
-        f"sqlite:///{db_path}", connect_args={"check_same_thread": False}
-    )
+    test_database_url = os.environ["TEST_SQLALCHEMY_DATABASE_URL"]
+    logger.info(f"构建测试客户端: database_url={test_database_url}")
+    # test_engine = create_engine(
+    #     f"sqlite:///{db_path}", connect_args={"check_same_thread": False}
+    # )
+    test_engine = create_engine(test_database_url, pool_pre_ping=True)
     testing_session_local = sessionmaker(
         autocommit=False,
         autoflush=False,
@@ -615,3 +623,5 @@ def test_upload_avatar_reject_oversized_file():
     finally:
         client.close()
         engine.dispose()
+
+
