@@ -4,9 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.25 数据库改用mysql">
+    <list default="true" id="583fda36-5091-4a66-a23f-d97eaa556da8" name="更改" comment="3.25 docs显示优化">
+      <change afterPath="$PROJECT_DIR$/qianwen/00.调用本地ollama本地模型.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/01.测试apikey的使用.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/05.提示词优化_金融文本分类.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/06.提示词优化_金融信息抽取.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/07.提示词优化_金融文本匹配判断.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/langchainRAG/01.余弦相似度.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/langchainRAG/02.langchain访问阿里云通义千问大模型.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/langchainRAG/03.langchain访问Ollama本地大模型.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/langchainRAG/04.langchain流式输出.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/langchainRAG/05.langchain调用聊天模型.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qianwen/langchainRAG/06.langchain调用Ollama本地模型.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/schemas/user_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastapi_sqlalchemy_auth/schemas/user_schema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,32 +90,43 @@
     &quot;Python 测试.tests.test_user_system.test_permission_and_admin_flows 的 Python 测试.executor&quot;: &quot;Run&quot;,
     &quot;Python 测试.tests.test_user_system.test_upload_avatar_reject_oversized_file 的 Python 测试.executor&quot;: &quot;Run&quot;,
     &quot;Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试.executor&quot;: &quot;Run&quot;,
+    &quot;Python.00.调用本地ollama本地模型.executor&quot;: &quot;Run&quot;,
     &quot;Python.01.DeepSeek调用测试.executor&quot;: &quot;Run&quot;,
     &quot;Python.01.faskApi1.executor&quot;: &quot;Run&quot;,
     &quot;Python.01.mysql练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01.余弦相似度.executor&quot;: &quot;Run&quot;,
     &quot;Python.01.入门程序.executor&quot;: &quot;Run&quot;,
     &quot;Python.01.字面量与变量.executor&quot;: &quot;Run&quot;,
     &quot;Python.01.导入模块.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01.测试apikey的使用.executor&quot;: &quot;Run&quot;,
     &quot;Python.01.爬虫入门程序.executor&quot;: &quot;Run&quot;,
     &quot;Python.02.json文件入门.executor&quot;: &quot;Run&quot;,
+    &quot;Python.02.langchain访问阿里云通义千问大模型.executor&quot;: &quot;Run&quot;,
     &quot;Python.02.mysql练习.executor&quot;: &quot;Run&quot;,
     &quot;Python.02.常见数据类型.executor&quot;: &quot;Run&quot;,
     &quot;Python.02.文件操作入门.executor&quot;: &quot;Run&quot;,
     &quot;Python.02.爬虫-网页解析 (1).executor&quot;: &quot;Run&quot;,
     &quot;Python.02.爬虫-网页解析.executor&quot;: &quot;Run&quot;,
+    &quot;Python.03.langchain访问Ollama本地大模型.executor&quot;: &quot;Run&quot;,
     &quot;Python.03.输入与输出.executor&quot;: &quot;Run&quot;,
     &quot;Python.04.csv入门.executor&quot;: &quot;Run&quot;,
+    &quot;Python.04.langchain流式输出.executor&quot;: &quot;Run&quot;,
     &quot;Python.04.运算符.executor&quot;: &quot;Run&quot;,
     &quot;Python.05.if条件判断.executor&quot;: &quot;Run&quot;,
+    &quot;Python.05.langchain调用聊天模型.executor&quot;: &quot;Run&quot;,
     &quot;Python.05.多线程练习.executor&quot;: &quot;Run&quot;,
+    &quot;Python.05.提示词优化_金融文本分类.executor&quot;: &quot;Run&quot;,
     &quot;Python.05.爬虫-案例-电影榜单.executor&quot;: &quot;Run&quot;,
     &quot;Python.06.ai_parther_4.executor&quot;: &quot;Run&quot;,
     &quot;Python.06.ai_parther_4_fixed.executor&quot;: &quot;Run&quot;,
+    &quot;Python.06.langchain调用Ollama本地模型.executor&quot;: &quot;Run&quot;,
     &quot;Python.06.match模式匹配.executor&quot;: &quot;Run&quot;,
     &quot;Python.06.socket客户端编程 (1).executor&quot;: &quot;Run&quot;,
     &quot;Python.06.socket客服端编程.executor&quot;: &quot;Run&quot;,
     &quot;Python.06.socket服务端编程.executor&quot;: &quot;Run&quot;,
+    &quot;Python.06.提示词优化_金融信息抽取.executor&quot;: &quot;Run&quot;,
     &quot;Python.07.while.executor&quot;: &quot;Run&quot;,
+    &quot;Python.07.提示词优化_金融文本匹配判断.executor&quot;: &quot;Run&quot;,
     &quot;Python.07.正则表达式基础使用.executor&quot;: &quot;Run&quot;,
     &quot;Python.08.for循环.executor&quot;: &quot;Run&quot;,
     &quot;Python.08.递归练习1.executor&quot;: &quot;Run&quot;,
@@ -217,8 +240,8 @@
       <recent name="D:\Develop\Python-Project\py_project01\牛客错题代码练习\3_17" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.fastapi_sqlalchemy_auth">
-    <configuration name="fastapi_sqlalchemy_auth" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.06.langchain调用Ollama本地模型">
+    <configuration name="02.langchain访问阿里云通义千问大模型" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -227,13 +250,13 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/qianwen/langchainRAG" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fastapi_sqlalchemy_auth/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/qianwen/langchainRAG/02.langchain访问阿里云通义千问大模型.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -242,88 +265,116 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Python 测试 (test_user_system.py 内)" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="03.langchain访问Ollama本地大模型" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/qianwen/langchainRAG" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/fastapi_sqlalchemy_auth/tests/test_user_system.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/qianwen/langchainRAG/03.langchain访问Ollama本地大模型.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="tests.test_user_system.test_health_check 的 Python 测试" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="04.langchain流式输出" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/qianwen/langchainRAG" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.test_user_system.test_health_check&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/qianwen/langchainRAG/04.langchain流式输出.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="tests.test_user_system.test_upload_avatar_reject_oversized_file 的 Python 测试" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="05.langchain调用聊天模型" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/qianwen/langchainRAG" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.test_user_system.test_upload_avatar_reject_oversized_file&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/qianwen/langchainRAG/05.langchain调用聊天模型.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="tests.test_user_system.test_user_basic_flow 的 Python 测试" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="06.langchain调用Ollama本地模型" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="py_project01" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/qianwen/langchainRAG" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.test_user_system.test_user_basic_flow&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/qianwen/langchainRAG/06.langchain调用Ollama本地模型.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.fastapi_sqlalchemy_auth" />
-      <item itemvalue="Python 测试.tests.test_user_system.test_upload_avatar_reject_oversized_file 的 Python 测试" />
-      <item itemvalue="Python 测试.Python 测试 (test_user_system.py 内)" />
-      <item itemvalue="Python 测试.tests.test_user_system.test_health_check 的 Python 测试" />
-      <item itemvalue="Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试" />
+      <item itemvalue="Python.02.langchain访问阿里云通义千问大模型" />
+      <item itemvalue="Python.03.langchain访问Ollama本地大模型" />
+      <item itemvalue="Python.04.langchain流式输出" />
+      <item itemvalue="Python.05.langchain调用聊天模型" />
+      <item itemvalue="Python.06.langchain调用Ollama本地模型" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.fastapi_sqlalchemy_auth" />
-        <item itemvalue="Python 测试.Python 测试 (test_user_system.py 内)" />
-        <item itemvalue="Python 测试.tests.test_user_system.test_upload_avatar_reject_oversized_file 的 Python 测试" />
-        <item itemvalue="Python 测试.tests.test_user_system.test_health_check 的 Python 测试" />
-        <item itemvalue="Python 测试.tests.test_user_system.test_user_basic_flow 的 Python 测试" />
+        <item itemvalue="Python.06.langchain调用Ollama本地模型" />
+        <item itemvalue="Python.05.langchain调用聊天模型" />
+        <item itemvalue="Python.04.langchain流式输出" />
+        <item itemvalue="Python.03.langchain访问Ollama本地大模型" />
+        <item itemvalue="Python.02.langchain访问阿里云通义千问大模型" />
       </list>
     </recent_temporary>
   </component>
@@ -382,15 +433,10 @@
       <workItem from="1774353854783" duration="10080000" />
       <workItem from="1774404926636" duration="147000" />
       <workItem from="1774405597631" duration="2108000" />
-      <workItem from="1774412960585" duration="808000" />
-    </task>
-    <task id="LOCAL-00019" summary="3.20 数据库CURD实战结合 Depends + SQLAlchemy 2 注释添加">
-      <option name="closed" value="true" />
-      <created>1774008190779</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1774008190779</updated>
+      <workItem from="1774412960585" duration="4026000" />
+      <workItem from="1774420530971" duration="11615000" />
+      <workItem from="1774437756496" duration="64000" />
+      <workItem from="1774437845067" duration="3790000" />
     </task>
     <task id="LOCAL-00020" summary="3.20 NP61-NP75错题练习">
       <option name="closed" value="true" />
@@ -776,7 +822,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774407230402</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="3.25 docs显示优化">
+      <option name="closed" value="true" />
+      <created>1774414008955</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1774414008955</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -797,7 +851,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="3.21 NP76-NP100" />
     <MESSAGE value="3.22 显式写入 Unix 时间戳，避免时区和 naive datetime 的解释差异" />
     <MESSAGE value="3.22 添加全局异常、自定义异常、logger日志" />
     <MESSAGE value="3.22 修复日志异常" />
@@ -822,7 +875,8 @@
     <MESSAGE value="3.23 项目名规范" />
     <MESSAGE value="3.23 项目名规范，结构规范" />
     <MESSAGE value="3.25 数据库改用mysql" />
-    <option name="LAST_COMMIT_MESSAGE" value="3.25 数据库改用mysql" />
+    <MESSAGE value="3.25 docs显示优化" />
+    <option name="LAST_COMMIT_MESSAGE" value="3.25 docs显示优化" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -837,6 +891,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/py_project01$NP72_.coverage" NAME="NP72 生成字典 覆盖结果" MODIFIED="1774009569628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
+    <SUITE FILE_PATH="coverage/py_project01$00_ollama.coverage" NAME="00.调用本地ollama本地模型 覆盖结果" MODIFIED="1774422189821" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen" />
     <SUITE FILE_PATH="coverage/py_project01$06_socket__1_.coverage" NAME="06.socket客户端编程 (1) 覆盖结果" MODIFIED="1773836204248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
     <SUITE FILE_PATH="coverage/py_project01$NP61_.coverage" NAME="NP61 牛牛的矩阵相加 覆盖结果" MODIFIED="1774008466703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
     <SUITE FILE_PATH="coverage/py_project01$12.coverage" NAME="练习题12 覆盖结果" MODIFIED="1773370999702" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
@@ -845,6 +900,7 @@
     <SUITE FILE_PATH="coverage/py_project01$07_.coverage" NAME="07.正则表达式基础使用 覆盖结果" MODIFIED="1773886223197" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
     <SUITE FILE_PATH="coverage/py_project01$main__1_.coverage" NAME="main (1) 覆盖结果" MODIFIED="1773984890874" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends" />
     <SUITE FILE_PATH="coverage/py_project01$NP75_.coverage" NAME="NP75 使用字典计数 覆盖结果" MODIFIED="1774010049366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
+    <SUITE FILE_PATH="coverage/py_project01$05__.coverage" NAME="05.提示词优化_金融文本分类 覆盖结果" MODIFIED="1774425718590" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen" />
     <SUITE FILE_PATH="coverage/py_project01$09.coverage" NAME="练习题09 覆盖结果" MODIFIED="1773284854977" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP26_.coverage" NAME="NP26 牛牛的反转列表 覆盖结果" MODIFIED="1773836669214" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_18" />
     <SUITE FILE_PATH="coverage/py_project01$fastapi_sqlalchemy_auth.coverage" NAME="fastapi_sqlalchemy_auth 覆盖结果" MODIFIED="1774413764044" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
@@ -857,18 +913,23 @@
     <SUITE FILE_PATH="coverage/py_project01$01.coverage" NAME="练习题01 覆盖结果" MODIFIED="1773208846660" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$11__list.coverage" NAME="11.数据容器-list 覆盖结果" MODIFIED="1773292966578" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$10_2.coverage" NAME="10.循环案例2 覆盖结果" MODIFIED="1773235049181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
-    <SUITE FILE_PATH="coverage/py_project01$01_.coverage" NAME="01.爬虫入门程序 覆盖结果" MODIFIED="1773629412393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第四章" />
+    <SUITE FILE_PATH="coverage/py_project01$01_.coverage" NAME="01.余弦相似度 覆盖结果" MODIFIED="1774437099103" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen/langchainRAG" />
+    <SUITE FILE_PATH="coverage/py_project01$03_langchainOllama.coverage" NAME="03.langchain访问Ollama本地大模型 覆盖结果" MODIFIED="1774438349123" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen/langchainRAG" />
     <SUITE FILE_PATH="coverage/py_project01$.coverage" NAME=" 覆盖结果" MODIFIED="1774405760213" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fastapi_sqlalchemy_auth" />
     <SUITE FILE_PATH="coverage/py_project01$02_json.coverage" NAME="02.json文件入门 覆盖结果" MODIFIED="1773554005108" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
     <SUITE FILE_PATH="coverage/py_project01$01_mysql.coverage" NAME="01.mysql练习 覆盖结果" MODIFIED="1773811734774" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$my_fun.coverage" NAME="my_fun 覆盖结果" MODIFIED="1773388602924" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章/module02" />
     <SUITE FILE_PATH="coverage/py_project01$NP55_2.coverage" NAME="NP55 2的次方数 覆盖结果" MODIFIED="1773922372330" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_19" />
+    <SUITE FILE_PATH="coverage/py_project01$02_langchain.coverage" NAME="02.langchain访问阿里云通义千问大模型 覆盖结果" MODIFIED="1774438170719" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen/langchainRAG" />
     <SUITE FILE_PATH="coverage/py_project01$10_1.coverage" NAME="10.循环案例1 覆盖结果" MODIFIED="1773234014093" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP15_10.coverage" NAME="NP15 截取用户名前10位 覆盖结果" MODIFIED="1773747623703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />
     <SUITE FILE_PATH="coverage/py_project01$02.coverage" NAME="练习题02 覆盖结果" MODIFIED="1773211274780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$file_define.coverage" NAME="file_define 覆盖结果" MODIFIED="1773732280221" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/数据分析案例" />
-    <SUITE FILE_PATH="coverage/py_project01$01_DeepSeek.coverage" NAME="01.DeepSeek调用测试 覆盖结果" MODIFIED="1773551978660" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
+    <SUITE FILE_PATH="coverage/py_project01$04_langchain.coverage" NAME="04.langchain流式输出 覆盖结果" MODIFIED="1774438742454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen/langchainRAG" />
+    <SUITE FILE_PATH="coverage/py_project01$01_DeepSeek.coverage" NAME="01.DeepSeek调用测试 覆盖结果" MODIFIED="1774421329086" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
+    <SUITE FILE_PATH="coverage/py_project01$05_langchain.coverage" NAME="05.langchain调用聊天模型 覆盖结果" MODIFIED="1774439295874" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen/langchainRAG" />
     <SUITE FILE_PATH="coverage/py_project01$04_.coverage" NAME="04.运算符 覆盖结果" MODIFIED="1773215130154" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
+    <SUITE FILE_PATH="coverage/py_project01$06_langchainOllama.coverage" NAME="06.langchain调用Ollama本地模型 覆盖结果" MODIFIED="1774439443455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen/langchainRAG" />
     <SUITE FILE_PATH="coverage/py_project01$NP100_.coverage" NAME="NP100 重载运算 覆盖结果" MODIFIED="1774098636171" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_21" />
     <SUITE FILE_PATH="coverage/py_project01$17_.coverage" NAME="17.函数进阶 覆盖结果" MODIFIED="1773377182586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$08_1.coverage" NAME="08.递归练习1 覆盖结果" MODIFIED="1773889691436" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
@@ -877,6 +938,7 @@
     <SUITE FILE_PATH="coverage/py_project01$19_2.coverage" NAME="19.函数进阶2 覆盖结果" MODIFIED="1773382414050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$02_mysql.coverage" NAME="02.mysql练习 覆盖结果" MODIFIED="1773817531286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/mysql" />
     <SUITE FILE_PATH="coverage/py_project01$NP21_.coverage" NAME="NP21 增加派对名单（二） 覆盖结果" MODIFIED="1773748588441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />
+    <SUITE FILE_PATH="coverage/py_project01$06__.coverage" NAME="06.提示词优化_金融信息抽取 覆盖结果" MODIFIED="1774429168798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen" />
     <SUITE FILE_PATH="coverage/py_project01$09_.coverage" NAME="09.嵌套循环 覆盖结果" MODIFIED="1773233044499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$test_user_system.coverage" NAME="test_user_system 覆盖结果" MODIFIED="1774143367639" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Depends + SQLAlchemy 2 分层" />
     <SUITE FILE_PATH="coverage/py_project01$11.coverage" NAME="练习题11 覆盖结果" MODIFIED="1773318053786" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
@@ -896,6 +958,7 @@
     <SUITE FILE_PATH="coverage/py_project01$NP69_.coverage" NAME="NP69 姓名与学号 覆盖结果" MODIFIED="1774009330949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_20" />
     <SUITE FILE_PATH="coverage/py_project01$15__dict.coverage" NAME="15.数据容器-dict字典 覆盖结果" MODIFIED="1773312319507" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP24_.coverage" NAME="NP24 淘汰排名最后的学生 覆盖结果" MODIFIED="1773748655680" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />
+    <SUITE FILE_PATH="coverage/py_project01$01_apikey.coverage" NAME="01.测试apikey的使用 覆盖结果" MODIFIED="1774422067746" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen" />
     <SUITE FILE_PATH="coverage/py_project01$05_.coverage" NAME="05.多线程练习 覆盖结果" MODIFIED="1773837929614" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章/补充" />
     <SUITE FILE_PATH="coverage/py_project01$05___.coverage" NAME="05.爬虫-案例-电影榜单 覆盖结果" MODIFIED="1773647211334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第4章" />
     <SUITE FILE_PATH="coverage/py_project01$16_.coverage" NAME="16.函数基础 覆盖结果" MODIFIED="1773369195414" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
@@ -913,6 +976,7 @@
     <SUITE FILE_PATH="coverage/py_project01$NP9_.coverage" NAME="NP9 十六进制数字的大小 覆盖结果" MODIFIED="1773747353914" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习" />
     <SUITE FILE_PATH="coverage/py_project01$08_for.coverage" NAME="08.for循环 覆盖结果" MODIFIED="1773228812207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第二章" />
     <SUITE FILE_PATH="coverage/py_project01$NP95_.coverage" NAME="NP95 兔子的数量 覆盖结果" MODIFIED="1774097746026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/牛客错题代码练习/3_21" />
+    <SUITE FILE_PATH="coverage/py_project01$07__.coverage" NAME="07.提示词优化_金融文本匹配判断 覆盖结果" MODIFIED="1774429144785" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/qianwen" />
     <SUITE FILE_PATH="coverage/py_project01$__1_.coverage" NAME="爬虫练习 (1) 覆盖结果" MODIFIED="1773646697591" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第4章" />
     <SUITE FILE_PATH="coverage/py_project01$06_ai_parther_4.coverage" NAME="06.ai_parther_4 覆盖结果" MODIFIED="1774252176799" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第3章" />
     <SUITE FILE_PATH="coverage/py_project01$06_match.coverage" NAME="06.match模式匹配 覆盖结果" MODIFIED="1773980033759" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/第2章" />

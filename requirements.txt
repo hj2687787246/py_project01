@@ -88,3 +88,7 @@ slowapi
 pydantic-settings
 python-dotenv
 python-jose
+langchain-community
+dashscope
+
+langchain-ollama
