@@ -93,3 +93,5 @@ dashscope
 
 langchain-ollama
 langchain-core
+langchain-text-splitters
+langchain-chroma
