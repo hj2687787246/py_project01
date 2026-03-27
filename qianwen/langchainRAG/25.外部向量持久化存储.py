@@ -3,10 +3,9 @@ from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_chroma import Chroma
 
 vector_store = Chroma(
-    # Chroma 向量数据库
+    # Chroma向量数据库
     collection_name="test", # 当前向量存储名字，类似数据库的表名称
-    #DashScopeEmbeddings = 阿里通义 embedding
-    embedding_function=DashScopeEmbeddings(), #嵌入模型
+    embedding_function=DashScopeEmbeddings(), #嵌入模型 DashScopeEmbeddings = 阿里通义 embedding
     persist_directory="./chroma_db" # 指定数据存放的文件
 )
 

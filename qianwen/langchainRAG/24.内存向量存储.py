@@ -3,8 +3,8 @@ from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 
 vector_store = InMemoryVectorStore(
-# InMemoryVectorStore = 内存临时向量库
-# DashScopeEmbeddings = 阿里通义 embedding
+    # InMemoryVectorStore = 内存临时向量库
+    # DashScopeEmbeddings = 阿里通义 embedding
     embedding=DashScopeEmbeddings()
 )
 
